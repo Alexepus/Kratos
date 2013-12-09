@@ -33,6 +33,7 @@ int CurrAttempt=1;
 int RealSubmeasuring, CurrentSubmeasuring;
 int NewN, SumN;
 int RealTime;
+CString strMessage;
 CString fatalErrorMessage;
 
 int remeasureCountOnTimerError; // Количество попыток перемерить текущую точку при ошибке таймера
@@ -267,9 +268,9 @@ Met_NextSubmeasuring:
 						LastRealTime = RealTime;
 					}
 					counterUnit.StartTimedCount();
-					if(counterUnit.ReadState().CoolingState == CoolingStates.Interlock)
+					if(counterUnit.ReadState().CoolingState == CoolingStates::Interlock)
 					{
-						fatalErrorMessage = "Ошибка: сработала блокировка охлаждения с запретом высокого. Измерение будет прервано."
+						fatalErrorMessage = "Ошибка: сработала блокировка охлаждения с запретом высокого. Измерение будет прервано.";
 						goto Met_EndBigCircle;
 					}
 				}
@@ -455,9 +456,9 @@ Met_NextSubmeasuring:
 			CurrAttempt=1;
 			
 			THR_UNLOCK();
-			sprintf(strMessage, " Volts = %.3lf  F = %i  dF = %i", I2D(pReg->m_pDataOut[k].x), int(floor(NewY+0.5)), int(floor(NewY-DataOut.y+0.5)));
+			strMessage.Format(" Volts = %.3lf  F = %i  dF = %i", I2D(pReg->m_pDataOut[k].x), int(floor(NewY+0.5)), int(floor(NewY-DataOut.y+0.5)));
 			::SendMessage(ThComm->pMainFrame->m_hStatusBar, SB_SETTEXT, 
-					1, (LPARAM) (LPSTR) strMessage);
+					1, (LPARAM) (LPCSTR) strMessage);
 
 			THR_LOCK();
 			
@@ -732,6 +733,13 @@ while((CDxpsRegion::ScanTime-CDxpsRegion::PassedCommonTime>0 && ThComm->StopCont
 				LastRealTime = (int)(pReg->Parameters.Dwell*1000);
 			}
 			counterUnit.StartTimedCount();
+			if(counterUnit.ReadState().CoolingState == CoolingStates::Interlock)
+			{
+				CString errorMessage = "Ошибка: сработала блокировка охлаждения с запретом высокого. Измерение будет прервано.";
+				LogFileFormat(errorMessage);
+				MessageBox(NULL, errorMessage, "Error" , MB_ICONSTOP|MB_OK);
+				LeaveCrSecAndEndDxpsThread(ThComm->pMainFrame, pReg, ThreadLock);
+			}
 		}
 		catch(DetailedException e)
 		{

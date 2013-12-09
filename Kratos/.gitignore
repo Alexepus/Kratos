@@ -1,0 +1,12 @@
+# UserSettings #
+*.suo
+*.user
+*.aps
+*.ncb
+
+# Temporary #
+.VLH2005.ProgNew.sln/
+
+Debug/
+Release/*
+!Release/Kratos.exe
