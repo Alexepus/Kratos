@@ -1,0 +1,11 @@
+del *.obj
+del *.sbr
+del *.pdb
+del *.idb
+del *.bsc
+del *.ilk
+del *.pch
+del *.res
+del mt.dep
+del BuildLog.htm
+del *intermediate.manifest

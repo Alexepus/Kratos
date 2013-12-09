@@ -1,0 +1,29 @@
+* Описание классов *
+---------------------
+CComThreadBasic - базовый класс, реализующий логику посылки и получения команд по протоколу ПИП
+CComThread - описывает действия при отправке/получении сообщений: логирование, обработка сообщений 
+				с помощью класса CMsgPool
+CMsgPool - позволяет окну подписаться на получение уведомлений о сообщениях; обратившись к объекту 
+				с использованием полученного Id, можно получить всё сообщение
+CMainFrame - принимает сообщения "RemoteDxpsState", которые направляет в CSpecView::OnRemoteDxpsState, 
+				который вызывает CThermoReg::OnRemoteDxpsState
+CThermoReg - конфигурирует COM-порт, загружает в контроллер параметры терморегулирования 
+				(параметры PID, термопары), разбирает сообщения из контроллера
+				
+* Формат передачи данных между приложениями *
+---------------------------------------------
+1) Передача из DXPS(Kratos) в Spec статуса готовности к запуску 
+SendMessage(hSpecWnd, wm_RegDxpsMessageID, wParam, lParam);
+Параметры:
+hSpecWnd = ::FindWindow(_T("SpecWindowClass"),NULL);
+UINT wm_RegDxpsMessageID=RegisterWindowMessage("RemoteDxpsState");
+wParam = 0;
+lParam = DxpsDocReadyState;
+
+2) Передача из Spec в Kratos сигнала дистанционного запуска
+SendMessage(hKratosWnd, wm_CurrentTempMessage, wParam, lParam);
+Параметры:	
+hKratosWnd = ::FindWindow(_T("KratosWindowClass"),NULL);
+UINT wm_CurrentTempMessage = RegisterWindowMessage("RemoteCurrentTemp");
+wParam = (int)(RefferenceTemp*256);
+lParam = (int)(CurrentTemp*256);	

@@ -1,0 +1,902 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\Spec.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR_DIVSIZE      CURSOR                  "res\\divsize.cur"
+IDC_CURSOR_GRAPH        CURSOR                  "res\\cursor_g.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Spectrum.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_HARDWARE_SETUP_DLG DIALOG  0, 0, 219, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Hardware Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,52,103,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,119,103,50,14
+    LTEXT           "Note: All changes should be made when measurements stopped.",IDC_STATIC,13,38,185,18
+    GROUPBOX        "ADC Ö0609",IDC_STATIC,5,27,204,67
+    COMBOBOX        IDC_COMBO_INTEGRATION,101,56,48,84,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Integration Time",IDC_STATIC,35,58,52,8
+    LTEXT           "Range",IDC_STATIC,63,75,22,8
+    COMBOBOX        IDC_COMBO_RANGE,101,74,48,39,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "COM Port",IDC_STATIC,25,12,32,8
+    EDITTEXT        IDC_EDIT_COM_PORT_NAME,67,10,40,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Reconnect",IDC_BUTTON_COM_RECONNECT,111,9,43,14
+END
+
+IDD_APPEARANCE_SETUP_DLG DIALOGEX 0, 0, 304, 215
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Appearance"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,87,194,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,167,194,50,14
+    GROUPBOX        "Plots Setup",IDC_STATIC,6,4,292,128
+    CONTROL         "",IDC_APPEARANCE_CALIB_CHART,"ChartCtrl",WS_TABSTOP,189,15,102,110
+    COMBOBOX        IDC_COMBO_SERIES1_TYPE,115,27,66,63,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Plot Type",IDC_STATIC,129,17,31,8
+    LTEXT           "Plot Element",IDC_STATIC,125,46,40,8
+    COMBOBOX        IDC_COMBO_SERIES1_ELEMENT,115,56,66,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_BUTTON_SERIES1_COLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,140,76,40,14
+    LTEXT           "Color",IDC_STATIC,114,78,17,8
+    LTEXT           "Size:",IDC_STATIC,114,102,16,8
+    CONTROL         "Slider1",IDC_SLIDER_SERIES1_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,136,97,47,19
+    LTEXT           "1",IDC_STATIC_SIZE,131,102,8,8
+    GROUPBOX        "Temperature History",IDC_STATIC,5,135,293,53
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_KEEP,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,105,148,48,15,WS_EX_RIGHT
+    LTEXT           "Keep History Within",IDC_STATIC,35,151,63,8
+    LTEXT           "(H:M:S)",IDC_STATIC,159,151,25,8
+    CONTROL         "Show Power Curve",IDC_CHECK_SHOW_POWER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,35,166,77,10
+    CONTROL         "Tree1",IDC_APPEAR_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,11,15,92,110
+END
+
+IDD_TR_SETTINGS_DLG DIALOG  0, 0, 169, 263
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "TR Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,25,240,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,95,240,50,14
+    LTEXT           "Prime",IDC_STATIC,41,30,18,8
+    EDITTEXT        IDC_EDIT_PRIME,67,28,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "Heating Function",IDC_STATIC,9,2,151,184
+    LTEXT           "°C",IDC_STATIC,112,30,8,8
+    LTEXT           "Beta +",IDC_STATIC,37,44,22,8
+    EDITTEXT        IDC_EDIT_BETA_PLUS,67,41,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C/s",IDC_STATIC,112,44,15,8
+    LTEXT           "T 1",IDC_STATIC,47,57,12,8
+    EDITTEXT        IDC_EDIT_T1,67,54,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C",IDC_STATIC,112,57,8,8
+    LTEXT           "Beta -",IDC_STATIC,39,84,20,8
+    EDITTEXT        IDC_EDIT_BETA_MINUS,67,81,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C/s",IDC_STATIC,112,84,15,8
+    LTEXT           "Dwell 1",IDC_STATIC,35,70,24,8
+    EDITTEXT        IDC_EDIT_DWELL1,67,68,40,12,ES_AUTOHSCROLL
+    LTEXT           "s",IDC_STATIC,112,70,8,8
+    LTEXT           "T 2",IDC_STATIC,47,97,12,8
+    EDITTEXT        IDC_EDIT_T2,67,94,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C",IDC_STATIC,112,97,8,8
+    LTEXT           "Dwell 2",IDC_STATIC,35,110,24,8
+    EDITTEXT        IDC_EDIT_DWELL2,67,108,40,12,ES_AUTOHSCROLL
+    LTEXT           "s",IDC_STATIC,112,110,8,8
+    CONTROL         "Repeat ",IDC_CHECK_REPEATE,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,35,124,41,10
+    LTEXT           "Heating Rate",IDC_STATIC,18,140,43,8
+    EDITTEXT        IDC_EDIT_HEATING_RATE,67,137,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C/s",IDC_STATIC,112,140,15,8
+    LTEXT           "Cooling Rate",IDC_STATIC,19,153,42,8
+    EDITTEXT        IDC_EDIT_COOLING_RATE,67,150,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C/s",IDC_STATIC,112,153,15,8
+    GROUPBOX        "ThermoCouple",IDC_STATIC,9,190,151,42
+    LTEXT           "Cold Ends",IDC_STATIC,26,217,33,8
+    EDITTEXT        IDC_EDIT_COLD_LEAD,66,214,40,12,ES_AUTOHSCROLL
+    LTEXT           "°C",IDC_STATIC,111,217,8,8
+    EDITTEXT        IDC_EDIT_COUPLE_FILE,66,198,55,12,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_BUTTON_BROWSE_COUPLECALIB,124,198,13,12
+    LTEXT           "Type",IDC_STATIC,41,201,17,8
+    PUSHBUTTON      "Save...",IDC_BUTTON_TR_SAVE,38,169,43,11
+    PUSHBUTTON      "Load...",IDC_BUTTON_TR_LOAD,87,169,43,11
+    EDITTEXT        IDC_EDIT_START_DELAY,67,14,40,12,ES_AUTOHSCROLL
+    LTEXT           "Start Delay",IDC_STATIC,28,15,36,8
+    LTEXT           "s",IDC_STATIC,111,16,8,8
+END
+
+IDD_HEATER_SETUP_DLG DIALOGEX 0, 0, 225, 251
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Heater Setup"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,56,229,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,118,229,50,14
+    GROUPBOX        "Heater Regulator",IDC_STATIC,4,3,214,127
+    LTEXT           "Proportional",IDC_STATIC,19,30,38,8
+    LTEXT           "Integral",IDC_STATIC,19,43,24,8
+    LTEXT           "Derivative",IDC_STATIC,19,58,33,8
+    EDITTEXT        IDC_EDIT_KP,67,26,40,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_KI,67,40,40,13,ES_AUTOHSCROLL
+    LTEXT           "Factor",IDC_STATIC,73,12,21,8
+    EDITTEXT        IDC_EDIT_KD,67,54,40,13,ES_AUTOHSCROLL
+    LTEXT           "Value",IDC_STATIC,125,12,19,8
+    LTEXT           "Static",IDC_STATIC_VP,129,28,31,8
+    LTEXT           "Static",IDC_STATIC_VI,129,42,31,8
+    LTEXT           "Static",IDC_STATIC_VD,129,58,31,8
+    PUSHBUTTON      "Load",IDC_BUTTON_PID_COEF_LOAD,67,111,40,14
+    LTEXT           "Static",IDC_STATIC_PID_OUT,166,71,31,8
+    GROUPBOX        "PID",IDC_STATIC,11,17,199,67
+    LTEXT           "Total PID",IDC_STATIC,20,72,31,8
+    LTEXT           "Feed Forward",IDC_STATIC,19,91,44,8
+    EDITTEXT        IDC_EDIT_KFF,67,88,40,13,ES_AUTOHSCROLL
+    LTEXT           "Static",IDC_STATIC_FEEDFORW_V,128,92,31,8
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME | SS_SUNKEN,11,105,199,1
+    LTEXT           "Total",IDC_STATIC,19,114,17,8
+    LTEXT           "Value*Factor",IDC_STATIC,157,12,42,8
+    LTEXT           "Static",IDC_STATIC_FEEDFORW_VF,166,92,31,8
+    LTEXT           "Static",IDC_STATIC_OUTPUT,166,113,31,8
+    LTEXT           "Static",IDC_STATIC_VP_F,166,27,31,8
+    LTEXT           "Static",IDC_STATIC_VI_F,166,42,31,8
+    LTEXT           "Static",IDC_STATIC_VD_F,166,57,31,8
+    GROUPBOX        "PID Parameters",IDC_STATIC,4,135,214,70
+    LTEXT           "Derivative by",IDC_STATIC,13,148,42,8
+    EDITTEXT        IDC_EDIT_DERIV_SAMPLES,66,145,40,13,ES_AUTOHSCROLL
+    LTEXT           "Samples",IDC_STATIC,111,147,28,8
+    LTEXT           "Integral Term Min/Max",IDC_STATIC,11,177,72,8
+    LTEXT           "Zero Integral if  |dT|  >",IDC_STATIC,11,191,70,8
+    EDITTEXT        IDC_EDIT_VI_MAX,89,174,40,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ZERO_VI,89,188,40,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Load",IDC_BUTTON_PID_PARAM_LOAD2,158,163,40,14
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME | SS_SUNKEN,149,143,1,56
+    PUSHBUTTON      "View ADC && DAC",IDC_BUTTON_ADC_DAC,4,209,67,14
+    LTEXT           "Integral Term Decay",IDC_STATIC,11,163,65,8
+    EDITTEXT        IDC_EDIT_VI_DECAY,89,160,40,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Feed Forw. Table",IDC_BUTTON_FF_TABLE,74,209,65,14
+    PUSHBUTTON      "Feed Forw. Auto-tune",IDC_BUTTON2,142,209,76,14,WS_DISABLED
+END
+
+IDD_ADCDAC_DLG DIALOG  0, 0, 242, 174
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ADC & DAC"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "                 ",IDC_STATIC,9,4,70,62
+    CONTROL         "Manual Heater Control",IDC_CHECK_MANUAL_HEATER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,80,87,10
+    CONTROL         "Slider1",IDC_SLIDER_HEATER,"msctls_trackbar32",TBS_TOP | TBS_NOTICKS | WS_DISABLED | WS_TABSTOP,15,92,213,17
+    CONTROL         "Manual MSP Control",IDC_CHECK_MANUAL_MSP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,113,81,10
+    CONTROL         "Slider1",IDC_SLIDER_MSP,"msctls_trackbar32",TBS_TOP | TBS_NOTICKS | WS_DISABLED | WS_TABSTOP,15,125,213,17
+    DEFPUSHBUTTON   "OK",IDOK,53,153,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,131,153,50,14
+    LTEXT           "0:",IDC_STATIC,15,17,8,8
+    LTEXT           "...",IDC_STATIC_ADC0,27,17,48,8,WS_DISABLED
+    LTEXT           "...",IDC_STATIC_AVER_ADC0,102,15,48,8
+    GROUPBOX        "Averaged ADC",IDC_STATIC,87,4,70,62
+    LTEXT           "1:",IDC_STATIC,15,28,8,8
+    LTEXT           "...",IDC_STATIC_ADC1,27,28,48,8,WS_DISABLED
+    LTEXT           "2:",IDC_STATIC,15,39,8,8
+    LTEXT           "...",IDC_STATIC_ADC2,27,39,48,8,WS_DISABLED
+    LTEXT           "3:",IDC_STATIC,15,50,8,8
+    LTEXT           "...",IDC_STATIC_ADC3,27,50,48,8,WS_DISABLED
+    LTEXT           "0:",IDC_STATIC,92,16,8,8
+    LTEXT           "1:",IDC_STATIC,92,27,8,8
+    LTEXT           "2:",IDC_STATIC,92,38,8,8
+    LTEXT           "3:",IDC_STATIC,92,49,8,8
+    LTEXT           "...",IDC_STATIC_AVER_ADC1,102,26,48,8
+    LTEXT           "...",IDC_STATIC_AVER_ADC2,102,37,48,8
+    LTEXT           "...",IDC_STATIC_AVER_ADC3,102,49,48,8
+    LTEXT           "0:",IDC_STATIC,171,17,8,8
+    LTEXT           "...",IDC_STATIC_DAC0,183,17,48,8
+    GROUPBOX        "DAC",IDC_STATIC,165,4,70,62
+    LTEXT           "1:",IDC_STATIC,171,28,8,8
+    LTEXT           "...",IDC_STATIC_DAC1,183,28,48,8
+    LTEXT           "2:",IDC_STATIC,171,39,8,8,WS_DISABLED
+    LTEXT           "...",IDC_STATIC_ADC6,183,39,48,8,WS_DISABLED
+    LTEXT           "3:",IDC_STATIC,171,50,8,8,WS_DISABLED
+    LTEXT           "...",IDC_STATIC_ADC7,183,50,48,8,WS_DISABLED
+    GROUPBOX        "Manual Operation",IDC_STATIC,9,70,226,77
+    CONTROL         "ADC",IDC_CHECK_ADC_ON,"Button",BS_AUTOCHECKBOX,15,4,31,10
+END
+
+IDD_FF_TABLE_DLG DIALOG  0, 0, 184, 133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Feed-Forward Table"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,34,113,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,102,113,50,14
+    CONTROL         "List1",IDC_LIST_FF,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,7,7,170,82
+    PUSHBUTTON      "Load",IDC_BUTTON_LOAD_FF,66,94,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_HARDWARE_SETUP_DLG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 117
+    END
+
+    IDD_APPEARANCE_SETUP_DLG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 208
+    END
+
+    IDD_HEATER_SETUP_DLG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 244
+    END
+
+    IDD_ADCDAC_DLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 241
+        BOTTOMMARGIN, 167
+    END
+
+    IDD_FF_TABLE_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 177
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 127
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_HARDWARE_SETUP_DLG DLGINIT
+BEGIN
+    IDC_COMBO_INTEGRATION, 0x403, 5, 0
+0x2035, 0x736d, "\000" 
+    IDC_COMBO_INTEGRATION, 0x403, 6, 0
+0x3031, 0x6d20, 0x0073, 
+    IDC_COMBO_INTEGRATION, 0x403, 6, 0
+0x3032, 0x6d20, 0x0073, 
+    IDC_COMBO_INTEGRATION, 0x403, 6, 0
+0x3034, 0x6d20, 0x0073, 
+    IDC_COMBO_INTEGRATION, 0x403, 6, 0
+0x3038, 0x6d20, 0x0073, 
+    IDC_COMBO_INTEGRATION, 0x403, 7, 0
+0x3631, 0x2030, 0x736d, "\000" 
+    IDC_COMBO_INTEGRATION, 0x403, 7, 0
+0x3233, 0x2030, 0x736d, "\000" 
+    IDC_COMBO_RANGE, 0x403, 4, 0
+0x2038, 0x0056, 
+    IDC_COMBO_RANGE, 0x403, 6, 0
+0x2e30, 0x2035, 0x0056, 
+    0
+END
+
+IDD_APPEARANCE_SETUP_DLG DLGINIT
+BEGIN
+    IDC_COMBO_SERIES1_TYPE, 0x403, 14, 0
+0x694c, 0x656e, 0x6120, 0x646e, 0x4420, 0x746f, 0x0073, 
+    IDC_COMBO_SERIES1_TYPE, 0x403, 5, 0
+0x694c, 0x656e, "\000" 
+    IDC_COMBO_SERIES1_TYPE, 0x403, 5, 0
+0x6f44, 0x7374, "\000" 
+    IDC_COMBO_SERIES1_TYPE, 0x403, 10, 0
+0x7254, 0x7061, 0x7a65, 0x7569, 0x006d, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_TOOLBAR_TR          BITMAP                  "res\\toolbar1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR_TR TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_TR_START
+    BUTTON      ID_TR_PRIME
+    BUTTON      ID_TR_WAIT_CONT
+    BUTTON      ID_TR_MAINOFF
+    SEPARATOR
+    BUTTON      ID_TR_SYNC_DXPS
+    BUTTON      ID_TR_SYNC_MSP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    ID_TR_START             "Start ThermoFunction\nStart TR"
+    ID_TR_PRIME             "Prime Temperature\nPrime"
+    ID_TR_MAINOFF           "Switch Off Heater\nMain Off"
+    ID_TR_WAIT_CONT         "Wait/Continue\nWait"
+    ID__TR_GO               "Go\nGo"
+    ID_TR_GO                "Go - Starts thermofunction\nGo"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_TR_SYNC_DXPS         "Start DXPS synchronously\nSync with DXPS"
+    ID_TR_SYNC_MSP          "Start MassSpectrometer synchronously\nSync with MassSpectrometer"
+END
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MSPTYPE             ICON                    "res\\MassSpecDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 82
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Spec"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,15,20,20
+    LTEXT           "Spec Version 1.2",IDC_STATIC,39,13,119,8,SS_NOPREFIX
+    LTEXT           "Programmer: Alexey Popov (alexpopov@mail.ru)",IDC_STATIC,39,60,179,8
+    DEFPUSHBUTTON   "OK",IDOK,173,11,50,14,WS_GROUP
+    LTEXT           "Mass-spectrometer and Thermo Regulator",IDC_STATIC,39,27,133,8
+    LTEXT           "Static",IDC_STATIC_BUILD_DATE,77,42,139,8
+    LTEXT           "Build date:",IDC_STATIC,39,42,34,8
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,13,55,207,1
+    GROUPBOX        "",IDC_STATIC,5,2,224,75
+END
+
+IDD_CALIB_DLG DIALOG  0, 0, 97, 260
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Calibrate",IDC_BUTTON_CALIB_OK,23,208,50,14
+    CONTROL         "List1",IDC_LIST_CALIB,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,0,0,97,205
+    PUSHBUTTON      "Close",IDC_BUTTON_CALIB_CANCEL,30,242,37,14
+    PUSHBUTTON      "Inspect...",IDC_BUTTON_CALIB_INSPECT,30,225,37,14
+END
+
+IDD_MEASURING_OPT_DLG DIALOGEX 0, 0, 266, 138
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Measuring Options"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,73,117,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,143,117,50,14
+    EDITTEXT        IDC_EDIT_MASS_START,85,18,31,14,ES_AUTOHSCROLL
+    GROUPBOX        "Calibration",IDC_STATIC,8,6,250,51
+    LTEXT           "Scan Masses from",IDC_STATIC,19,21,59,8
+    LTEXT           "to",IDC_STATIC,119,21,8,8
+    EDITTEXT        IDC_EDIT_MASS_STOP,131,18,31,14,ES_AUTOHSCROLL
+    LTEXT           "with step",IDC_STATIC,166,21,29,8
+    EDITTEXT        IDC_EDIT_MASS_STEP,199,18,31,14,ES_AUTOHSCROLL
+    LTEXT           "Delay between mass setup and measuring",IDC_STATIC,17,91,134,8
+    EDITTEXT        IDC_EDIT_MASS_SETUP_DELAY,157,89,34,14,ES_AUTOHSCROLL
+    LTEXT           "sec",IDC_STATIC,197,91,12,8
+    GROUPBOX        "Measure",IDC_STATIC,8,61,250,49
+    LTEXT           "Scan Time",IDC_STATIC,18,75,35,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,61,72,48,15,WS_EX_RIGHT
+    LTEXT           "hh:mm:ss",IDC_STATIC,119,76,30,8
+    LTEXT           "Delay between mass setup and measuring",IDC_STATIC,17,40,134,8
+    EDITTEXT        IDC_EDIT_CALIB_MASS_SETUP_DELAY,157,38,34,14,ES_AUTOHSCROLL
+    LTEXT           "sec",IDC_STATIC,197,40,12,8
+END
+
+IDD_INSPECT_DLG DIALOG  0, 0, 186, 71
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Inspect Calibration"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,131,6,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,131,25,50,14
+    LTEXT           "Voltage = a+b*Mass+c*Mass^2",IDC_STATIC,13,5,100,8
+    LTEXT           "a:",IDC_STATIC,15,22,8,8
+    EDITTEXT        IDC_EDIT_INSPECT_A,28,19,73,14,ES_AUTOHSCROLL
+    LTEXT           "b:",IDC_STATIC,15,38,8,8
+    EDITTEXT        IDC_EDIT_INSPECT_B,28,35,73,14,ES_AUTOHSCROLL
+    LTEXT           "c:",IDC_STATIC,15,54,8,8
+    EDITTEXT        IDC_EDIT_INSPECT_C,28,51,73,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Defaults",IDC_BUTTON_INSPECT_DEFAULTS,131,45,50,14
+END
+
+IDD_PROTECTION_SETUP_DLG DIALOGEX 0, 0, 182, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Protection Parameters"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,33,128,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,98,128,50,14
+    RTEXT           "Maximum current",IDC_STATIC,21,15,59,8
+    RTEXT           "Maximum voltage",IDC_STATIC,17,33,62,8
+    RTEXT           "Maximum power",IDC_STATIC,18,51,61,8
+    EDITTEXT        IDC_EDIT_MAXCURRENT,83,13,40,14,ES_AUTOHSCROLL | ES_NOHIDESEL
+    EDITTEXT        IDC_EDIT_MAXVOLTAGE,83,31,40,14,ES_AUTOHSCROLL | ES_NOHIDESEL
+    EDITTEXT        IDC_EDIT_MAXPOWER,83,49,40,14,ES_AUTOHSCROLL | ES_NOHIDESEL
+    LTEXT           "A",IDC_STATIC,130,16,8,8
+    LTEXT           "V",IDC_STATIC,130,34,8,8
+    LTEXT           "W",IDC_STATIC,130,51,8,8
+    GROUPBOX        "Interlock",IDC_STATIC,7,1,168,67
+    GROUPBOX        "Limitation *",IDC_STATIC,7,76,168,34
+    RTEXT           "Maximum current",IDC_STATIC,19,91,59,8
+    EDITTEXT        IDC_EDIT_LIMITCURRENT,83,89,40,14,ES_AUTOHSCROLL | ES_NOHIDESEL
+    LTEXT           "A",IDC_STATIC,129,92,8,8
+    LTEXT           "* Might be unreliable",IDC_STATIC,10,114,85,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MEASURING_OPT_DLG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 131
+    END
+
+    IDD_PROTECTION_SETUP_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 175
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 142
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+    SEPARATOR
+    BUTTON      ID_BUTTON_START
+    BUTTON      ID_BUTTON_STOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "Save as EasyPlot...",         IDM_FILE_SAVEAS_EASYPLOT
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+    END
+    POPUP "TR"
+    BEGIN
+        MENUITEM "TR Settings...",              ID_TR_TRSETTINGS
+        POPUP "Sync Start"
+        BEGIN
+            MENUITEM "DXPS",                        ID_TR_SYNC_DXPS
+            MENUITEM "MassSpectrometer",            ID_TR_SYNC_MSP
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Start",                       ID_TR_START
+        MENUITEM "Prime",                       ID_TR_PRIME
+        MENUITEM "Wait",                        ID_TR_WAIT
+        MENUITEM "Continue",                    ID_TR_CONTINUE
+        MENUITEM "Main Off",                    ID_TR_MAINOFF
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Mass Table",                  ID_VIEW_MASSES
+        MENUITEM SEPARATOR
+        MENUITEM "Mass Chart",                  ID_VIEW_MASSCHART
+        MENUITEM "Thermo Chart",                ID_VIEW_TEMPERATURECHART
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "Settings"
+    BEGIN
+        MENUITEM "Test",                        ID_SETTINGS_CALIBRATION
+        MENUITEM SEPARATOR
+        MENUITEM "Measuring Options...",        ID_SETTINGS_MEASURINGOPTIONS
+        MENUITEM "Appearance...",               ID_SETTINGS_APPEARANCE
+        MENUITEM "Heater Setup...",             ID_SETTINGS_HEATER_SETUP
+        MENUITEM "Hardware Setup...",           ID_SETTINGS_HARDWARESETUP
+        MENUITEM "ADCs & DACs...",              ID_SETTINGS_ADCSDACS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About Spec...",              ID_APP_ABOUT
+    END
+END
+
+IDR_MENU_PROTECTION MENU 
+BEGIN
+    POPUP "PopupRoot"
+    BEGIN
+        MENUITEM "Protection Reset",            ID_POPUP_RESETPROTECTION
+        MENUITEM "Protection Parameters...",    ID_POPUP_PROTECTIONPARAMETERS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Mass-spectrometer & Thermoregulator"
+            VALUE "FileVersion", "1, 2, 0, 0"
+            VALUE "InternalName", "Spec"
+            VALUE "LegalCopyright", "Alexey Popov (C) 2007-2010"
+            VALUE "OriginalFilename", "Spec.exe"
+            VALUE "ProductName", "Spec Application"
+            VALUE "ProductVersion", "1, 2, 0, 0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "Spec\nUnnamed\nMassSpec\nMassSpec Files (*.msp)\n.msp\nMassSpec.Document\nMassSpec Document"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "Spec"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the graph data in EasyPlot format to the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut\nCut/Clear"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_SETTINGS_HARDWARE    "Hardware Setup\nHardware"
+    ID_SETTINGS_CALIBRATION "Calibrate Mass-spectrometer\nCalibration"
+    ID_BUTTON_START         "Starts Measurement\nStart MSP"
+    ID_BUTTON_STOP          "Stops Measurement\nStop MSP"
+    IDM_FILE_SAVEAS_EASYPLOT 
+                            "Saves current document as EasyPlot file\nSave as EasyPlot"
+    ID_TR_TRSETTINGS        "ThermoRegulator Settings"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_REF_TEMP   "T Ref:           "
+    ID_INDICATOR_CUR_TEMP   "T Cur:           "
+    ID_INDICATOR_REMAIN_TIME "  00:00:00"
+    ID_INDICATOR_POWER      "Power: Off      "
+    ID_INDICATOR_PROTECTION "Protection: OK  "
+END
+
+STRINGTABLE 
+BEGIN
+    ID_TR_START             "Start ThermoFunction Execution"
+    ID_TR_PRIME             "Prime Temperature"
+    ID_TR_WAIT              "Hold Current Heating Power"
+    ID_TR_CONTINUE          "Continue ThermoFunction"
+    ID_TR_MAINOFF           "Switch Off Heater"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\Spec.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

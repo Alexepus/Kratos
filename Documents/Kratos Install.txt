@@ -1,0 +1,6 @@
+При установке Kratos (High Pressure) и Spec на новый компьютер необходимо:
+1. 
+ a) Версии v2.0-v2.43 Установить драйвер для КАМАК PPI-2 или PPI-4, как описано в VCMCD.TXT
+ б) Версии v2.50+ Установить WinDriver, выполнив Windrvr6\win2000.bat
+2. Скопировать компонент NTGraph.ocx в %WINDIR%\System32, 
+   из этого каталога выполнить regsvr32.exe ntgraph.ocx

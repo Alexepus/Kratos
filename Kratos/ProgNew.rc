@@ -1,0 +1,796 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\ProgNew.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Icon3.ico"
+IDI_ICON_FOR_REG        ICON                    "res\\iconforreg.ico"
+IDI_ICON_FOR_REG_NULL   ICON                    "res\\icon_for.ico"
+IDI_ICON_FOR_REG_ONOFF  ICON                    "res\\iconOnOff.ico"
+IDI_ICON_DXPS           ICON                    "res\\DXPS.ico"
+IDI_ICON_XPS            ICON                    "res\\XPS.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENUEX 
+BEGIN
+    POPUP "&File",                          65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "&New Project",                ID_FILE_NEW_PROJECT,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Open Project...",            ID_FILE_OPEN_PROJECT,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Save Project",               ID_FILE_SAVE_PROJECT,MFT_STRING,MFS_ENABLED
+        MENUITEM "Save Project &as...",         ID_FILE_SAVE_PROJECT_AS,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        POPUP "&Recent Projects",               65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "No files",                    ID_FILE_RECENTPROJECTS_NOFILES,MFT_STRING,MFS_GRAYED
+        END
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Save as EasyPlot (&mc)...",   ID_FILE_SAVE_AS_EASYPLOT_MC,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Save as &Origin...",          ID_FILE_SAVE_AS_ORIGIN,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Exit",                       ID_FILE_EXIT,MFT_STRING,MFS_ENABLED
+    END
+    POPUP "&Program",                       65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "Region Table...",             ID_PROGRAM_REGION_TABLE,MFT_STRING,MFS_ENABLED
+        MENUITEM "DXPS Table...",               ID_PROGRAM_DXPS_TABLE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Start",                       ID_PROGRAMM_START,MFT_STRING,MFS_ENABLED
+        MENUITEM "Stop",                        ID_PROGRAMM_STOP,MFT_STRING,MFS_ENABLED
+    END
+    POPUP "&Settings",                      65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "Camac Setup...",              ID_SETTINGS_CAMAC_SETUP,MFT_STRING,MFS_ENABLED
+        MENUITEM "Counter Setup...",            ID_SETTINGS_COUNTERSETUP,MFT_STRING,MFS_ENABLED
+        MENUITEM "Hardware Setup...",           ID_SETTINGS_HARDWARESETUP,MFT_STRING,MFS_ENABLED
+        MENUITEM "Measuring Options...",        ID_SETTINGS_MEASURING_OPTIONS,MFT_STRING,MFS_ENABLED
+        MENUITEM "Fi Table ...",                ID_SETTINGS_FITABLE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        POPUP "Graphics",                       65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "Font...",                     ID_GRAPHICS_FONT,MFT_STRING,MFS_ENABLED
+            MENUITEM "Settings for Curves ...",     ID_GRAPHICS_SETTINGS_FOR_CURVERS,MFT_STRING,MFS_ENABLED
+            MENUITEM "Grid",                        ID_GRAPHICS_GRID,MFT_STRING,MFS_ENABLED
+            MENUITEM MFT_SEPARATOR
+            MENUITEM "Settings for Viewer",         ID_GRAPHICS_SETTINGS_FOR_VIEWER,MFT_STRING,MFS_ENABLED
+        END
+    END
+    POPUP "Help",                           65535,MFT_STRING | MFT_RIGHTJUSTIFY,MFS_ENABLED
+    BEGIN
+        MENUITEM "About...",                    ID_ABOUT,MFT_STRING,MFS_ENABLED
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_BITMAPTOOLBAR       BITMAP                  "res\\Toolbar.bmp"
+IDB_BITMAP_ICONFORREG   BITMAP                  "res\\Iconforeg.bmp"
+IDB_BITMAP_OFF          BITMAP                  "res\\bitmap1.bmp"
+IDB_BITMAP_CUR          BITMAP                  "res\\bmp00001.bmp"
+IDB_BITMAP_DEF          BITMAP                  "res\\bmp00002.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_PARAM_REGION DIALOGEX 0, 0, 340, 221
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Region"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,99,197,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,182,197,50,14
+    EDITTEXT        IDC_EDIT_HV,96,20,37,14,ES_AUTOHSCROLL | ES_NUMBER | WS_GROUP
+    PUSHBUTTON      "Table",IDC_BUTTON_HV_TABLE,138,21,32,13
+    EDITTEXT        IDC_EDIT_KE_BEGIN,96,46,76,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_KE_END,96,70,76,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_STEP,96,95,76,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_N,96,120,76,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_TIME,96,145,76,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_COMMENTS,96,170,192,14,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Start ,   [ eV ]",IDC_STATIC_PARAM_KE_BEGIN,9,47,81,12,NOT WS_GROUP
+    LTEXT           "Finish ,  [ eV ]",IDC_STATIC_PARAM_KE_END,9,71,81,11,NOT WS_GROUP
+    LTEXT           "Step ,    [ eV ]",IDC_STATIC_PARAM_STEP,9,96,81,12,NOT WS_GROUP
+    LTEXT           "N (Number of passage)",IDC_STATIC_PARAM_N,9,122,81,13,NOT WS_GROUP
+    LTEXT           "Time ,   [ sec ]",IDC_STATIC_PARAM_TIME,9,146,81,11,NOT WS_GROUP
+    LTEXT           "Comments",IDC_STATIC_PARAM_COMMENTS,9,172,81,11,NOT WS_GROUP
+    LTEXT           "PARAMETRS OF REGIONS:",IDC_STATIC_PARAM,6,5,108,8
+    GROUPBOX        "",IDC_STATIC_HV,6,14,170,23
+    GROUPBOX        "",IDC_STATIC_KE_BEGIN,6,39,170,23
+    GROUPBOX        "",IDC_STATIC_KE_END,6,64,170,23
+    GROUPBOX        "",IDC_STATIC_STEP,6,89,170,23
+    GROUPBOX        "",IDC_STATIC_N,6,114,170,23
+    GROUPBOX        "",IDC_STATIC_TIME,6,139,170,23
+    GROUPBOX        "",IDC_STATIC_COMMENTS,6,164,326,23
+    GROUPBOX        "",IDC_STATIC_KEBE,189,14,137,22
+    LTEXT           " HV ,     [ eV ]",IDC_STATIC_PARAM_HV1,7,22,81,11,NOT WS_GROUP
+    CONTROL         "KE",IDC_RADIO_KE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,242,22,25,10
+    CONTROL         "BE",IDC_RADIO_BE,"Button",BS_AUTORADIOBUTTON,283,22,25,10
+    LTEXT           "KE / BE :",IDC_STATIC_KE_BE,195,22,31,8
+    GROUPBOX        "",IDC_STATIC_ANODE,189,39,137,23
+    LTEXT           "Anode :",IDC_STATIC_ANODE_TXT,197,47,26,8
+    COMBOBOX        IDC_COMBO_ANODE,242,46,81,61,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "",IDC_STATIC_ONOFF,190,89,137,22
+    CONTROL         "On",IDC_RADIO_ON,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,243,97,25,10
+    CONTROL         "Off",IDC_RADIO_OFF,"Button",BS_AUTORADIOBUTTON,284,97,25,10
+    LTEXT           "On / Off",IDC_STATIC_ONOFF_TXT,196,97,27,8
+    PUSHBUTTON      "Reset Out Data",IDC_BUTTON_RESET,191,120,135,14
+    PUSHBUTTON      "Edit",IDC_BUTTON_COMMENTS_EDIT,295,171,32,13
+    COMBOBOX        IDC_COMBO_HV,96,22,37,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Reset ALL Out Data",IDC_BUTTON_RESET_ALL,191,145,135,14
+END
+
+IDD_DLG_KE_END DIALOG  0, 0, 249, 122
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Attention"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,100,94,50,14
+    CONTROL         "",IDC_RADIO_BIG,"Button",BS_AUTORADIOBUTTON | WS_GROUP,13,34,17,8
+    CONTROL         "",IDC_RADIO_SMALL,"Button",BS_AUTORADIOBUTTON,13,52,17,8
+    CONTROL         "Enter over value",IDC_RADIO_OVER,"Button",BS_AUTORADIOBUTTON,13,70,68,10
+    GROUPBOX        "",IDC_STATIC_BORDER,7,5,235,110
+    LTEXT           "Parameter ""KE_end"" must be equal  ""KE_begin + integer * Step""",IDC_STATIC_CAPTION,13,15,225,8,NOT WS_GROUP
+    LTEXT           "Static",IDC_STATIC_SMALL,75,52,126,8,NOT WS_GROUP
+    LTEXT           "Static",IDC_STATIC_BIG,75,34,126,8,NOT WS_GROUP
+    LTEXT           "Static",IDC_STATIC_CAPTION_BIG,35,34,34,8,NOT WS_GROUP
+    LTEXT           "Static",IDC_STATIC_CAPTION_SMALL,35,52,34,8,NOT WS_GROUP
+END
+
+IDD_DLG_MEASURE_OPT DIALOG  0, 0, 204, 189
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Measuring Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,41,167,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,113,167,50,14
+    CONTROL         "Slider1",IDC_SLIDER_NSIGMA,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,26,38,152,19
+    CONTROL         "Slider1",IDC_SLIDER_NSUBMEASURINGS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,26,134,152,19
+    CTEXT           "3.0",IDC_STATIC_NSIGMA,94,30,13,8
+    LTEXT           "1",IDC_STATIC_NSIGMA_MIN,33,30,8,8
+    LTEXT           "30",IDC_STATIC_NSIGMA_MAX,164,30,9,8
+    GROUPBOX        "Number of sigmas for remeasure",IDC_GROUP_NSIGMA,18,20,169,40
+    GROUPBOX        "Number of submeasurings",IDC_STATIC,17,115,169,42
+    LTEXT           "1",IDC_STATIC,32,126,8,8
+    LTEXT           "10",IDC_STATIC,164,126,9,8
+    CTEXT           "10",IDC_STATIC_SUBMEASURINGS,97,126,9,8
+    GROUPBOX        "Maximum of measure attempts",IDC_GROUP_ATTEMPTS,17,68,169,39
+    CONTROL         "Slider1",IDC_SLIDER_NATTEMPTS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,26,84,152,19
+    LTEXT           "1",IDC_STATIC_ATTEMPTS_MIN,33,76,8,8
+    LTEXT           "10",IDC_STATIC_ATTEMPTS_MAX,165,76,9,8
+    CTEXT           "10",IDC_STATIC_ATTEMPTS,97,76,9,8
+    CONTROL         "Apply Min/Remeasure Techique",IDC_CHECK_REMEASURE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,5,118,10
+END
+
+IDD_DLG_SETTINGS_FOR_CURVERS DIALOG  0, 0, 362, 146
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings for Curves"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,108,125,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,203,125,50,14
+    GROUPBOX        "Current",IDC_STATIC_CURRENT,5,5,110,110
+    GROUPBOX        "",IDC_STATIC_CURR_LINE,10,15,45,22
+    CONTROL         "Line",IDC_CHECK_CURR_LINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,23,29,10
+    GROUPBOX        "",IDC_STATIC_CURR_POINTS,10,40,45,22
+    CONTROL         "Points",IDC_CHECK_CURR_POINTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,48,36,10
+    GROUPBOX        "",IDC_STATIC_CURR_LINE3,10,65,100,22
+    LTEXT           "Size of Points :",IDC_STATIC_CURR,14,72,48,8
+    COMBOBOX        IDC_COMBO_SIZE_CURR,71,72,34,67,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Sample",IDC_STATIC_CURR_SAMPLE,60,15,50,45
+    EDITTEXT        IDC_EDIT_CURR_SAMPLE,65,25,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Color ...",IDC_BUTTON_CURR_COLOR,10,95,100,14
+    GROUPBOX        "Result",IDC_STATIC_RESULT,125,5,110,110
+    GROUPBOX        "",IDC_STATIC_RES_LINE,130,15,45,22
+    CONTROL         "Line",IDC_CHECK_RES_LINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,134,23,29,10
+    GROUPBOX        "",IDC_STATIC_RES_POINTS,130,40,45,22
+    CONTROL         "Points",IDC_CHECK_RES_POINTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,134,48,36,10
+    GROUPBOX        "",IDC_STATIC_CURR_LINE6,130,65,100,22
+    LTEXT           "Size of Points :",IDC_STATIC_RES,134,72,48,8
+    COMBOBOX        IDC_COMBO_SIZE_RES,190,72,34,67,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Sample",IDC_STATIC_CURR_SAMPLE2,180,15,50,45
+    EDITTEXT        IDC_EDIT_RES_SAMPLE,185,25,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Color ...",IDC_BUTTON_RES_COLOR,130,95,100,14
+    GROUPBOX        "Grid",IDC_STATIC_GRID,245,5,110,60
+    GROUPBOX        "",IDC_STATIC_GRID_GRID,250,15,45,22
+    CONTROL         "Grid",IDC_CHECK_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,254,23,29,10
+    GROUPBOX        "Sample",IDC_STATIC_GRID_SAMPLE,300,15,50,45
+    EDITTEXT        IDC_EDIT_GRID_SAMPLE,305,25,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Color ...",IDC_BUTTON_GRID_COLOR,250,45,45,14
+    CONTROL         "Guide Lines",IDC_CHECK_GUIDE_LINES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,251,92,50,10
+    GROUPBOX        "Cursor",IDC_STATIC,245,73,110,42
+    EDITTEXT        IDC_EDIT_CURSOR_SAMPLE,305,81,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+END
+
+IDD_DLG_VIEWER_SET DIALOG  0, 0, 242, 141
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Viewer Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,52,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,138,120,50,14
+    GROUPBOX        "Curve",IDC_STATIC_CURVE,5,5,110,110
+    GROUPBOX        "",IDC_STATIC_CURVE_LINE,10,15,45,22
+    CONTROL         "Line",IDC_CHECK_CURVE_LINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,23,29,10
+    GROUPBOX        "",IDC_STATIC_CURVE_POINTS,10,40,45,22
+    CONTROL         "Points",IDC_CHECK_CURVE_POINTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,48,36,10
+    GROUPBOX        "",IDC_STATIC_CURVE_LINE3,10,65,100,22
+    LTEXT           "Size of Points :",IDC_STATIC_CURVE_SIZE,14,72,48,8
+    COMBOBOX        IDC_COMBO_SIZE_CURVE,71,72,34,67,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Sample",IDC_STATIC_CURVE_SAMPLE,60,15,50,45
+    EDITTEXT        IDC_EDIT_CURVE_SAMPLE,65,25,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Color ...",IDC_BUTTON_CURVE_COLOR,10,95,100,14
+    GROUPBOX        "Grid",IDC_STATIC_GRID,125,5,110,60
+    GROUPBOX        "",IDC_STATIC_GRID_GRID,130,15,45,22
+    CONTROL         "Grid",IDC_CHECK_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,134,23,29,10
+    GROUPBOX        "Sample",IDC_STATIC_GRID_SAMPLE,180,15,50,45
+    EDITTEXT        IDC_EDIT_GRID_SAMPLE,185,25,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Color ...",IDC_BUTTON_GRID_COLOR,130,45,45,14
+    GROUPBOX        "Font",IDC_STATIC_FONT,125,65,110,50
+    GROUPBOX        "Sample",IDC_STATIC_GRID_SAMPLE2,180,70,50,40
+    EDITTEXT        IDC_EDIT_FONT_SAMPLE,185,80,40,25,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Font ...",IDC_BUTTON_FONT_COLOR,129,76,45,15
+END
+
+IDD_DLG_FI_TABLE DIALOG  0, 0, 198, 213
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Fi Table"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,142,18,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,142,39,50,14
+    CONTROL         "List1",IDC_FI_LIST,"SysListView32",WS_BORDER | WS_TABSTOP,4,4,126,202
+END
+
+IDD_DIALOG_COMMENTS_EDIT DIALOG  0, 0, 296, 79
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Comments"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,82,58,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,162,58,50,14
+    EDITTEXT        IDC_EDIT,3,2,289,49,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+END
+
+IDD_DIALOG_PARAM_DXPS DIALOG  0, 0, 339, 198
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DXPS Parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,110,177,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,179,177,50,14
+    GROUPBOX        "",IDC_STATIC_ONOFF,187,63,137,23
+    CONTROL         "On",IDC_RADIO_DXPSPAR_ON,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,243,72,25,10
+    CONTROL         "Off",IDC_RADIO_DXPSPAR_OFF,"Button",BS_AUTORADIOBUTTON,283,72,25,10
+    LTEXT           "On / Off",IDC_STATIC,195,72,27,8
+    EDITTEXT        IDC_EDIT_DXPSPAR_BE,100,41,73,13,ES_AUTOHSCROLL
+    LTEXT           "BE   [ eV ]",IDC_STATIC,11,42,81,10,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_STEP,7,34,170,23
+    LTEXT           "Type",IDC_STATIC_PARAM_STEP2,11,17,17,10,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_STEP2,7,8,170,23
+    CONTROL         "BE",IDC_RADIO_DXPSPAR_TYPE_BE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,36,17,25,10
+    CONTROL         "Division",IDC_RADIO_DXPSPAR_TYPE_DIV,"Button",BS_AUTORADIOBUTTON,67,17,41,10
+    EDITTEXT        IDC_EDIT_DXPSPAR_DWELL,100,128,73,13,ES_AUTOHSCROLL
+    LTEXT           "Dwell Time [sec]",IDC_STATIC,11,129,81,10,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_STEP3,7,121,170,23
+    EDITTEXT        IDC_EDIT_DXPSPAR_HV,99,69,37,12,ES_AUTOHSCROLL
+    LTEXT           "HV   [ eV ]",IDC_STATIC,11,71,81,10,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_STEP4,7,63,170,23
+    PUSHBUTTON      "Table",IDC_BUTTON_DXPSPAR_HV_TABLE,141,69,32,13
+    EDITTEXT        IDC_EDIT_DXPSPAR_COMMENTS,100,157,230,14,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Comments",IDC_STATIC,11,159,81,9,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_COMMENTS2,7,151,326,23
+    PUSHBUTTON      "Reset All Output Data",IDC_BUTTON_DXPSPAR_RESET_ALL,189,127,112,14
+    GROUPBOX        "",IDC_STATIC_ANODE,187,8,137,23
+    LTEXT           "Anode :",IDC_STATIC_ANODE_TXT,195,16,26,8
+    COMBOBOX        IDC_COMBO_ANODE,241,16,81,61,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "",IDC_STATIC_ANODE2,187,34,137,23
+    LTEXT           "Color :",IDC_STATIC,199,42,21,8
+    COMBOBOX        IDC_COMBO_COLOR,241,42,81,61,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_DXPSPAR_DELAY,100,99,73,13,ES_AUTOHSCROLL
+    LTEXT           "Delay Before  [sec]",IDC_STATIC,11,100,81,10,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_STEP5,7,92,170,23
+    PUSHBUTTON      "Reset Region Output Data",IDC_BUTTON_DXPSPAR_RESET_REG,189,98,112,14
+    COMBOBOX        IDC_COMBO_DXPSPAR_HV,99,69,37,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "/",IDC_STATIC,140,17,8,8
+    COMBOBOX        IDC_COMBO_DXPSPAR_DIVIDENT,111,15,27,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DXPSPAR_DIVISOR,147,15,27,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DLG_HARDWARE DIALOG  0, 0, 169, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Hardware Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,27,44,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,91,44,50,14
+    GROUPBOX        "Calibration",IDC_STATIC,6,5,157,30
+    EDITTEXT        IDC_EDIT_RETARD_CALIBRATION,113,16,40,13,ES_AUTOHSCROLL
+    LTEXT           "Retard Calibration Coefficient",IDC_STATIC,16,19,88,8
+END
+
+IDD_DLG_COUNTER DIALOGEX 0, 0, 258, 253
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Параметры Счетчика"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,87,234,50,14
+    PUSHBUTTON      "Отмена",IDCANCEL,142,234,50,14
+    PUSHBUTTON      "Применить",IDC_BUTTON_APPLY,197,234,50,14,WS_DISABLED
+    GROUPBOX        "Состояние",IDC_STATIC,8,40,240,110
+    LTEXT           "Название модуля: ",IDC_STATIC,34,53,64,8
+    LTEXT           "Статус: ",IDC_STATIC,69,65,30,8
+    LTEXT           "   ",IDC_COUNTER_MODULE_NAME,99,53,146,8
+    CONTROL         "",IDC_RUN_MODE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,99,85,11,10
+    LTEXT           "Запущен",IDC_STATIC,111,85,31,8
+    CONTROL         "",IDC_COOLING_OK,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,99,95,10,10
+    LTEXT           "Охлаждение в норме",IDC_STATIC,111,95,72,8
+    CONTROL         "",IDC_MODULE_AVAILABLE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,99,65,11,10
+    LTEXT           "Доступен",IDC_STATIC,111,65,34,8
+    LTEXT           "Порт",IDC_STATIC,76,18,18,8
+    EDITTEXT        IDC_COM_PORT,98,15,44,14,ES_AUTOHSCROLL
+    LTEXT           "Порт доступен",IDC_PORT_AVAILABLE,147,18,97,14
+    GROUPBOX        "Подключение",IDC_STATIC,9,6,239,29
+    LTEXT           "Время счета",IDC_STATIC,50,173,42,8
+    EDITTEXT        IDC_COUNT_TIME,97,170,44,14,ES_AUTOHSCROLL
+    LTEXT           "мс (0... 655350)",IDC_STATIC,147,172,60,8
+    LTEXT           "Порог детектирования",IDC_STATIC,14,189,80,8
+    EDITTEXT        IDC_DETECT_THRESHOLD,97,186,44,14,ES_AUTOHSCROLL
+    LTEXT           "(0... 255)",IDC_STATIC,147,188,60,8
+    LTEXT           "Порог защиты",IDC_STATIC,42,205,50,8
+    EDITTEXT        IDC_COOLING_THRESHOLD,97,202,44,14,ES_AUTOHSCROLL
+    LTEXT           "1/сек (0... 65535)",IDC_STATIC,147,204,60,8
+    GROUPBOX        "Конфигурация",IDC_STATIC,7,157,240,67
+    LTEXT           "Время счета:",IDC_STATIC,51,105,45,8
+    LTEXT           "Порог детектирования:",IDC_STATIC,13,115,82,8
+    LTEXT           "Порог защиты:",IDC_STATIC,43,125,52,8
+    LTEXT           "Значение охлаждения:",IDC_STATIC,15,136,80,8
+    LTEXT           "?             ",IDC_STATIC_CUR_COUNT_TIME,98,105,51,8
+    LTEXT           "?             ",IDC_STATIC_CUR_DETECT_THRESHOLD,98,116,51,8
+    LTEXT           "?             ",IDC_STATIC_CUR_INTERLOCK_THRESHOLD,98,126,51,8
+    LTEXT           "?             ",IDC_STATIC_CUR_COOLING_FREQ,98,136,51,8
+    CONTROL         "",IDC_MODULE_CONFIGURED,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,99,75,16,10
+    LTEXT           "Сконфигурирован",IDC_STATIC,111,75,62,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG_PARAM_REGION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 333
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 214
+    END
+
+    IDD_DLG_KE_END, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 242
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
+
+    IDD_DLG_MEASURE_OPT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 197
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 182
+    END
+
+    IDD_DLG_SETTINGS_FOR_CURVERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 139
+    END
+
+    IDD_DLG_VIEWER_SET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 235
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 134
+    END
+
+    IDD_DLG_FI_TABLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 192
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 206
+    END
+
+    IDD_DIALOG_COMMENTS_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 292
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_DIALOG_PARAM_DXPS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 332
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 191
+    END
+
+    IDD_DLG_HARDWARE, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DLG_COUNTER, DIALOG
+    BEGIN
+        RIGHTMARGIN, 256
+        BOTTOMMARGIN, 250
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG_PARAM_DXPS DLGINIT
+BEGIN
+    IDC_COMBO_ANODE, 0x403, 20, 0
+0x6c41, 0x2020, 0x2020, 0x2020, 0x3128, 0x3834, 0x2e36, 0x2036, 0x5665, 
+0x0029, 
+    IDC_COMBO_ANODE, 0x403, 18, 0
+0x674d, 0x2020, 0x2020, 0x3128, 0x3532, 0x2e33, 0x2036, 0x5665, 0x0029, 
+
+    IDC_COMBO_ANODE, 0x403, 16, 0
+0x6548, 0x4920, 0x2020, 0x3128, 0x2e32, 0x2032, 0x5665, 0x0029, 
+    IDC_COMBO_ANODE, 0x403, 16, 0
+0x6548, 0x4920, 0x2049, 0x3428, 0x2e30, 0x2038, 0x5665, 0x0029, 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 3, 0
+0x3032, "\000" 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 3, 0
+0x3035, "\000" 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 4, 0
+0x3031, 0x0030, 
+    IDC_COMBO_DXPSPAR_HV, 0x403, 4, 0
+0x3032, 0x0030, 
+    0
+END
+
+IDD_DIALOG_PARAM_REGION DLGINIT
+BEGIN
+    IDC_COMBO_HV, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_HV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_HV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_HV, 0x403, 3, 0
+0x3032, "\000" 
+    IDC_COMBO_HV, 0x403, 3, 0
+0x3035, "\000" 
+    IDC_COMBO_HV, 0x403, 4, 0
+0x3031, 0x0030, 
+    IDC_COMBO_HV, 0x403, 4, 0
+0x3032, 0x0030, 
+    0
+END
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_DXPS_POPUP MENU 
+BEGIN
+    POPUP "Root"
+    BEGIN
+        MENUITEM "&Add New",                    ID_ROOT_ADDNEW
+        MENUITEM "&Edit",                       ID_ROOT_EDIT
+        MENUITEM "&Delete",                     ID_ROOT_DELETE
+        MENUITEM "&View",                       ID_ROOT_VIEW
+        MENUITEM "&On/Off",                     ID_ROOT_ONOFF
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PROGNEW_DIALOG DIALOGEX 0, 0, 185, 92
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "ProgNew"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,128,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,128,23,50,14
+    LTEXT           "TODO: Place dialog controls here.",IDC_STATIC,5,34,113,8
+END
+
+IDD_DLG_DXPS DIALOGEX 0, 0, 339, 204
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "DXPS"
+FONT 8, "System", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_DXPS_TIME,297,12,40,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Add New",IDC_BUTTON_DXPS_ADDNEW,297,27,40,12
+    PUSHBUTTON      "Edit",IDC_BUTTON_DXPS_EDIT,297,41,40,12
+    PUSHBUTTON      "Delete",IDC_BUTTON_DXPS_DELETE,297,55,40,12
+    PUSHBUTTON      "On/Off",IDC_BUTTON_DXPS_ONOFF,297,69,40,12
+    PUSHBUTTON      "Close",IDC_BUTTON_DXPS_CLOSE,297,83,40,12
+    CONTROL         "List1",IDC_LIST_DXPS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,0,0,293,203
+    LTEXT           "Scan time, s",IDC_STATIC_SCAN_T,297,2,41,8
+    CONTROL         "Hide Off",IDC_CHECK_DXPS_HIDE_OFF,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,298,96,39,10
+END
+
+IDD_DLG_ABOUT DIALOGEX 0, 0, 247, 126
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About..."
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,182,11,50,14
+    LTEXT           "KRATOS Version <version> PCI",IDC_STATIC_VER,49,14,111,8
+    LTEXT           "File date:",IDC_STATIC,16,66,30,8
+    ICON            IDR_MAINFRAME,IDC_STATIC,15,9,20,20
+    LTEXT           "Static",IDC_STATIC_FILE_DATE,55,66,166,8
+    LTEXT           "Programmers: Alexey Popov (alexpopov@mail.ru, 8-952-912-44-75)",IDC_STATIC,15,94,212,8
+    LTEXT           "Konstantin Chernov - V1.00 (339-54-23)",IDC_STATIC,59,105,126,8
+    GROUPBOX        "",IDC_STATIC,5,1,235,119
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,30,88,187,1
+    LTEXT           "(KRATOS Mode)",IDC_STATIC_MODE,49,26,100,10
+    LTEXT           "To switch between ""KRATOS"" and ""High Pressure"" Modes edit value ""HighPressureMode"" in Kratos.ini",IDC_STATIC,17,42,214,19
+    LTEXT           "Build date:",IDC_STATIC,16,76,34,8
+    LTEXT           "Static",IDC_STATIC_BUILD_DATE,55,76,165,8
+END
+
+IDD_CAM_SETUP_DLG DIALOGEX 0, 0, 187, 167
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Camac Setup"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,146,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,69,146,50,14
+    EDITTEXT        IDC_EDIT_CRATE_NUM,95,25,22,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Crate Number",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,33,27,47,8
+    EDITTEXT        IDC_EDIT_REGIST_POS,95,65,21,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Output Register",IDC_STATIC,20,70,56,8
+    EDITTEXT        IDC_EDIT_COUNT_POS,95,85,21,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Counter",IDC_STATIC,20,90,55,8
+    EDITTEXT        IDC_EDIT_TIMER_POS,95,105,22,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Timer",IDC_STATIC,20,110,55,8
+    GROUPBOX        "Block Positions",IDC_STATIC,7,48,119,84
+    EDITTEXT        IDC_EDIT_REGIST_TEST,139,64,35,14,ES_READONLY | NOT WS_TABSTOP
+    GROUPBOX        "Test",IDC_STATIC,134,10,45,123
+    PUSHBUTTON      "Test",IDC_TEST,129,146,50,14
+    GROUPBOX        "CAMAC Crate",IDC_STATIC,7,10,120,35
+    EDITTEXT        IDC_EDIT_CRATE_TEST,139,25,35,14,ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_COUNT_TEST,139,85,35,14,ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_TIMER_TEST,139,106,35,14,ES_READONLY | NOT WS_TABSTOP
+END
+
+IDD_CAM_SETUP_HP_DLG DIALOGEX 0, 0, 187, 178
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Camac Setup"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,156,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,69,156,50,14
+    EDITTEXT        IDC_EDIT_HP_CRATE_NUM,95,25,22,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Crate Number",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,43,27,47,8
+    EDITTEXT        IDC_EDIT_HP_REGIST_RETARD_POS,95,65,21,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Output Register (Retard)",IDC_STATIC,11,67,78,8
+    EDITTEXT        IDC_EDIT_HP_COUNT_POS,95,106,21,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Counter",IDC_STATIC,31,108,55,8
+    EDITTEXT        IDC_EDIT_HP_TIMER_POS,95,126,22,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Timer",IDC_STATIC,33,128,55,8
+    GROUPBOX        "Block Positions",IDC_STATIC,7,48,119,99
+    EDITTEXT        IDC_EDIT_HP_REGIST_RETARD_TEST,139,64,35,14,ES_READONLY | NOT WS_TABSTOP
+    GROUPBOX        "Test",IDC_STATIC,134,10,45,138
+    PUSHBUTTON      "Test",IDC_BUTTON_HP_TEST,129,156,50,14
+    GROUPBOX        "CAMAC Crate",IDC_STATIC,7,10,120,35
+    EDITTEXT        IDC_EDIT_HP_CRATE_TEST,139,25,35,14,ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_HP_COUNT_TEST,139,106,35,14,ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_HP_TIMER_TEST,139,127,35,14,ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_HP_REGIST_HV_POS,95,86,21,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Output Register (HV)",IDC_STATIC,11,88,76,8
+    EDITTEXT        IDC_EDIT_HP_REGIST_HV_TEST,139,84,35,14,ES_READONLY | NOT WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PROGNEW_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 178
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 85
+    END
+
+    IDD_DLG_DXPS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 3,0,0,7
+ PRODUCTVERSION 3,0,0,7
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Kratos MFC Application"
+            VALUE "FileVersion", "3, 0, 0, 7"
+            VALUE "InternalName", "Kratos"
+            VALUE "LegalCopyright", "Copyright K.Chernov, A.Popov (C) 2002-2013"
+            VALUE "OriginalFilename", "Kratos.exe"
+            VALUE "ProductName", "Kratos Mass Spectrometer"
+            VALUE "ProductVersion", "3, 0, 0, 7"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\ProgNew.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

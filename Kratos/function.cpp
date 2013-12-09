@@ -1,0 +1,739 @@
+// File FUNCTION.CPP
+/*
+#include "stdafx.h"
+//#include<windows.h>
+#include <string.h>
+#include <stdio.h>
+#include "ProgNew.h"
+#include "Region.h"
+#include "DialogParamRegion.h"
+#include "ListRegionWnd.h"
+#include "function.h"
+*/
+#include "stdafx.h"
+#include "Main.h"
+#include "hardware.h"
+
+extern CMutex MutexThread;
+extern CProgNewApp theApp;
+BOOL ReadLOGFONTFromIniFile(LPCTSTR lpszSection, LOGFONT* LogFont)
+{
+	CString string;
+	//memset(LogFont, 0, sizeof(LOGFONT));
+	CWinApp* App = AfxGetApp();
+	LogFont->lfHeight = (LONG) App->GetProfileInt(lpszSection, "lfHeight", 20);
+	LogFont->lfWidth = (LONG) App->GetProfileInt(lpszSection, "lfWidth", 0);
+	LogFont->lfEscapement = (LONG) App->GetProfileInt(lpszSection, "lfEscapement", 0);
+	LogFont->lfOrientation = (LONG) App->GetProfileInt(lpszSection, "lfOrientation", 0);
+	LogFont->lfWeight = (LONG) App->GetProfileInt(lpszSection, "lfWeight", FW_NORMAL);
+	LogFont->lfItalic = (BYTE) App->GetProfileInt(lpszSection, "lfItalic", 0);
+	LogFont->lfUnderline = (BYTE) App->GetProfileInt(lpszSection, "lfUnderline", 0);
+	LogFont->lfStrikeOut = (BYTE) App->GetProfileInt(lpszSection, "lfStrikeOut", 0);
+	LogFont->lfCharSet = (BYTE) App->GetProfileInt(lpszSection, "lfCharSet", ANSI_CHARSET);
+	LogFont->lfOutPrecision = (BYTE) App->GetProfileInt(lpszSection, "lfOutPrecision", OUT_DEFAULT_PRECIS);
+	LogFont->lfClipPrecision = (BYTE) App->GetProfileInt(lpszSection, "lfClipPrecision", CLIP_DEFAULT_PRECIS);
+	LogFont->lfQuality = (BYTE) App->GetProfileInt(lpszSection, "lfQuality", DEFAULT_QUALITY);
+	LogFont->lfPitchAndFamily = (BYTE) App->GetProfileInt(lpszSection, "lfPitchAndFamily", (DEFAULT_PITCH|FF_MODERN));
+	//LogFont->lfFaceName = (TCHAR) App->GetProfileString(lpszSection, "lfFaceName", "System");
+	string = App->GetProfileString(lpszSection, "lfFaceName", "Times New Romanm");
+	sprintf(LogFont->lfFaceName, "%s", (LPCSTR)string);
+	return TRUE;
+}
+
+BOOL WriteLOGFONTToIniFile(LPCTSTR lpszSection, LOGFONT* LogFont)
+{
+	CString string;
+	//memset(LogFont, 0, sizeof(LOGFONT));
+	CWinApp* App = AfxGetApp();
+	App->WriteProfileInt(lpszSection, "lfHeight", LogFont->lfHeight);
+	App->WriteProfileInt(lpszSection, "lfWidth", LogFont->lfWidth);
+	App->WriteProfileInt(lpszSection, "lfEscapement", LogFont->lfEscapement);
+	App->WriteProfileInt(lpszSection, "lfOrientation", LogFont->lfOrientation);
+	App->WriteProfileInt(lpszSection, "lfWeight", LogFont->lfWeight);
+	App->WriteProfileInt(lpszSection, "lfItalic", LogFont->lfItalic);
+	App->WriteProfileInt(lpszSection, "lfUnderline", LogFont->lfUnderline);
+	App->WriteProfileInt(lpszSection, "lfStrikeOut", LogFont->lfStrikeOut);
+	App->WriteProfileInt(lpszSection, "lfCharSet", LogFont->lfCharSet);
+	App->WriteProfileInt(lpszSection, "lfOutPrecision", LogFont->lfOutPrecision);
+	App->WriteProfileInt(lpszSection, "lfClipPrecision", LogFont->lfClipPrecision);
+	App->WriteProfileInt(lpszSection, "lfQuality", LogFont->lfQuality);
+	App->WriteProfileInt(lpszSection, "lfPitchAndFamily", LogFont->lfPitchAndFamily);
+	//LogFont->lfFaceName = (TCHAR) App->GetProfileString(lpszSection, "lfFaceName", "System");
+	string = LogFont->lfFaceName;
+//	sprintf(string, "%s", LogFont->lfFaceName);
+	App->WriteProfileString(lpszSection, "lfFaceName", string);
+	return TRUE;
+}
+
+BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color)
+{
+	CHOOSEFONT cf;
+	memset(&cf, 0, sizeof(CHOOSEFONT));
+	cf.lStructSize = sizeof(CHOOSEFONT);
+	cf.hwndOwner = hWnd;
+	cf.lpLogFont = LogFont;
+	cf.Flags = CF_SCREENFONTS | CF_EFFECTS | CF_INITTOLOGFONTSTRUCT |CF_LIMITSIZE;
+	//cf.Flags = CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT |CF_LIMITSIZE;
+	cf.rgbColors = *Color;
+	cf.lpszStyle = (LPSTR) LogFont->lfFaceName;
+	cf.nFontType = SCREEN_FONTTYPE;
+	cf.nSizeMin = 5;
+	cf.nSizeMax = 30;
+	if(::ChooseFont(&cf)) 
+	{
+		*Color = cf.rgbColors; 
+		sprintf(LogFont->lfFaceName, "%s", cf.lpszStyle);
+		return TRUE;}
+	return FALSE;
+}
+
+//==============
+BOOL NewOreEditParamToReg(CRegion* pReg, CDialogParamRegion* pDlgParamReg)
+{
+///*
+BOOL RETURN = TRUE;
+int i,k;
+int NBytes;
+int Step = D2I(pDlgParamReg->m_Step);
+//int N_Step = (((int) (10*pDlgParamReg->m_KE_End)) - ((int) (10*pDlgParamReg->m_KE_Start))) / Step;
+int N_Step = ( D2I(pDlgParamReg->m_KE_End)  - D2I(pDlgParamReg->m_KE_Start)) / Step;
+if(pReg->m_NewOreEdit==pReg->New)
+	{
+	pReg->m_NDataOut = N_Step+1;
+	pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
+	if(pReg->m_pDataOut == NULL) return FALSE;
+	for(i=0; i<pReg->m_NDataOut; ++i) 
+		{pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
+		 pReg->m_pDataOut[i].y = 0;}
+	}
+else if(pReg->m_NewOreEdit==pReg->Edit)
+	{
+	
+	
+	DATA_OUT* pNewDataOut=NULL;
+	int NNewDataOut = N_Step+1;
+	int KE_Start = D2I(pDlgParamReg->m_KE_Start);
+	int KE_End = D2I(pDlgParamReg->m_KE_End);
+	int del_KE_Start = abs(pReg->m_DataIn.KE_Start - KE_Start);
+	int del_KE_End = abs(pReg->m_DataIn.KE_End - KE_End);
+	int NewArrayBegin = 0;
+	int OldArrayBegin = 0;
+	//int NewArrayEnd = NNewDataOut;
+	//int OldArrayEnd = pReg->m_NDataOut;
+	NBytes = NNewDataOut*sizeof(DATA_OUT);
+	pNewDataOut = (DATA_OUT*) malloc(NBytes); 
+	if(pNewDataOut==NULL) return FALSE;
+	memset(pNewDataOut, 0, NBytes);
+	for(i=0; i<NNewDataOut; ++i) pNewDataOut[i].x = KE_Start + i*Step;
+	if(pReg->m_DataIn.Curr_N>0 || pReg->m_NDataOutCurr > 0)
+		{
+		
+		if(pReg->m_DataIn.KE_Start < KE_Start) 
+			{
+			OldArrayBegin = del_KE_Start/Step;
+			pReg->m_NDataOutCurr -= OldArrayBegin;
+			if(pReg->m_NDataOutCurr < 0) pReg->m_NDataOutCurr = 0;//AfxMessageBox("pReg->m_NDataOutCurr < 0");
+			//else AfxMessageBox("pReg->m_NDataOutCurr >= 0");
+			if(KE_Start > pReg->m_DataIn.KE_End) 
+				{OldArrayBegin = pReg->m_NDataOut;
+				 pReg->m_NDataOutCurr = 0;
+				}
+			} // end if(pReg->m_DataIn.KE_Start < KE_Start) 
+		else if(pReg->m_DataIn.KE_Start > KE_Start) 
+			{
+			NewArrayBegin = del_KE_Start/Step;
+			pReg->m_NDataOutCurr += NewArrayBegin;
+			if(pReg->m_NDataOutCurr >= NNewDataOut) pReg->m_NDataOutCurr = 0;
+			if(KE_End < pReg->m_DataIn.KE_Start)
+				{NewArrayBegin = NNewDataOut;
+				 pReg->m_NDataOutCurr = 0;
+				}
+			} // end else if(pReg->m_DataIn.KE_Start > KE_Start) 
+		
+		if(pReg->m_NDataOutCurr > NNewDataOut-1)
+			{ pReg->m_NDataOutCurr = 0;
+				++pReg->m_DataIn.Curr_N;
+				if(pReg->m_DataIn.Curr_N > pReg->m_DataIn.N_) 
+					pReg->m_DataIn.Curr_N = pReg->m_DataIn.N_;
+				if(pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegEdit==pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow)	
+					//if (pRegEdit == pRegNow)
+					pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow = CRegion::GetNext(pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow);
+			}
+		
+		//if(pReg->m_DataIn.KE_End < KE_End) NewArrayBegin = del_KE_Start/Step;
+		for(i=OldArrayBegin, k=NewArrayBegin; i<pReg->m_NDataOut && k<NNewDataOut; ++i, ++k)
+			{pNewDataOut[k].x = pReg->m_pDataOut[i].x; 
+			pNewDataOut[k].y = pReg->m_pDataOut[i].y;}
+		} // end if(pReg->m_DataIn.Curr_N>0)
+	else pReg->m_NDataOutCurr=0;  // else if(pReg->m_DataIn.Curr_N==0)
+	
+	
+	free(pReg->m_pDataOut);
+	pReg->m_pDataOut = pNewDataOut;
+	pReg->m_NDataOut = NNewDataOut;
+	//*/
+	
+	} // end else if(pReg->m_NewOreEdit==pReg->Edit)
+	
+	
+//pReg->m_DataIn.HV = (int) (10*pDlgParamReg->m_HV);
+pReg->m_DataIn.HV = D2I(pDlgParamReg->m_HV);
+if(RETURN)
+	{//pReg->m_DataIn.KE_Start = (int) (10*pDlgParamReg->m_KE_Start);
+	 pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
+	 //pReg->m_DataIn.KE_End = (int) (10*pDlgParamReg->m_KE_End);}
+	 pReg->m_DataIn.KE_End = D2I(pDlgParamReg->m_KE_End);
+	}
+
+//pReg->m_DataIn.Step = (int) (10*pDlgParamReg->m_Step);
+pReg->m_DataIn.Step = D2I(pDlgParamReg->m_Step);
+pReg->m_DataIn.N_ = pDlgParamReg->m_N;
+pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
+sprintf(pReg->m_DataIn.Comments, "%s", (LPCSTR)pDlgParamReg->m_Comments);
+pReg->m_DataIn.Comments[255] = '\0';
+pReg->m_DataIn.Off = pDlgParamReg->m_Off;
+if(pDlgParamReg->m_KE_BE == pReg->m_DataIn.KE)
+	{ pReg->m_DataIn.KE_BE = pReg->m_DataIn.KE;
+		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
+																+ D2I(100.0);	
+	 //pReg->m_DataIn.N_h_nu = 0;
+	}
+else 
+	{pReg->m_DataIn.KE_BE = pReg->m_DataIn.BE;
+	 pReg->m_DataIn.N_h_nu = pDlgParamReg->m_Anode;
+	 pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
+																+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
+																+ D2I(100.0);
+	}
+
+//char ss[64];
+//sprintf(ss, "DeltaVolt = %.3lf", I2D(pReg->m_DataIn.DeltaVolts));
+//AfxMessageBox(ss);
+
+//sprintf(pReg->m_DataIn.Comments, "%s", "Comments");
+
+sprintf(pReg->str.HV, "%.0lf", I2D(pReg->m_DataIn.HV) );
+sprintf(pReg->str.KE_Start, "%.3lf", I2D(pReg->m_DataIn.KE_Start) );
+sprintf(pReg->str.KE_End, "%.3lf", I2D(pReg->m_DataIn.KE_End) );
+sprintf(pReg->str.Step, "%.3lf", I2D(pReg->m_DataIn.Step) );
+sprintf(pReg->str.Time, "%.2lf", I2D(pReg->m_DataIn.Time));
+sprintf(pReg->str.N_, "%i", pReg->m_DataIn.N_);
+sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
+if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)  sprintf(pReg->str.KE_BE, "%s", "KE");
+else  sprintf(pReg->str.KE_BE, "%s", "BE");
+sprintf(pReg->str.Name_h_nu, "%s", pReg->h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
+pReg->str.Comments = pReg->m_DataIn.Comments;
+return RETURN;
+}
+//============
+void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image)
+{
+if(pReg == NULL) return;
+LV_ITEM item;
+memset(&item, 0, sizeof(LV_ITEM));
+item.iItem = pReg->ID;
+item.iSubItem=0;
+item.iImage=Image;
+item.mask = LVIF_IMAGE;
+if(::IsWindow(pList->m_hWnd))
+	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+	//::PostMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+}
+/*
+void RemoveIconForReg(CListRegionWnd* pList, CRegion* pReg)
+{
+LV_ITEM item;
+memset(&item, 0, sizeof(LV_ITEM));
+item.iItem = pReg->ID;
+item.iSubItem=0;
+item.iImage=0;
+item.mask = LVIF_IMAGE;
+if(::IsWindow(pList->m_hWnd))
+	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+}
+*/
+void SetNewRegionItemForListView(CListRegionWnd* pList, CRegion* pReg)
+{
+LV_ITEM item;
+memset(&item, 0, sizeof(LV_ITEM));
+item.iItem = pList->GetItemCount();
+//if(item.iItem == 0 ) item.state = (LVIS_CUT);
+//else item.state = 0;
+item.iImage=0;
+item.mask= (LVIF_TEXT | LVIF_STATE | LVIF_IMAGE );
+//item.mask= (LVIF_STATE );
+item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
+item.iSubItem=0;
+char s[5];
+
+
+sprintf(s, "R%i",pReg->ID+1);
+item.pszText=s;
+item.cchTextMax= strlen(item.pszText);
+//pList->InsertItem(&item);
+::SendMessage(pList->m_hWnd, LVM_INSERTITEM, 0, (LPARAM) &item);
+				
+item.iSubItem = 1;
+item.pszText = pReg->str.KE_BE;
+item.cchTextMax = strlen(pReg->str.KE_BE);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 2;
+item.pszText = pReg->str.Name_h_nu;
+item.cchTextMax = strlen(pReg->str.Name_h_nu);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+
+item.iSubItem = 3;
+//item.mask=LVIF_TEXT;
+//item.stateMask = 0;
+item.pszText = pReg->str.HV;
+item.cchTextMax = strlen(pReg->str.HV);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+				
+item.iSubItem = 4;
+item.pszText = pReg->str.KE_Start;
+item.cchTextMax = strlen(pReg->str.KE_Start);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 5;
+item.pszText = pReg->str.KE_End;
+item.cchTextMax = strlen(pReg->str.KE_End);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 6;
+item.pszText = pReg->str.Step;
+item.cchTextMax = strlen(pReg->str.Step);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 7;
+item.pszText = pReg->str.N_;
+item.cchTextMax = strlen(pReg->str.N_);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 8;
+item.pszText = pReg->str.Curr_N;
+item.cchTextMax = strlen(pReg->str.Curr_N);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 9;
+item.pszText = pReg->str.Time;
+item.cchTextMax = strlen(pReg->str.Time);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+
+item.iSubItem = 10;
+char *Comments="Comments", *NullComments="";
+if(strcmp(pReg->str.Comments,Comments))
+	item.pszText = pReg->str.Comments;
+else
+	item.pszText = NullComments;
+
+item.cchTextMax = strlen(pReg->str.Comments);
+//pList->SetItem(&item);
+::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
+}
+//===============
+
+void UpdateTextItem(HWND hWnd, CRegion* pReg)
+{
+LV_ITEM item;
+memset(&item, 0, sizeof(LV_ITEM));
+item.iItem = pReg->ID;
+item.iSubItem=0;
+//item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
+//item.state = (LVIS_SELECTED | LVIS_FOCUSED);
+char s[5];
+sprintf(s, "R%i",pReg->ID+1);
+item.pszText=s;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::SendMessage(hWnd, LVM_SETITEMSTATE, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 1;
+item.pszText = pReg->str.KE_BE;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+				
+item.iSubItem = 2;
+item.pszText = pReg->str.Name_h_nu;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 3;
+item.pszText = pReg->str.HV;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 4;
+item.pszText = pReg->str.KE_Start;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 5;
+item.pszText = pReg->str.KE_End;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 6;
+item.pszText = pReg->str.Step;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 7;
+item.pszText = pReg->str.N_;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 8;
+item.pszText = pReg->str.Curr_N;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 9;
+item.pszText = pReg->str.Time;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+
+item.iSubItem = 10;
+char *Comments="Comments", *NullComments="";
+if(strcmp(pReg->str.Comments,Comments))
+	item.pszText = pReg->str.Comments;
+else
+	item.pszText = NullComments;
+::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
+}
+//=====================
+
+int FindSelectedItem(HWND hWnd)
+{
+UINT N_Item = (UINT) ::SendMessage(hWnd, LVM_GETITEMCOUNT, 0, 0);
+UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
+UINT state;
+for(UINT i=0; i<N_Item; ++i)
+	{
+	state = (UINT) ::SendMessage(hWnd, LVM_GETITEMSTATE, (LPARAM) (int) i, (WPARAM)  mask);	
+	if( (state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int) i);
+	}
+return -1;
+}
+
+//========
+void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CSingleLock &tsLock, BOOL UserStop)
+{
+	CListRegionWnd* pList=pMainFrame->m_pRegionWnd->m_pListRegionWnd;
+	if(pMainFrame->m_Doc.m_Graph.m_pDataShort) 
+	{
+		delete[] pMainFrame->m_Doc.m_Graph.m_pDataShort; 
+		pMainFrame->m_Doc.m_Graph.m_pDataShort = NULL; 
+	}
+
+	int CrateN=theApp.Ini.CrateNumber.Value;
+	int RegisterN=theApp.Ini.RegisterPosition.Value;
+	int RegisterRetardN=theApp.Ini.RegisterRetardPosition.Value;
+	int RegisterHVN=theApp.Ini.RegisterHVPosition.Value;
+
+	if(!theApp.Ini.CamacSimulation.Value) 	//Hardware
+	{
+		//Writing HV (younger HV bit = 1 V) - зануление HV перед выходом
+		if(!theApp.Ini.HighPressureMode.Value)
+			Camac_WriteLong(CrateN, RegisterN, REGISTER_HV_A, REGISTER_POT_WRITE_F, 0L);
+								//Writing HV; (younger HV bit = 1 V)
+		else
+		{
+			if(!pReg)
+				pReg=CRegion::GetFirst();
+			int Retard =pReg->m_DataIn.DeltaVolts -0;
+			if(Retard <0) Retard=0;
+			Camac_WriteLong(CrateN, RegisterRetardN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, (long)(Retard/pMainFrame->m_Doc.m_ThrComm.RetardCalibration/HP_RETARD_GUAGE));
+									//Writing BE=0; younger Retard bit = 50 mV (49.8 mV - точнее)
+
+			Camac_WriteLong(CrateN, RegisterHVN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, GetRegisterHVCodeFromHV(2.));
+								//Writing HV 
+		}
+		#ifdef IPS6
+		Camac_Close(CrateN);
+		#endif
+	}
+
+	if(tsLock.IsLocked())
+	{ 
+		tsLock.Unlock();
+		//LogFile("UnLock", __FILE__, __LINE__);
+	}
+	if(!UserStop)
+	{
+		char *str="Abnormal thread stop.\nSave current \"Kratos.log\" file in other location and show it to the developer.";
+		LogFile(str);
+		AfxMessageBox(str);
+	}
+	SetIconForReg(pList, pReg, 0);
+	::SendMessage(pMainFrame->m_hToolBar, TB_CHECKBUTTON  , 
+								(WPARAM) ID_PROGRAMM_START, (LPARAM) MAKELONG(FALSE, 0));
+	::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
+								(WPARAM) ID_FILE_OPEN_PROJECT, (LPARAM) MAKELONG(TRUE, 0));
+	::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
+								(WPARAM) ID_FILE_NEW_PROJECT, (LPARAM) MAKELONG(TRUE, 0));
+
+	HMENU	SysMenu = ::GetSystemMenu(pMainFrame->m_hWnd, FALSE);
+	::EnableMenuItem(SysMenu, SC_CLOSE, MF_ENABLED);
+
+	if(pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
+		{	
+		if(pReg->m_NDataOutCurr > 0)
+			{
+			pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
+			pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOutCurr;
+			}
+		}
+	pMainFrame->m_Doc.m_Graph.ReDrawAll();
+
+	pMainFrame->m_StartStop = pMainFrame->Start;
+	AfxEndThread(0);
+}
+//=========
+
+void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSingleLock &tsLock, BOOL UserStop)
+{
+	int CrateN=theApp.Ini.CrateNumber.Value;
+	int RegisterN=theApp.Ini.RegisterPosition.Value;
+	int RegisterRetardN=theApp.Ini.RegisterRetardPosition.Value;
+	int RegisterHVN=theApp.Ini.RegisterHVPosition.Value;
+
+	if(!theApp.Ini.CamacSimulation.Value) 	//Hardware
+	{
+		//Writing HV (younger HV bit = 1 V) - зануление HV перед выходом
+		if(!theApp.Ini.HighPressureMode.Value)
+			Camac_WriteLong(CrateN, RegisterN, REGISTER_HV_A, REGISTER_POT_WRITE_F, 0L);
+								//Writing HV; (younger HV bit = 1 V)
+		else
+		{
+			if(!pReg)
+				pReg=CDxpsRegion::GetFirst();
+			C_h_nu_Info h_nu_info;
+			int Retard = D2I(pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int)pReg->Parameters.HV)+ 
+										h_nu_info.Value_h_nu[pReg->Parameters.Anode]);
+			if(Retard <0) Retard=0;
+			Camac_WriteLong(CrateN, RegisterRetardN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, (long)(Retard/pMainFrame->m_Doc.m_ThrComm.RetardCalibration/HP_RETARD_GUAGE));
+									//Writing BE=0; younger Retard bit = 50 mV (49.8 mV - точнее)
+
+			Camac_WriteLong(CrateN, RegisterHVN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, GetRegisterHVCodeFromHV(2.));
+								//Writing HV 
+		}
+		#ifdef IPS6
+		Camac_Close(CrateN);
+		#endif
+	}
+if(tsLock.IsLocked())
+{ 
+	tsLock.Unlock();
+	//LogFile("UnLock", __FILE__, __LINE__);
+}
+/*if(!UserStop)
+{
+char *str="Abnormal thread stop.\nSave current \"Kratos.log\" file in other location and show it to the developer.";
+LogFile(str);
+AfxMessageBox(str);
+}*/
+//SetIconForReg(pList, pReg, 0);
+::SendMessage(pMainFrame->m_hToolBar, TB_CHECKBUTTON  , 
+							(WPARAM) ID_PROGRAMM_START, (LPARAM) MAKELONG(FALSE, 0));
+::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
+							(WPARAM) ID_FILE_OPEN_PROJECT, (LPARAM) MAKELONG(TRUE, 0));
+::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
+							(WPARAM) ID_FILE_NEW_PROJECT, (LPARAM) MAKELONG(TRUE, 0));
+
+HMENU	SysMenu = ::GetSystemMenu(pMainFrame->m_hWnd, FALSE);
+::EnableMenuItem(SysMenu, SC_CLOSE, MF_ENABLED);
+/*
+if(pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
+	{	
+	if(pReg->m_NDataOutCurr > 0)
+		{
+		pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
+		pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOutCurr;
+		}
+	}*/
+pMainFrame->m_Doc.m_Graph.ReDrawAll();
+
+pMainFrame->m_StartStop = pMainFrame->Start;
+AfxEndThread(0);
+}
+
+
+//========
+void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
+{ //NewData - массив точек в недоснятом скане, NNewData - число точек
+
+	int YesNo;
+	int i;
+	if(::IsWindow(pMainFrame->m_pRegionWnd->m_hWnd) ) 
+		::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, FALSE);
+	YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data ?", 
+												"Attention", MB_YESNO);
+	if(YesNo == IDYES)
+		{// Записать в pReg измеренные данные
+		// 
+		--pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr;
+		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+		for(i=0; i<NNewData; ++i)
+			{
+			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
+			}
+		}
+	else //if(YesNo == IDNO)
+		{// Записать в файл старые данные
+		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;
+		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+		for(i=0; i<=NNewData; ++i)
+			{
+			SaveDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow, 
+				i, &pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i]);
+			}
+
+		}
+	::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, TRUE);
+
+char TimeStr[64];
+SetNewTIME(&pMainFrame->m_Doc.m_ThrComm.TIME);
+TIME2Str(pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
+//::SendMessage(pMainFrame->m_hStatusBar, SB_SETTEXT, 
+//							2, (LPARAM) (LPSTR) TimeStr);
+::PostMessage(pMainFrame->m_hStatusBar, SB_SETTEXT, 
+							2, (LPARAM) (LPSTR) TimeStr);
+
+}
+
+//==========
+
+int D2I(double d) {return ( (int) (d*1000.0) );}
+double I2D(int i) {return ( ( (double) i)/1000.0 );}
+
+// Рассчитывает оставшееся время, необходимое для прохода недоснятых регионов XPS
+void SetNewTIME(int* TIME)
+{
+int Time=0, TimeReg, NumberOfUnstartedPassages=0,DeltaMeasurings;
+CRegion* pReg;
+for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
+	{
+		if(!pReg->m_DataIn.Off)
+		{
+			NumberOfUnstartedPassages=pReg->m_DataIn.N_ - pReg->m_DataIn.Curr_N;
+			if(pReg->m_NDataOutCurr > 0) NumberOfUnstartedPassages--;
+			if(NumberOfUnstartedPassages<0) NumberOfUnstartedPassages=0;
+			DeltaMeasurings=pReg->m_NDataOut - pReg->m_NDataOutCurr;
+			if(pReg->m_NDataOutCurr==0) DeltaMeasurings=0;
+			TimeReg=DeltaMeasurings*pReg->m_DataIn.Time+pReg->m_NDataOut*pReg->m_DataIn.Time*NumberOfUnstartedPassages+NumberOfUnstartedPassages*3000;
+			if(pReg->m_DataIn.N_ == pReg->m_DataIn.Curr_N) TimeReg=0;
+			Time +=TimeReg;
+		}
+	}
+*TIME = Time;
+}
+void TIME2Str(int TIME, char* str) //TIME - в мсек
+{
+int hh,mm,ss,Time, tmp;
+Time = abs(TIME)/1000;
+hh = Time/3600;
+tmp = (Time - hh*3600);
+mm = tmp/60;
+ss = tmp - mm*60;
+
+if(TIME>=0)
+	sprintf(str, "%.2i:%.2i:%.2i",hh,mm,ss);
+else
+	sprintf(str, "-%.2i:%.2i:%.2i",hh,mm,ss);
+}
+
+
+//========
+void SaveStyle(HWND hWnd)
+{
+DWORD Style[]={WS_BORDER,WS_CAPTION,WS_CHILD,WS_CLIPCHILDREN,WS_CLIPSIBLINGS,WS_DISABLED,
+							WS_DLGFRAME,WS_GROUP,WS_HSCROLL,WS_VSCROLL,WS_MAXIMIZE,WS_MINIMIZE,
+							WS_MAXIMIZEBOX,WS_MINIMIZEBOX,WS_OVERLAPPED,WS_POPUP,WS_SYSMENU,
+							WS_TABSTOP,WS_THICKFRAME,WS_VISIBLE,
+							LVS_ALIGNLEFT,LVS_ALIGNTOP,LVS_AUTOARRANGE,LVS_EDITLABELS,
+							LVS_ICON,LVS_LIST,LVS_NOCOLUMNHEADER,LVS_NOLABELWRAP,
+							LVS_NOSCROLL,LVS_NOSORTHEADER,LVS_OWNERDRAWFIXED,LVS_REPORT,
+							LVS_SHAREIMAGELISTS,LVS_SHOWSELALWAYS,LVS_SINGLESEL,
+							LVS_SMALLICON,LVS_SORTASCENDING,LVS_SORTDESCENDING};
+
+
+char* StyleName[]={"WS_BORDER","WS_CAPTION","WS_CHILD","WS_CLIPCHILDREN","WS_CLIPSIBLINGS","WS_DISABLED",
+					"WS_DLGFRAME","WS_GROUP","WS_HSCROLL","WS_VSCROLL","WS_MAXIMIZE","WS_MINIMIZE",
+					"WS_MAXIMIZEBOX","WS_MINIMIZEBOX","WS_OVERLAPPED","WS_POPUP","WS_SYSMENU",
+					"WS_TABSTOP","WS_THICKFRAME","WS_VISIBLE",
+					"LVS_ALIGNLEFT","LVS_ALIGNTOP","LVS_AUTOARRANGE","LVS_EDITLABELS",
+					"LVS_ICON","LVS_LIST","LVS_NOCOLUMNHEADER","LVS_NOLABELWRAP",
+					"LVS_NOSCROLL","LVS_NOSORTHEADER","LVS_OWNERDRAWFIXED","LVS_REPORT",
+					"LVS_SHAREIMAGELISTS","LVS_SHOWSELALWAYS","LVS_SINGLESEL",
+					"LVS_SMALLICON","LVS_SORTASCENDING","LVS_SORTDESCENDING"};
+
+DWORD ExStyle[]={WS_EX_ACCEPTFILES,WS_EX_CLIENTEDGE,
+			WS_EX_CONTEXTHELP,WS_EX_CONTROLPARENT,WS_EX_DLGMODALFRAME,
+			WS_EX_LEFT,WS_EX_LEFTSCROLLBAR,WS_EX_LTRREADING,WS_EX_MDICHILD,
+			WS_EX_NOPARENTNOTIFY,WS_EX_RIGHT,WS_EX_RIGHTSCROLLBAR,WS_EX_RTLREADING,
+			WS_EX_STATICEDGE,WS_EX_TOOLWINDOW,WS_EX_TOPMOST,
+			WS_EX_TRANSPARENT,WS_EX_WINDOWEDGE,
+			LVS_EX_CHECKBOXES,
+			LVS_EX_FULLROWSELECT,LVS_EX_GRIDLINES,LVS_EX_HEADERDRAGDROP,
+			LVS_EX_ONECLICKACTIVATE,
+			LVS_EX_SUBITEMIMAGES,LVS_EX_TRACKSELECT,
+			LVS_EX_TWOCLICKACTIVATE};
+
+char* ExStyleName[]={"WS_EX_ACCEPTFILES","WS_EX_CLIENTEDGE",
+			"WS_EX_CONTEXTHELP","WS_EX_CONTROLPARENT","WS_EX_DLGMODALFRAME",
+			"WS_EX_LEFT","WS_EX_LEFTSCROLLBAR","WS_EX_LTRREADING","WS_EX_MDICHILD",
+			"WS_EX_NOPARENTNOTIFY","WS_EX_RIGHT","WS_EX_RIGHTSCROLLBAR","WS_EX_RTLREADING",
+			"WS_EX_STATICEDGE","WS_EX_TOOLWINDOW","WS_EX_TOPMOST",
+			"WS_EX_TRANSPARENT","WS_EX_WINDOWEDGE",
+			"LVS_EX_CHECKBOXES",
+			"LVS_EX_FULLROWSELECT","LVS_EX_GRIDLINES","LVS_EX_HEADERDRAGDROP",
+			"LVS_EX_ONECLICKACTIVATE",
+			"LVS_EX_SUBITEMIMAGES","LVS_EX_TRACKSELECT",
+			"LVS_EX_TWOCLICKACTIVATE"};
+
+
+FILE* fp;
+fp=fopen("Stiles.txt","w");
+if(!fp) {AfxMessageBox("Can't open file"); return;}
+fprintf(fp,"STYLE:\n");
+LONG style = ::GetWindowLong(hWnd, GWL_STYLE);
+int i,N;
+N=sizeof(Style)/sizeof(DWORD);
+for(i=0; i<N; ++i)
+	{
+	if(style & Style[i]) fprintf(fp,"\n %s", StyleName[i]);
+	}
+
+fprintf(fp,"\n\n\n EX STYLE:\n");
+style = ::GetWindowLong(hWnd, GWL_EXSTYLE);
+N=sizeof(ExStyle)/sizeof(DWORD);
+for(i=0; i<N; ++i)
+	{
+	if(style & ExStyle[i]) fprintf(fp,"\n %s", ExStyleName[i]);
+	}
+
+AfxMessageBox("File write OK");
+fclose(fp);
+}
+
+long GetRegisterHVCodeFromHV(double HV)
+{
+	double HVTable[HP_MAX_HV_CODE+1]={20., 200., 10., 100., 5., 50., 2.};
+	int i;
+	for(i=0; i<=HP_MAX_HV_CODE;i++)
+		if(HV==HVTable[i])
+			return i;
+	return 14L; //=2.0 V
+}

@@ -1,0 +1,64 @@
+## SCL Builder Setup File: Do not edit!!
+
+## VERSION: 3.41.00.01
+## FORMAT:  v2.00.00
+## DEVICE:  PIC18F458
+
+## PINREGACTIONS
+cyc
+No Repeat
+--
+&
+## ADVPINREGACTIONS
+--
+&
+--
+COND1
+Any
+
+
+
+
+
+
+--
+&
+## CLOCK
+&
+## STIMULUSFILE
+&
+## RESPONSEFILE
+&
+## ASYNCH
+Pin
+RCREG
+Direct Message
+
+AA 11 AB
+-1
+--
+Pin
+RCREG
+Direct Message
+
+AA FE AB
+-1
+--
+Pin
+RCREG
+File Message
+
+UART-loadtable.txt
+-1
+--
+Pin
+RCREG
+File Message
+
+CMD_LOAD_PROTECTION_VALS.txt
+-1
+--
+&
+## ADVANCEDSCL
+
+&

@@ -1,0 +1,13 @@
+2011.02.10 22:45:51 CThermoReg::Init Upload Params
+2011.02.10 22:50:30 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
+2011.02.10 22:52:00 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
+2011.02.10 23:06:08 CThermoReg::OnSerialEvent Получен статус 'CMD_GET_STATUS.tablesNotLoaded'. Повторная загрузка конфигурации в контроллер
+2011.02.10 23:11:16 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
+2011.02.10 23:14:21 CThermoReg::OnSerialEvent Получен статус 'CMD_GET_STATUS.tablesNotLoaded'. Повторная загрузка конфигурации в контроллер
+2011.02.13 11:32:38 CThermoReg::Init Upload Params
+2011.02.13 11:33:18 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
+2011.02.13 11:33:31 ReadFile: ошибка чтения из порта.Операция ввода/вывода была прервана из-за завершения потока команд или по запросу приложения.
+ Break Detected; Receive Framing error; 
+
+2011.02.13 11:33:31 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
+2011.02.13 12:46:48 CThermoReg::OnSerialEvent Получено сообщение 'MESSAGE_RESET'. Повторная загрузка конфигурации в контроллер
