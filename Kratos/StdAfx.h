@@ -28,4 +28,3 @@
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_STDAFX_H__113AB9AD_6F91_11D5_9A4B_008048FD9845__INCLUDED_)
-#define nullptr NULL

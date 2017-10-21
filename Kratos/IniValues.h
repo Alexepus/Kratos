@@ -2,6 +2,9 @@
 #define _INIVALUES_H_
 
 #include <exception>
+#include <windows.h>
+#include <afxwin.h>
+
 
 template<class T>
 class ValueSvLdBase

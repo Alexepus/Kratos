@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6D15D155-3E65-49D8-9BE6-76706307529F}</ProjectGuid>
+    <RootNamespace>ProgNew</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <ProjectName>Kratos</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.26430.15</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/ProgNew.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0501;%(PreprocessorDefinitions); _AFXDLL</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/ProgNew.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>Version.lib %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>Debug/Kratos.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <EnableUAC>false</EnableUAC>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/Kratos.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/ProgNew.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/ProgNew.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/ProgNew.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>Version.lib %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>Release/Kratos.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <EnableUAC>false</EnableUAC>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/Kratos.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/ProgNew.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BigClientWnd.cpp" />
+    <ClCompile Include="CamSetupDlg.cpp" />
+    <ClCompile Include="CamSetupHPDlg.cpp" />
+    <ClCompile Include="CommentsWnd.cpp" />
+    <ClCompile Include="Cregion.cpp" />
+    <ClCompile Include="DialogParamRegion.cpp" />
+    <ClCompile Include="DlgAbout.cpp" />
+    <ClCompile Include="DlgCommentsEdit.cpp" />
+    <ClCompile Include="DlgKEEnd.cpp" />
+    <ClCompile Include="DlgSettingsForCurvers.cpp" />
+    <ClCompile Include="DlgSetViewer.cpp" />
+    <ClCompile Include="Doc.cpp" />
+    <ClCompile Include="DxpsDlg.cpp" />
+    <ClCompile Include="DxpsParamDlg.cpp" />
+    <ClCompile Include="DxpsRegion.cpp" />
+    <ClCompile Include="FiListCtrl.cpp" />
+    <ClCompile Include="FiTable.cpp" />
+    <ClCompile Include="FiTableDlg.cpp" />
+    <ClCompile Include="function.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="HardwareSetup.cpp" />
+    <ClCompile Include="HideWnd.cpp" />
+    <ClCompile Include="IniValues.cpp" />
+    <ClCompile Include="IPS6.cpp" />
+    <ClCompile Include="ListRegionWnd.cpp" />
+    <ClCompile Include="LogToFile.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="MeasOptDlg.cpp" />
+    <ClCompile Include="ntgraph.cpp" />
+    <ClCompile Include="OleFont.CPP" />
+    <ClCompile Include="OpenSaveFun.cpp" />
+    <ClCompile Include="ProgNew.cpp" />
+    <ClCompile Include="RegionWnd.cpp" />
+    <ClCompile Include="SerialCounter\AdamComThread.cpp" />
+    <ClCompile Include="SerialCounter\AdamComTransport.cpp" />
+    <ClCompile Include="SerialCounter\ComFunctions.cpp" />
+    <ClCompile Include="SerialCounter\SerialCounterDlg.cpp" />
+    <ClCompile Include="SerialCounter\SerialCounterUnit.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SVRDFILE.CPP" />
+    <ClCompile Include="Threads.cpp" />
+    <ClCompile Include="TitleXWnd.cpp" />
+    <ClCompile Include="ViewGraphics.cpp" />
+    <ClCompile Include="ViewWnd.cpp" />
+    <ClCompile Include="WndForCurve.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ProgNew.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BigClientWnd.h" />
+    <ClInclude Include="CamSetupDlg.h" />
+    <ClInclude Include="CamSetupHPDlg.h" />
+    <ClInclude Include="CommentsWnd.h" />
+    <ClInclude Include="DialogParamRegion.h" />
+    <ClInclude Include="DlgAbout.h" />
+    <ClInclude Include="DlgCommentsEdit.h" />
+    <ClInclude Include="DlgKEEnd.h" />
+    <ClInclude Include="DlgSettingsForCurvers.h" />
+    <ClInclude Include="DlgSetViewer.h" />
+    <ClInclude Include="Doc.h" />
+    <ClInclude Include="DomainLock.h" />
+    <ClInclude Include="DxpsDlg.h" />
+    <ClInclude Include="DxpsParamDlg.h" />
+    <ClInclude Include="DxpsRegion.h" />
+    <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="FiListCtrl.h" />
+    <ClInclude Include="FiTable.h" />
+    <ClInclude Include="FiTableDlg.h" />
+    <ClInclude Include="function.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Hardware.h" />
+    <ClInclude Include="HardwareSetup.h" />
+    <ClInclude Include="HideWnd.h" />
+    <ClInclude Include="IniValues.h" />
+    <ClInclude Include="IPS6.h" />
+    <ClInclude Include="ListRegionWnd.h" />
+    <ClInclude Include="LogToFile.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="MeasOptDlg.h" />
+    <ClInclude Include="NotifyStruct.h" />
+    <ClInclude Include="ntgraph.h" />
+    <ClInclude Include="OleFont.H" />
+    <ClInclude Include="OpenSaveFun.h" />
+    <ClInclude Include="ProgNew.h" />
+    <ClInclude Include="Region.h" />
+    <ClInclude Include="RegionWnd.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="SerialCounter\AdamComThread.h" />
+    <ClInclude Include="SerialCounter\AdamComTransport.h" />
+    <ClInclude Include="SerialCounter\AdamMessage.h" />
+    <ClInclude Include="SerialCounter\ComFunctions.h" />
+    <ClInclude Include="SerialCounter\ComMsgTale.h" />
+    <ClInclude Include="SerialCounter\ProcessableMessage.h" />
+    <ClInclude Include="SerialCounter\SerialCounterDlg.h" />
+    <ClInclude Include="SerialCounter\SerialCounterUnit.h" />
+    <ClInclude Include="sli6_ext.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="SVRDFILE.H" />
+    <ClInclude Include="Threads.h" />
+    <ClInclude Include="ThreadSafeQueue.h" />
+    <ClInclude Include="TitleXWnd.h" />
+    <ClInclude Include="ViewGraphics.h" />
+    <ClInclude Include="ViewWnd.h" />
+    <ClInclude Include="WndForCurve.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\1.ico" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bmp00001.bmp" />
+    <Image Include="res\bmp00002.bmp" />
+    <Image Include="res\DXPS.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icon3.ico" />
+    <Image Include="res\Iconforeg.bmp" />
+    <Image Include="res\iconforreg.ico" />
+    <Image Include="res\iconOnOff.ico" />
+    <Image Include="res\icon_for.ico" />
+    <Image Include="res\ProgNew.ico" />
+    <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\Toolbar1.bmp" />
+    <Image Include="res\Toolbar2.bmp" />
+    <Image Include="res\Untitled-1.bmp" />
+    <Image Include="res\Untitled-2.bmp" />
+    <Image Include="res\XPS.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ProgNew.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
+    <Text Include="Version History.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="ProgNew.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

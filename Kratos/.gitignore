@@ -9,4 +9,5 @@
 
 Debug/
 Release/*
+.vs/
 !Release/Kratos.exe
