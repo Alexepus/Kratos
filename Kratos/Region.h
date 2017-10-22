@@ -15,7 +15,6 @@ enum{KE, BE} KE_BE;
 char N_h_nu; // Здесь просто байт
 int DeltaVolts;
 char Comments[256];
-//int StrLen; //  Must be end !!!!!!
 } DATA_IN;
 
 #define TYPE_BE 0
@@ -35,7 +34,6 @@ double Dwell;	//Время измерения
 int ColorIndex;
 char Comments[256];
 //enum{Al, Mg, He1, He2};
-//void operator =(DxpsRegPar Par){memcpy(this,&Par,sizeof(DxpsRegPar));}; 
 };
 //===============
 typedef struct _STR_PAR
@@ -72,7 +70,6 @@ C_h_nu_Info();
 
 //==============
 
-// Class CRegion
 class CRegion
 {
 public:
@@ -90,21 +87,16 @@ enum {New, Edit} m_NewOreEdit;
 ////////////////////////KE, HV, and over data of region
 CRegion* m_pNext;
 CRegion* m_pPrev;
-public:
+
 static CRegion* m_pFirst;
 static CRegion* m_pEnd;
 
-
-public:
 CRegion();
 CRegion(int n);
 ~CRegion();
-void CreateNewRegion(void);
-static CRegion* GetFirst(void);
+void CreateNewRegion();
+static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
-
 };
-
-//====================
 
 #endif //_REGION_H_INCLUDED_

@@ -1,23 +1,5 @@
-// RegionWnd.cpp : implementation file
-//
-/*
-#include "stdafx.h"
-#include "ProgNew.h"
-//#include "MainFrame.h"
-#include "Region.h"
-#include "DialogParamRegion.h"
-#include "ListRegionWnd.h"
-#include "function.h"
-//#include "ListRegionWnd.h"
-#include "MainFrame.h"
-#include "RegionWnd.h"
-//#include "MainFrame.h"
-#include <stdio.h>
-#include <string.h>
-*/
 #include "stdafx.h"
 #include "Main.h"
-
 	
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,8 +10,6 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 extern CMutex MutexThread;
 extern CProgNewApp theApp;
-
-// CRegionWnd
 
 CRegionWnd::CRegionWnd()
 {
@@ -53,10 +33,7 @@ CRegionWnd::CRegionWnd()
 	if(m_rectWnd.right-m_rectWnd.left>ScreenSizeX) m_rectWnd.left=m_rectWnd.right-ScreenSizeX;
 	if(m_rectWnd.bottom-m_rectWnd.top>ScreenSizeY) m_rectWnd.top=m_rectWnd.bottom-ScreenSizeY;
 	if(m_rectWnd.top<5-GetSystemMetrics(SM_CYCAPTION)) m_rectWnd.top=5-GetSystemMetrics(SM_CYCAPTION);
-//m_ClassNameRegionWnd = AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW,
-//		AfxGetApp()->LoadStandardCursor(IDC_ARROW),
-//		(HBRUSH) GetStockObject(LTGRAY_BRUSH), NULL);
-	//m_Button.Num = 4;
+
 	m_Button.cx = 80;
 	m_Button.cy = 25;
 	m_Button.AddNew.Name = "Add New";
@@ -65,13 +42,6 @@ CRegionWnd::CRegionWnd()
 	m_Button.Close.Name = "Close";
 	m_Button.OnOff.Name = "On/Off";
 	m_Button.View.Name = "View";
-	
-	//m_pListRegionWnd = new CListRegionWnd;
-	/*
-	char s[20];
-	sprintf(s,"NumOfButton=%i",m_NumOfButton);
-	AfxMessageBox(s);
-	*/
 }
 
 CRegionWnd::~CRegionWnd()
@@ -92,16 +62,11 @@ BEGIN_MESSAGE_MAP(CRegionWnd, CWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CRegionWnd message handlers
-
 BOOL CRegionWnd::RegisterRegionWndClass()
 {
 	memset(&m_WC, 0, sizeof(WNDCLASS));
 	m_WC.lpszClassName = "RegionWindow";
 	m_WC.lpfnWndProc = (WNDPROC) ::DefWindowProc;
-	//m_WC.lpfnWndProc = (WNDPROC) NULL;
 	m_WC.style = CS_HREDRAW | CS_VREDRAW;
 	m_WC.hInstance = AfxGetInstanceHandle();
 	m_WC.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
@@ -114,40 +79,7 @@ BOOL CRegionWnd::RegisterRegionWndClass()
 
 void CRegionWnd::OnDestroy() 
 {
-	//CWnd::OnDestroy();
-	
-	// TODO: Add your message handler code here
-	//AfxMessageBox("Destroy Gerion Window");
-/*
-	if(::IsWindow(this->m_hWnd))
-		{
-		if(::IsIconic(this->m_hWnd));// AfxMessageBox("IsIconic");
-		else
-			{
-			::GetWindowRect(this->m_hWnd, &m_rectWnd);
-			CWinApp* App = AfxGetApp();
-			App->WriteProfileInt("SizeOfRegionWindow", "Left", m_rectWnd.left);
-			App->WriteProfileInt("SizeOfRegionWindow", "Top", m_rectWnd.top);
-			App->WriteProfileInt("SizeOfRegionWindow", "Right", m_rectWnd.right);
-			App->WriteProfileInt("SizeOfRegionWindow", "Bottom", m_rectWnd.bottom);
-			int width;
-			for(int i=0; i<m_pListRegionWnd->N_Column; ++i)
-				{
-				width = m_pListRegionWnd->GetColumnWidth(i);
-				App->WriteProfileInt(m_pListRegionWnd->strIniListRegionWnd, 
-				m_pListRegionWnd->strNameColumn[i], width);
-				}
-			}
-		//if(m_pDlgParamReg != NULL)
-		//	{
-		//	m_pDlgParamReg->EndDialog(IDCANCEL);
-		//	//if(m_pDlgParamReg->IsWindow(m_pDlgParamReg->m_hWnd)) AfxMessageBox("Dlg is window");
-		//	//AfxMessageBox("Dlg is window");
-		//	}
-		} // end if(::IsWindow(this->m_hWnd))
-*/	
-
-CWnd::OnDestroy();
+	CWnd::OnDestroy();
 }
 
 int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -155,7 +87,6 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// TODO: Add your specialized creation code here
 	CWnd::SetIcon(m_hIcon, TRUE);			// Set big icon
 	RECT r;
 	::GetClientRect(this->m_hWnd, &r);
@@ -191,18 +122,10 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_Button.cx, m_Button.cy,
 		this->m_hWnd, (HMENU) IDC_BUTTON_CLOSE, AfxGetInstanceHandle(), NULL);
 	
-	
-	
-	//m_Button.Edit.Name = "Edit";
-	//m_Button.Delete.Name = "Delete";
-	//m_Button.Close.Name = "Close";
-	
 	RECT rl;
 	rl.left = rl.top = 0;
 	rl.right = r.right - 2*5 - m_Button.cx;
 	rl.bottom = r.bottom;
-	
-	//::InitCommonControls();
 	
 	m_pListRegionWnd->m_pMainFrame = this->m_pMainFrame;
 	//TODO: можно переделать на вызов CListCtrl::CreateEx()
@@ -211,8 +134,7 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT | LVS_SINGLESEL,
 		0, 0, rl.right, rl.bottom, 
-		this->m_hWnd, (HMENU) IDC_REPORT_REGION, NULL); 
-	
+		this->m_hWnd, (HMENU) IDC_REPORT_REGION, NULL); 	
 	
 	DWORD ExStyle = (LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	::SendMessage(m_pListRegionWnd->m_hWnd, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, ExStyle);
@@ -227,12 +149,9 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-
 void CRegionWnd::OnSize(UINT nType, int cx, int cy) 
 {
 	CWnd::OnSize(nType, cx, cy);
-	
-	// TODO: Add your message handler code here
 	RECT r;
 	::GetClientRect(this->m_hWnd, &r);
 	::MoveWindow(m_Button.AddNew.hWnd, r.right - m_Button.cx - 5, 5,
@@ -260,18 +179,16 @@ void CRegionWnd::OnSize(UINT nType, int cx, int cy)
 	
 }
 
-
 BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam) 
 {
 	CSingleLock sLock(&MutexThread);
 	if( LOWORD(wParam) == IDC_BUTTON_ADDNEW  &&  HIWORD(wParam) == BN_CLICKED)
-		{//::MessageBox(this->m_hWnd, "BN_CLICKED", "Bred", MB_OK);
+		{
 		m_pDlgParamReg = new CDialogParamRegion((CWnd*) this);
 		m_pDlgParamReg->m_pMainFrame = this->m_pMainFrame;
 		if(!m_pDlgParamReg) {AfxMessageBox("Can't create dialog window"); return TRUE;}
 		else
-			{
-			
+			{			
 			THRI_LOCK();
 
 			CRegion* pReg = new CRegion;
@@ -344,8 +261,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				else {delete pReg;} // OK!
 				
 				m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
-			//	if(m_pDlgParamReg) delete m_pDlgParamReg;
-			//	m_pDlgParamReg = NULL;
 				::SetFocus(m_pListRegionWnd->m_hWnd);
 				::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
 				} // end if(pReg!=NULL)
@@ -378,7 +293,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 
 						THRI_LOCK();
 
-						//if(pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow) RegNow = TRUE;
 						if((pReg==m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop==m_pMainFrame->Stop)) 
 							RegNow = TRUE;
 						else 
@@ -397,16 +311,14 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 					m_pDlgParamReg->m_pMainFrame = this->m_pMainFrame;
 					pReg->m_NewOreEdit = pReg->Edit; 
 					m_pDlgParamReg->m_pReg = pReg;
-					//::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
 					if(m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut)
-						{ //AfxMessageBox("m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut");
+						{ 
 							ReDrawReg = TRUE;
 							m_pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
 						}
-					else {ReDrawReg = FALSE;}//  AfxMessageBox("m_pMainFrame->m_Doc.m_Graph.m_pDataAll != pReg->m_pDataOut");}
+					else {ReDrawReg = FALSE;}
 					if(::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
 						{
-						//if(pReg->m_pDataOut == m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll)
 						if(pReg == m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pReg)
 							{	m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
 								m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
@@ -422,8 +334,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						if(!NewOreEditParamToReg(pReg, m_pDlgParamReg))
 								::MessageBox(m_pListRegionWnd->m_hWnd, 
 														"Can't realloc memory for region.\n", "Attention", MB_OK);
-						//else if(m_pMainFrame->m_Doc.fpPrj != NULL) 
-						//		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
 						else if(m_pMainFrame->m_Doc.fpPrj != NULL) 
 							{
 							CWaitCursor WCur;
@@ -431,7 +341,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 							THRI_LOCK();
 							if(ReWriteFile) // Перезапись всего файла если изменился диапазон или шаг региона
 								{
-								//FILE* fp;
 								fclose(m_pMainFrame->m_Doc.fpPrj);
 								m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
 								if(!m_pMainFrame->m_Doc.fpPrj)
@@ -442,7 +351,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 									m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
 									m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
 									}
-								//AfxMessageBox("ReWrite total file");
 								}
 							else //Перезаписать только параметры региона
 								{ SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);}
@@ -517,7 +425,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						{if(pReg->ID == SelectedItem) break; }
 				
 				THRI_LOCK();
-				//if(pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow) RegNow = TRUE;
 				if((pReg==m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop==m_pMainFrame->Stop)) 
 					RegNow = TRUE;
 				else 
@@ -528,7 +435,7 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			
 				::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
 				
-				if(!RegNow) // if(RegNow == FALSE)
+				if(!RegNow)
 					{
 					char str[128];
 					sprintf(str,"Are you sure you want\nto delete the region number %i ?",SelectedItem+1);
@@ -621,9 +528,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 	
 	else if( LOWORD(wParam) == IDC_BUTTON_VIEW  &&  HIWORD(wParam) == BN_CLICKED)
 		{
-		//CGraphics* pNewGraph = new CGraphics;
-		//AfxMessageBox("IDC_BUTTON_VIEW");
-		
 		int N_Item = (int) ::SendMessage(m_pListRegionWnd->m_hWnd, LVM_GETITEMCOUNT, 0, 0);
 		if(N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "No any region", "Attention",MB_OK);
 		else
@@ -637,14 +541,10 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 						{if(pReg->ID == SelectedItem) break; }
 
-
-
-
-
 				m_pMainFrame->m_Doc.m_ViewWnd.m_pMainFrame = this->m_pMainFrame;
 				sprintf(m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_cl_name_for_curve, "%s",
 								m_pMainFrame->m_Doc.m_Graph.m_cl_name_for_curve);
-		//m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_cl_name_for_curve = m_pMainFrame->m_Doc.m_Graph.m_cl_name_for_curve; 
+
 				if(::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
 					{	m_pMainFrame->m_Doc.m_ViewWnd.ShowWindow(SW_SHOWNORMAL);
 						::SetFocus(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd);
@@ -664,8 +564,7 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						m_pMainFrame->m_Doc.m_ViewWnd.m_rectWnd.top,
 						m_pMainFrame->m_Doc.m_ViewWnd.m_rectWnd.right - m_pMainFrame->m_Doc.m_ViewWnd.m_rectWnd.left,
 						m_pMainFrame->m_Doc.m_ViewWnd.m_rectWnd.bottom - m_pMainFrame->m_Doc.m_ViewWnd.m_rectWnd.top,
-					//0,0,0,0,
-					NULL,NULL);
+							NULL,NULL);
 					}
 				
 				if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
@@ -675,7 +574,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						sprintf(m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_strCaption, 
 						"Region %i ( BE, Anode: %s )", pReg->ID+1, pReg->str.Name_h_nu);
 
-				//sprintf(m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_strCaption, "Region %i", pReg->ID+1);
 				m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pReg = pReg;
 				m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = pReg->m_pDataOut;
 				m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_NDataAll = pReg->m_NDataOut;
@@ -690,7 +588,6 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 	
 	else if( LOWORD(wParam) == IDC_BUTTON_ONOFF  &&  HIWORD(wParam) == BN_CLICKED)	
 		{
-		//AfxMessageBox("IDC_BUTTON_ONOFF");
 		int N_Item = (int) ::SendMessage(m_pListRegionWnd->m_hWnd, LVM_GETITEMCOUNT, 0, 0);
 		if(N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "No any region", "Attention",MB_OK);
 		else
@@ -745,46 +642,38 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 		
 
 	return TRUE;
-	//return CWnd::OnCommand(wParam, lParam);
 }
 
 void CRegionWnd::OnSetFocus(CWnd* pOldWnd) 
 {
 	CWnd::OnSetFocus(pOldWnd);
-	
-	// TODO: Add your message handler code here
 	::SetFocus(m_pListRegionWnd->m_hWnd);
 	
 }
 
 void CRegionWnd::OnClose() 
 {
-	// TODO: Add your message handler code here and/or call default
-	
 	if(::IsWindow(this->m_hWnd))
 		{
-		if(!::IsIconic(this->m_hWnd) && !::IsZoomed(this->m_hWnd))   // AfxMessageBox("IsIconic");
+		if(!::IsIconic(this->m_hWnd) && !::IsZoomed(this->m_hWnd))
 			{
-			::GetWindowRect(this->m_hWnd, &m_rectWnd);
-			CWinApp* App = AfxGetApp();
-			if( m_rectWnd.left > -20 && m_rectWnd.top > -20 )
-			{
-				App->WriteProfileInt("SizeOfRegionWindow", "Left", m_rectWnd.left);
-				App->WriteProfileInt("SizeOfRegionWindow", "Top", m_rectWnd.top);
-				App->WriteProfileInt("SizeOfRegionWindow", "Right", m_rectWnd.right);
-				App->WriteProfileInt("SizeOfRegionWindow", "Bottom", m_rectWnd.bottom);
-			}
-			int width;
-			for(int i=0; i<m_pListRegionWnd->N_Column; ++i)
+				::GetWindowRect(this->m_hWnd, &m_rectWnd);
+				CWinApp* App = AfxGetApp();
+				if( m_rectWnd.left > -20 && m_rectWnd.top > -20 )
 				{
-				width = m_pListRegionWnd->GetColumnWidth(i);
-				App->WriteProfileInt(m_pListRegionWnd->strIniListRegionWnd, 
-				m_pListRegionWnd->strNameColumn[i], width);
+					App->WriteProfileInt("SizeOfRegionWindow", "Left", m_rectWnd.left);
+					App->WriteProfileInt("SizeOfRegionWindow", "Top", m_rectWnd.top);
+					App->WriteProfileInt("SizeOfRegionWindow", "Right", m_rectWnd.right);
+					App->WriteProfileInt("SizeOfRegionWindow", "Bottom", m_rectWnd.bottom);
+				}
+				for(int i=0; i<m_pListRegionWnd->N_Column; ++i)
+				{
+					int width = m_pListRegionWnd->GetColumnWidth(i);
+					App->WriteProfileInt(m_pListRegionWnd->strIniListRegionWnd, 
+					m_pListRegionWnd->strNameColumn[i], width);
 				}
 			}
 		} // end if(::IsWindow(this->m_hWnd))
-	
-	
 	
 	if( (::IsWindow(this->m_pListRegionWnd->m_CommentsWnd) ) 
 				&& (!::IsIconic(this->m_pListRegionWnd->m_CommentsWnd) ))
@@ -799,7 +688,6 @@ void CRegionWnd::OnShowWindow(BOOL bShow, UINT nStatus)
 	CWnd::OnShowWindow(bShow, nStatus);
 	if(bShow==SW_SHOW||bShow==SW_SHOWNORMAL)
 		theApp.m_pMainFrame->m_pDxpsDlg->ShowWindow(SW_HIDE);
-	
 }
 
 void CRegionWnd::OnMove(int x, int y) 
@@ -813,5 +701,4 @@ void CRegionWnd::OnMove(int x, int y)
 		theApp.m_pMainFrame->m_pDxpsDlg->MoveWindow(&theApp.m_pMainFrame->m_pRegionWnd->m_rectWnd,FALSE);
 		theApp.m_pMainFrame->m_bSynchronousResize=FALSE;
 	}
-	
 }
