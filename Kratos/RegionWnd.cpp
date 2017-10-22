@@ -128,16 +128,7 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rl.bottom = r.bottom;
 	
 	m_pListRegionWnd->m_pMainFrame = this->m_pMainFrame;
-	//TODO: можно переделать на вызов CListCtrl::CreateEx()
-	((CWnd*)m_pListRegionWnd)->CreateEx(WS_EX_CLIENTEDGE, // | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES, 
-		"SysListView32", //WC_LISTVIEW, 
-		NULL,
-		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT | LVS_SINGLESEL,
-		0, 0, rl.right, rl.bottom, 
-		this->m_hWnd, (HMENU) IDC_REPORT_REGION, NULL); 	
-	
-	DWORD ExStyle = (LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-	::SendMessage(m_pListRegionWnd->m_hWnd, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, ExStyle);
+	m_pListRegionWnd->Create(this, rl);
 	
 	if(::IsWindow(m_pListRegionWnd->m_hWnd))
 		{
@@ -666,12 +657,7 @@ void CRegionWnd::OnClose()
 					App->WriteProfileInt("SizeOfRegionWindow", "Right", m_rectWnd.right);
 					App->WriteProfileInt("SizeOfRegionWindow", "Bottom", m_rectWnd.bottom);
 				}
-				for(int i=0; i<m_pListRegionWnd->N_Column; ++i)
-				{
-					int width = m_pListRegionWnd->GetColumnWidth(i);
-					App->WriteProfileInt(m_pListRegionWnd->strIniListRegionWnd, 
-					m_pListRegionWnd->strNameColumn[i], width);
-				}
+				m_pListRegionWnd->SaveColumnsWidthsToIni();
 			}
 		} // end if(::IsWindow(this->m_hWnd))
 	

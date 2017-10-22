@@ -1,11 +1,7 @@
 // ListRegionWnd.cpp : implementation file
 //
-
 #include "stdafx.h"
 #include "Main.h"
-
-//#include <string.h>
-//#include <stdio.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,27 +15,37 @@ class CMainFrame;
 
 CListRegionWnd::CListRegionWnd()
 {
-	char* s = "ListRegionWnd";
-	strIniListRegionWnd = new char[strlen(s) + 1];
-	sprintf(strIniListRegionWnd, "%s", s);
+	m_iniSectionName = "ListRegionWnd";
 	char* str[] = {"Region","KE/BE","Anode","HV, [eV]","Start, [eV]","Finish, [eV]","Step, [eV]","N","n","Time, [sec]","Comments"};
 	N_Column = sizeof(str)/sizeof(char*);
-	strNameColumn = new char*[N_Column];
-	for(int i=0; i<N_Column; ++i)
-		{
-		strNameColumn[i] = new char[strlen(str[i])+1];
-		sprintf(strNameColumn[i],"%s", str[i]);
-		}
+	for (int i = 0; i < N_Column; ++i)
+		m_columnsNames.push_back(str[i]);
 	
 	m_CommentsWnd.m_pMainFrame = this->m_pMainFrame;
-	//N_Column = sizeof(strNameColumn)/sizeof(char*);
+}
+
+void CListRegionWnd::SaveColumnsWidthsToIni()
+{
+	CWinApp* App = AfxGetApp();
+	for (int i = 0; i < N_Column; ++i)
+	{
+		int width = GetColumnWidth(i);
+		App->WriteProfileInt(m_iniSectionName.GetString(),
+			m_columnsNames[i].GetString(), width);
+	}
+}
+
+void CListRegionWnd::Create(CWnd* parentCWnd, RECT controlPosition)
+{
+	CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT | LVS_SINGLESEL,
+		controlPosition, parentCWnd, IDC_REPORT_REGION);
+
+	DWORD ExStyle = (LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	::SendMessage(m_hWnd, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, ExStyle);
 }
 
 CListRegionWnd::~CListRegionWnd()
 {
-	for(int i=0; i<N_Column; ++i)  {	delete[] strNameColumn[i];}
-	delete[] strNameColumn;
-	delete[] strIniListRegionWnd;
 }
 
 
@@ -61,40 +67,18 @@ int CListRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CListCtrl::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-	// TODO: Add your specialized creation code here
-	//AfxMessageBox("CListCtrl::OnCreate");
-	//m_ImageIcon = new CImageList;
+
 	m_ImageIcon.Create(16,16,TRUE,1,1);
 	m_ImageIcon.Add(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_FOR_REG)));
 	m_ImageIcon.Add(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_FOR_REG_NULL)));
 	m_ImageIcon.Add(::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_FOR_REG_ONOFF)));
 	SetImageList(&m_ImageIcon, LVSIL_SMALL);
 
-	CreateColumn();
-	/*
-	CWinApp* App = AfxGetApp();
-	RECT r;
-	::GetClientRect(this->m_hWnd, &r);
-	LV_COLUMN col;
-	memset(&col, 0, sizeof(LV_COLUMN));
-	col.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
-	col.fmt = LVCFMT_CENTER;
-	for(int i=0; i<N_Column; ++i)
-		{
-		col.iSubItem = i;
-		col.pszText = strNameColumn[i];
-		col.cchTextMax = strlen(strNameColumn[i]);
-		col.cx = (int) App->GetProfileInt(strIniListRegionWnd, strNameColumn[i], r.right/N_Column);
-		InsertColumn(i, &col);	
-		}
-	*/
-	
-	return 0;
+	CreateColumns();
+		return 0;
 }
 
-
-void CListRegionWnd::CreateColumn()
+void CListRegionWnd::CreateColumns()
 {
 	CWinApp* App = AfxGetApp();
 	RECT r;
@@ -104,34 +88,27 @@ void CListRegionWnd::CreateColumn()
 	col.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 	col.fmt = LVCFMT_CENTER;
 	for(int i=0; i<N_Column; ++i)
-		{
+	{
 		col.iSubItem = i;
-		col.pszText = strNameColumn[i];
-		col.cchTextMax = strlen(strNameColumn[i]);
-		col.cx = (int) App->GetProfileInt(strIniListRegionWnd, strNameColumn[i], r.right/N_Column);
+		col.pszText = const_cast<LPSTR>(m_columnsNames[i].GetString());
+		col.cchTextMax = m_columnsNames[i].GetLength();
+		col.cx = (int) App->GetProfileInt(m_iniSectionName.GetString(), m_columnsNames[i].GetString(), r.right/N_Column);
 		InsertColumn(i, &col);	
-		}
+	}
 }
-
-
-
 
 void CListRegionWnd::OnDestroy() 
 {
 	CListCtrl::OnDestroy();
-
-	// TODO: Add your message handler code here
 	m_ImageIcon.DeleteImageList();
-	//AfxMessageBox("Destroy CtrlListWnd");
 }
 
 BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam) 
 {
-	// TODO: Add your specialized code here and/or call the base class
-int wNotifyCode = HIWORD(wParam); // notification code 
-int wID = LOWORD(wParam);         // item, control, or accelerator identifier 
-HWND hwndCtl = (HWND) lParam;      // handle of control 
-HWND hWnd;
+	int wNotifyCode = HIWORD(wParam); // notification code 
+	int wID = LOWORD(wParam);         // item, control, or accelerator identifier 
+	HWND hwndCtl = (HWND) lParam;      // handle of control 
+	HWND hWnd;
 	if(wNotifyCode == 0 && hwndCtl == 0)
 		{
 		
@@ -167,7 +144,6 @@ HWND hWnd;
 		}
 		else if(wID == IDC_BUTTON_COMMENTS)
 			{
-			//AfxMessageBox("IDC_BUTTON_COMMENTS");
 			char str[32];
 			int SelectedItem = FindSelectedItem(this->m_hWnd);
 			CRegion* pReg;
@@ -183,16 +159,10 @@ HWND hWnd;
 				
 				m_CommentsWnd.CreateEx(0, 
 					m_pMainFrame->m_pHideWnd->m_pBigClientWnd->m_class_name, 
-					//m_pMainFrame->m_Doc.m_ViewWnd.m_WC.lpszClassName,
 					"Comments",
-					//WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE ,
 					WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
-					//WS_POPUPWINDOW | WS_VISIBLE |  ES_MULTILINE | ES_AUTOVSCROLL ,
-					//200,100,400,200,
 					r.left, r.top, (r.right - r.left), (r.bottom - r.top),
 					this->m_hWnd, NULL);
-
-				//::SendMessage();
 				}// end if(!::IsWindow(this->m_CommentsWnd.m_hWnd))
 			sprintf(str, "Region %i", SelectedItem+1);
 			::SendMessage(m_CommentsWnd.m_hWnd, WM_SETTEXT, 0, (LPARAM) str);
@@ -203,7 +173,6 @@ HWND hWnd;
 										(LPARAM) pReg->m_DataIn.Comments);
 			if(::IsIconic(m_CommentsWnd.m_hWnd) ) ::ShowWindow(m_CommentsWnd.m_hWnd, SW_RESTORE);
 			::SetForegroundWindow(m_CommentsWnd.m_hWnd);
-			//::SetFocus(m_CommentsWnd.m_hWnd);
 			}// end else if(wID == IDC_BUTTON_COMMENTS)
 		}
 	return CListCtrl::OnCommand(wParam, lParam);
@@ -211,7 +180,6 @@ HWND hWnd;
 
 void CListRegionWnd::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
 	//AfxMessageBox("OnRButtonUp");
 /*
 	LVHITTESTINFO TestInfo;
@@ -239,13 +207,11 @@ void CListRegionWnd::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
-	CListCtrl::OnRButtonDown(nFlags, point); // Сам сюда вставил
+	CListCtrl::OnRButtonDown(nFlags, point);
 
 	LVHITTESTINFO TestInfo;
 	TestInfo.pt = point;
-	int res;
-	res = ::SendMessage(m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM) &TestInfo);
+	int res = ::SendMessage(m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM) &TestInfo);
 
 	UINT style;
 	CRegion* pReg;
@@ -264,7 +230,6 @@ void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point)
 	
 	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 		{if(pReg->ID == res) break;}
-	//if((pReg==m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop==m_pMainFrame->Stop)) 
 	
 	if(res == -1 || (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop==m_pMainFrame->Stop) )
 		style = MF_DISABLED | MF_GRAYED	 | MF_STRING;
@@ -281,27 +246,17 @@ void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point)
 		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED	 | MF_STRING, IDC_BUTTON_VIEW, "View");
 	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_VIEW, "View");
 	::AppendMenu(hMenu, style, IDC_BUTTON_ONOFF, "On/Off");
-//	if(res==-1) 
-//		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED	 | MF_STRING, IDC_BUTTON_COMMENTS, "Comments");
-//	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_COMMENTS, "Comments");
 	if(res==-1) 
 		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED	 | MF_STRING, IDC_BUTTON_RESET, "Reset Data");
 	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_RESET, "Reset Data");
 
 	::ClientToScreen(this->m_hWnd, &pt);
 	::TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON, 
-		//r.left+point.x, r.top+point.y, 0, this->m_hWnd, NULL);
 		pt.x, pt.y, 0, this->m_hWnd, NULL);
-	
-	
-		
-	//CListCtrl::OnRButtonDown(nFlags, point);
-	//AfxMessageBox("OnRButtonDown");
 }
 
 void CListRegionWnd::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
 	LVHITTESTINFO TestInfo;
 	TestInfo.pt = point;
 	int res;
@@ -320,9 +275,7 @@ void CListRegionWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		::SendMessage(m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 0, 
 										(LPARAM) pReg->m_DataIn.Comments);
 		}	
-	
 
-	
 	CListCtrl::OnLButtonDown(nFlags, point);
 }
 

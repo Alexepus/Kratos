@@ -16,8 +16,10 @@ class CListRegionWnd : public CListCtrl
 // Construction
 public:
 	CListRegionWnd();
+	void SaveColumnsWidthsToIni();
+	void Create(CWnd* parentCWnd, RECT controlPosition);
 
-// Attributes
+	// Attributes
 public:
 
 // Operations
@@ -35,12 +37,12 @@ public:
 	CCommentsWnd m_CommentsWnd;
 	CMainFrame* m_pMainFrame;
 	CImageList m_ImageIcon;
-	void CreateColumn();
-//	CDialogParamRegion* m_pDlgParamReg;
+	void CreateColumns();
 	int N_Column;
-	char** strNameColumn;
-	char* strIniListRegionWnd;
 	virtual ~CListRegionWnd();
+private:
+	CString m_iniSectionName;
+	std::vector<CString> m_columnsNames; // Названия колонок
 
 	// Generated message map functions
 protected:
