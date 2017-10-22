@@ -1,22 +1,12 @@
 //#include "stdafx.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>  // Потом убрать. Нужно для random()
-#include <math.h>
 
-
-//#include "MeasOptDlg.h"
 #include "ProgNew.h"
 #include "FiTable.h"
-#include <afxmt.h>
 #include "HardwareSetup.h"
-//#include "NotifyStruct.h"
-//#include "MeasOptDlg.h"
 #include "LogToFile.h"
 #include "IniValues.h"
 #include "Region.h"
 #include "DxpsRegion.h"
-//#include "Threads.h"
 #include "TitleXWnd.h"
 #include "DlgKEEnd.h"
 #include "BigClientWnd.h"
@@ -24,12 +14,10 @@
 #include "CommentsWnd.h"
 #include "DlgCommentsEdit.h"
 #include "DialogParamRegion.h"
-//#include "CommentsWnd.h"
 #include "ListRegionWnd.h"
 #include "function.h"
 #include "SvRdFile.h"
 #include "RegionWnd.h"
-//#include "Doc.h"
 #include "OpenSaveFun.h"
 #include "Threads.h"
 #include "FiListCtrl.h"
@@ -42,7 +30,6 @@
 #include "ViewGraphics.h"
 #include "ViewWnd.h"
 #include "Doc.h"
-//#include "Graphics.h"
 #include "MainFrame.h"
 #include "ListRegionWnd.h"
 #include "DxpsDlg.h"
