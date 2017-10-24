@@ -112,6 +112,13 @@ CRegion* CRegion::GetNext(CRegion* reg)
 	return reg->m_pNext;
 }
 
+CRegion* CRegion::GetAtPosition(int position)
+{
+	auto reg = GetFirst();
+	for (int i = 0; reg != nullptr && i < position; i++, reg = GetNext(reg));
+	return reg;
+}
+
 
 C_h_nu_Info::C_h_nu_Info()
 {

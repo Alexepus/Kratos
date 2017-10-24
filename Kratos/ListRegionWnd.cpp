@@ -37,7 +37,7 @@ void CListRegionWnd::SaveColumnsWidthsToIni()
 
 void CListRegionWnd::Create(CWnd* parentCWnd, RECT controlPosition)
 {
-	CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT | LVS_SINGLESEL,
+	CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT,
 		controlPosition, parentCWnd, IDC_REPORT_REGION);
 
 	DWORD ExStyle = (LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -58,10 +58,19 @@ BEGIN_MESSAGE_MAP(CListRegionWnd, CListCtrl)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
 	//}}AFX_MSG_MAP
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomdraw)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CListRegionWnd message handlers
+
+bool CListRegionWnd::IsItemDisabledAtIndex(int index)
+{
+	auto reg =  CRegion::GetAtPosition(index);
+	if (reg != nullptr && reg->m_DataIn.Off)
+		return true;
+	return false;
+}
 
 int CListRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
@@ -176,6 +185,34 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			}// end else if(wID == IDC_BUTTON_COMMENTS)
 		}
 	return CListCtrl::OnCommand(wParam, lParam);
+}
+
+void CListRegionWnd::OnCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+
+	// Take the default processing unless we set this to something else below.
+	*pResult = CDRF_DODEFAULT;
+
+	// First thing - check the draw stage. If it's the control's prepaint
+	// stage, then tell Windows we want messages for every item.
+	if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage)
+	{
+		*pResult = CDRF_NOTIFYITEMDRAW;
+	}
+	else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage)
+	{
+		// This is the prepaint stage for an item. Here's where we set the
+		// item's text color. Our return value will tell Windows to draw the
+		// item itself, but it will use the new color we set here.
+		// Store the color back in the NMLVCUSTOMDRAW struct.
+		auto itemIndex = pLVCD->nmcd.dwItemSpec;
+		if (IsItemDisabledAtIndex(itemIndex))
+			pLVCD->clrText = RGB(127, 127, 127);
+
+		// Tell Windows to paint the control itself.
+		*pResult = CDRF_DODEFAULT;	
+	}
 }
 
 void CListRegionWnd::OnRButtonUp(UINT nFlags, CPoint point) 

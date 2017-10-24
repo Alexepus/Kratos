@@ -97,6 +97,7 @@ CRegion(int n);
 void CreateNewRegion();
 static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
+static CRegion* GetAtPosition(int position);
 };
 
 #endif //_REGION_H_INCLUDED_

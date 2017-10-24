@@ -29,8 +29,9 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CListRegionWnd)
 	protected:
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	
 	//}}AFX_VIRTUAL
+	void OnCustomdraw(NMHDR* pNMHDR, LRESULT* pResult);
 
 // Implementation
 public:
@@ -40,9 +41,11 @@ public:
 	void CreateColumns();
 	int N_Column;
 	virtual ~CListRegionWnd();
+
 private:
 	CString m_iniSectionName;
 	std::vector<CString> m_columnsNames; // Названия колонок
+	static bool IsItemDisabledAtIndex(int index);
 
 	// Generated message map functions
 protected:
