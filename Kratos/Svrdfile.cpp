@@ -15,6 +15,7 @@ extern CString FileSaveOpenErrorDescription;
 #define KRATOS_KEY 0x0103
 #define DXPS_TYPE 0xbd
 #define XPS_VER1 0x13
+#define XPS_VER2 0x14
 #define DXPS_VER1 0x13
 #define DXPS_VER2 0x14
 
@@ -59,7 +60,6 @@ BOOL SaveBinaryFile(FILE* fp)
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{
 			ptrCurr+=sizeof(UINT);
-		//	ptrCurr += (UINT) sizeof(UINT)*fwrite(&ptrCurr, sizeof(UINT), 1, fp);
 			fwrite(&ptrCurr, sizeof(UINT), 1, fp);
 			pReg->m_ptrInFile = ptrCurr;
 			ptrCurr += (UINT) sizeof(DATA_IN)*fwrite(&pReg->m_DataIn,
@@ -68,8 +68,6 @@ BOOL SaveBinaryFile(FILE* fp)
 			ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 			ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
 											sizeof(DATA_OUT), pReg->m_NDataOut, fp);
-
-		//	fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 			}
 	}
 	else if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::DXPS)
@@ -207,8 +205,8 @@ FileVersion=(BYTE)key[3];
 if(key[0]==0x01 && key[1]==0x03 && key[2]==0xbc) theApp.m_pMainFrame->m_Doc.m_DocType=CDoc::XPS;
 else if(key[0]==0x01 && key[1]==0x03 && key[2]==0xbd) theApp.m_pMainFrame->m_Doc.m_DocType=CDoc::DXPS;
 else {AfxMessageBox("This file is not a project file."); throw (8);}
-//fseek(fp, 0, SEEK_SET);
-if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::XPS)
+
+	if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::XPS)
 {
 	if(FileVersion<XPS_VER1)
 		throw (INCORRECT_FILE_VERSION);
@@ -520,7 +518,6 @@ fseek(fp,
 	(pReg->m_ptrInFile + sizeof(DATA_IN) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
 	 SEEK_SET);
 fwrite(data, sizeof(DATA_OUT), 1, fp);
-//fread(&pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
 return TRUE;
 }
 //=================
@@ -533,7 +530,6 @@ fseek(fp,	pReg->m_ptrInFile, SEEK_SET);
 fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
 fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
 fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
-//fread(&pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
 return TRUE;
 }
 
@@ -543,7 +539,6 @@ void SaveEasyPlotFile(FILE* fp, char* FileName)
 {
 CRegion* pReg;    //º 186
 char* Caption[]={"|Reg |","KE/BE|","Anode|"," HV |","  Start  |","  Finish |"," Step |","  N |","  n |"," Time |"};
-//char Value[9];
 int i;
 int NCaption = sizeof(Caption)/sizeof(char*);
 int NLine=0;
@@ -555,7 +550,6 @@ if(RegionsOff==0)
 else 
 	fprintf(fp, ";Number of regions: %i (%i of them %s off)\n", CRegion::m_NReg, RegionsOff,(RegionsOff==1)?"is":"are");
 ++NLine;
-//printf("\n Number of Caption = %i",sizeof(Caption)/sizeof(char*));
 fprintf(fp,";");
 for(i=0; i<NCaption; ++i) fprintf(fp,"%s",Caption[i]);
 fprintf(fp,"\n"); ++NLine;
@@ -591,7 +585,6 @@ for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 		}
 	fprintf(fp,"//nc\n;\n");
 	}
-return;
 }
 //------
 int SaveEasyPlotTable(FILE* fp, CRegion* pReg)
@@ -637,49 +630,6 @@ return NLine;
 
 void SaveOrigin(FILE* fp, char* FileName)
 {
-
-//AfxMessageBox("SaveOrigin");
-/*
-CRegion* pReg;    //º 186
-char* Caption[]={"|Reg |","KE/BE|","Anode|"," HV |","  Start  |","  Finish |"," Step |","  N |","  n |"," Time |"};
-//char Value[9];
-int i;
-int NCaption = sizeof(Caption)/sizeof(char*);
-int NLine=0;
-
-fprintf(fp, ";Number of regions : %i\n", CRegion::m_NReg); ++NLine;
-//printf("\n Number of Caption = %i",sizeof(Caption)/sizeof(char*));
-fprintf(fp,";");
-for(i=0; i<NCaption; ++i) fprintf(fp,"%s",Caption[i]);
-fprintf(fp,"\n"); ++NLine;
-for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-	{
-	if(NLine >= 25)
-		{
-		fprintf(fp,"\n;");
-		for(i=0; i<NCaption; ++i) fprintf(fp,"%s",Caption[i]);
-		NLine = 0;
-		fprintf(fp,"\n"); ++NLine;
-		}
-	NLine += SaveEasyPlotTable(fp, pReg);
-	}
-fprintf(fp,";\n;\n");
-
-for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-	{
-	fprintf(fp,";");
-	for(i=0; i<NCaption; ++i) fprintf(fp,"%s",Caption[i]);
-	fprintf(fp,"\n"); //++NLine;
-	SaveEasyPlotTable(fp, pReg);
-	fprintf(fp,";Points count %i\n",pReg->m_NDataOut);
-	fprintf(fp,"/td \"xy\"\n");
-	fprintf(fp,"/sa l \"%s:%i,\" 2\n", FileName, pReg->ID+1);
-	for(i=0; i<pReg->m_NDataOut; ++i)
-		{fprintf(fp,"%.3lf  %.3f\n", I2D(pReg->m_pDataOut[i].x), pReg->m_pDataOut[i].y);
-		}
-	fprintf(fp,"//nc\n;\n");
-	}
-*/
 CRegion* pReg;
 int iL = 0;
 int i;
@@ -730,8 +680,6 @@ for(pReg=CRegion::GetFirst(), iL=0; pReg!=NULL; pReg=CRegion::GetNext(pReg), ++i
 		{fprintf(fp,strFormat, I2D(pReg->m_pDataOut[i].x), pReg->m_pDataOut[i].y);
 		}
 	}
-
-return;
 }
 
 void GetWord(CRegion* pReg, char* strWord, int nW)
@@ -740,7 +688,6 @@ int i=0;
 int k=0;
 int m=0;
 BOOL InWord;
-//BOOL OutWord;
 char* str = pReg->m_DataIn.Comments;
 
 sprintf(strWord, "%c", '-');
@@ -769,10 +716,6 @@ while(str[i] != '\0')
 		}
 	++i;
 	}
-//strWord[k] = '\0';
-//if(!InWord)  sprintf(strWord, "%c", '-');
-//if(m == 0 && nW>1) sprintf(strWord, "%c", '-');
-return;
 }
 
 void EmptyAllData()
@@ -780,12 +723,7 @@ void EmptyAllData()
 	CRegion* pReg;
 	while( (pReg=CRegion::GetFirst()) != NULL) 
 	{
-	if(::IsWindow(theApp.m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
-		{
-		//::SendMessage(theApp.m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, 
-										//(WPARAM) pReg->ID, 0);
-		}
-	delete pReg;
+		delete pReg;
 	}
 	if(::IsWindow(theApp.m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
 		::SendMessage(theApp.m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, LVM_DELETEALLITEMS, 0, 0);
@@ -967,4 +905,3 @@ void ParseXPSFile(FILE *fp)
 	}while(!feof(fp));
 	fclose(fpOutput);
 }
-

@@ -8,10 +8,9 @@
 #include "ViewWnd.h"	// Added by ClassView
 struct  FILE_NAME
 {
-char FullPath[256];
-char FileName[32];
-char Dir[256];
-//int TypeFile;
+char FullPath[MAX_PATH + 1];
+char FileName[MAX_PATH + 1];
+char Dir[MAX_PATH + 1];
 int NeedSave;
 };
 
@@ -30,8 +29,6 @@ public: //members
 	enum {NoDoc=-1, XPS, DXPS} m_DocType;
 	FILE* fpPrj;
 
-//	HWND m_hCommentsEdit;
-//	HWND m_hComments;
 	CViewWnd m_ViewWnd;
 	char m_WindowCaption[MAX_PATH+10];
 	CWinThread* m_pMeasThread;
@@ -39,10 +36,6 @@ public: //members
 	CDoc();
 	int CheckDocType(); //Checks document data if doc is NoDoc, XPS or DXPS;
 						//Sets m_DocType, hides inproper windows and enables/disables buttons
-
-//CDoc* GetDoc();
 };
-
-
 
 #endif // _DOC_H_INCLUDED_

@@ -49,7 +49,7 @@ CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 		strcpy(AppTitle, "KRATOS");
 	else
 		strcpy(AppTitle, "HP");
-	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[unsaved]");
+	strcpy(m_Doc.m_WindowCaption, AppTitle);
 	
 	HDC dc = CreateDC("DISPLAY", NULL, NULL, NULL);
 	m_ScreenDpi = GetDeviceCaps(dc, LOGPIXELSX);
@@ -811,7 +811,6 @@ void CMainFrame::OnUpdateFileOpenProject(CCmdUI* pCmdUI)
 //=========
 void CMainFrame::OnFileSaveAsEasyPlot() 
 {
-	// TODO: Add your command handler code here
 	m_Doc.m_TypeFile = m_Doc.EasyPlot; 
 	m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
 	WindowSaveAsOpen(this);
@@ -819,15 +818,14 @@ void CMainFrame::OnFileSaveAsEasyPlot()
 
 void CMainFrame::OnFileSaveProjectAs() 
 {
-	// TODO: Add your command handler code here
 	m_Doc.m_TypeFile = m_Doc.Project; 
 	m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
-	WindowSaveAsOpen(this);
+	WindowSaveAsOpen(this); 
+	m_Doc.CheckDocType();
 }
 
 void CMainFrame::OnUpdateFileSaveAsEasyPlot(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(CRegion::m_NReg > 0) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);
 }
@@ -953,9 +951,6 @@ void CMainFrame::OnSettingsMeasuringOptions()
 }
 
 
-//==========
-
-
 void CMainFrame::OnGraphicsFont() 
 {
 	// TODO: Add your command handler code here
@@ -991,92 +986,13 @@ if(ChooseNewFont(this->m_hWnd, &NewLogFont, &m_Doc.m_Graph.m_TextColor))
 	else AfxMessageBox("ERROR !\n\n Can't create font");
 	::ReleaseDC(m_Doc.m_Graph.m_hWnd, DC);
 	}
-
-/*
-if(ChooseNewFont(this->m_hWnd, m_Doc.m_Graph.m_pLogFont, &m_Doc.m_Graph.m_TextColor))	
-	{
-	//AfxMessageBox("ChooseNewFont OK");
-	WriteLOGFONTToIniFile("TextFont", m_Doc.m_Graph.m_pLogFont);
-	CWinApp* App = AfxGetApp();
-	App->WriteProfileInt("TextFont", "TextColor", m_Doc.m_Graph.m_TextColor);
-	if(m_Doc.m_Graph.m_Font) ::DeleteObject( (HGDIOBJ) m_Doc.m_Graph.m_Font);
-	m_Doc.m_Graph.m_Font = ::CreateFontIndirect(m_Doc.m_Graph.m_pLogFont);
-	m_Doc.m_Graph.ReDrawAll();
-	}
-*/	
-
-
 }
-/*
-void CMainFrame::OnGraphicsDrawGraph() 
-{
-	// TODO: Add your command handler code here
-	CRegion* pReg;
-	pReg=CRegion::GetFirst();
-	if(!pReg) {AfxMessageBox("pReg==NULL"); return;}
-	m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
-	m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
-	
-	pReg=CRegion::GetNext(pReg);
-	if(pReg)
-		{
-		m_Doc.m_Graph.m_pDataShort = pReg->m_pDataOut;
-		m_Doc.m_Graph.m_NDataShort = pReg->m_NDataOut;
-		}
-
-	::SendMessage(m_Doc.m_Graph.m_hWnd, WM_PAINT, 0,0);
-//	m_Doc.m_Graph.DrawAxis();
-//	m_Doc.m_Graph.DrawGraphics();
-
-//	::MoveWindow(m_Doc.m_Graph.m_WndForCurve.m_hWnd,0,0,100,100,NULL);
-}
-*/
-/*
-void CMainFrame::OnGraphicsColor() 
-{
-	// TODO: Add your command handler code here
-		COLORREF rgb, CustColor[16];
-	CHOOSECOLOR cc;
-	CWinApp* App = AfxGetApp();
-	rgb = (COLORREF) App->GetProfileInt("COLOR","FirstColor",0xff0000);
-	char* str[] = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"};
-	//rgb=RGB(0,0,255);
-	int i;
-	for(i=0; i<16; ++i) 
-		CustColor[i]=(COLORREF) App->GetProfileInt("COLOR",str[i],0xffffff);
-	memset(&cc, 0, sizeof(CHOOSECOLOR));
-	cc.lStructSize=sizeof(CHOOSECOLOR);
-	cc.hwndOwner=m_hWnd;
-//	cc.hInstance=AfxGetInstanceHandle();
-	cc.lpCustColors=CustColor;
-	cc.Flags=CC_RGBINIT|CC_FULLOPEN;
-	cc.rgbResult=rgb;
-	if(::ChooseColor(&cc)) rgb=cc.rgbResult;
-
-	App->WriteProfileInt("COLOR","FirstColor",(int) rgb);
-	for(i=0; i<16; ++i) 
-		App->WriteProfileInt("COLOR",str[i],cc.lpCustColors[i]);
-
-	m_Doc.m_Graph.m_DataAllColor = (COLORREF) App->GetProfileInt("COLOR","1",0xff0000);
-	m_Doc.m_Graph.m_DataShortColor = (COLORREF) App->GetProfileInt("COLOR","2",0xff0000);
-	m_Doc.m_Graph.m_GridColor = (COLORREF) App->GetProfileInt("COLOR","3",0xff0000);
-//REDRAW
-	m_Doc.m_Graph.ReDrawAll();
-}
-*/
 
 void CMainFrame::OnFileSaveProject() 
 {
 	CSingleLock sLock(&MutexThread);
 	if(!m_Doc.fpPrj) 
 		return;
-	// TODO: Add your command handler code here
-	THRI_LOCK();
-	//if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
-	//AfxMessageBox("OnFileSaveProject()");
-	//if(m_Doc.fpPrj!=m_Doc.m_ThrComm.fp) AfxMessageBox("m_Doc.fpPrj != m_Doc.m_ThrComm.fp");
-	//else AfxMessageBox("m_Doc.fpPrj == m_Doc.m_ThrComm.fp");
-	//if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
 	
 	if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
 	m_Doc.fpPrj = fopen(m_Doc.m_ProjectFile.FullPath, "wb+");
@@ -1090,21 +1006,18 @@ void CMainFrame::OnFileSaveProject()
 
 void CMainFrame::OnUpdateFileSaveProject(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_Doc.fpPrj) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);
 }
 
 void CMainFrame::OnUpdateFileNewProject(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_StartStop == Start) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);	
 }
 
 void CMainFrame::OnUpdateFileExit(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_StartStop == Start) pCmdUI->Enable(TRUE);
 	else	pCmdUI->Enable(FALSE);	
 }
@@ -1140,11 +1053,9 @@ m_Doc.fpPrj=NULL;
 m_Doc.m_ThrComm.pRegNow = NULL;
 m_Doc.m_ProjectFile.FullPath[0] = '\0';
 
-
 m_Doc.m_Graph.m_pDataAll=NULL;
 m_Doc.m_Graph.m_pDataShort=NULL;
 m_Doc.m_Graph.ReDrawAll();
-
 
 if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	{
@@ -1154,7 +1065,6 @@ if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	m_Doc.m_ViewWnd.DestroyWindow();
 	}
 EmptyAllData();
-
 
 	RECT r;
 	::GetWindowRect(this->m_hWnd, &r);
@@ -1195,7 +1105,6 @@ EmptyAllData();
 
 void CMainFrame::OnGraphicsGrid() 
 {
-	// TODO: Add your command handler code here
 	if(m_Doc.m_Graph.m_Grid == TRUE) {m_Doc.m_Graph.m_Grid = FALSE;}// AfxMessageBox("TRUE->FALSE");}
 	else {m_Doc.m_Graph.m_Grid = TRUE;}//  AfxMessageBox("FALSE->TRUE");}
 	m_Doc.m_Graph.ReDrawAll();
@@ -1203,14 +1112,12 @@ void CMainFrame::OnGraphicsGrid()
 
 void CMainFrame::OnUpdateGraphicsGrid(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_Doc.m_Graph.m_Grid == TRUE) pCmdUI->SetCheck();
 	else pCmdUI->SetCheck(0);
 }
 
 void CMainFrame::OnGraphicsSettingsForCurvers() 
 {
-	// TODO: Add your command handler code here
 	CDlgSettingsForCurvers Dlg;
 	Dlg.m_pMainFrame = this;
 	if(::IsWindow(m_pRegionWnd->m_hWnd))
@@ -1236,20 +1143,6 @@ void CMainFrame::OnGraphicsSettingsForCurvers()
 		if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 			m_Doc.m_ViewWnd.m_ViewGraph.m_GuideLines = Dlg.m_CheckGuideLines;
 
-
-
-		/*
-		m_Doc.m_ViewWnd.m_ViewGraph.m_DataAllColor = Dlg.m_ColorRes;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_LineAll = Dlg.m_CheckResLine;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_PointsAll = Dlg.m_CheckResPoints;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_SizePointsAll = Dlg.m_SizePointsRes;
-		
-		m_Doc.m_ViewWnd.m_ViewGraph.m_GridColor = Dlg.m_ColorGrid;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_Grid = Dlg.m_CheckGrid;
-
-		if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd)) m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
-		*/
-		
 		CWinApp* App = AfxGetApp();
 		App->WriteProfileInt("COLOR","1",(UINT) m_Doc.m_Graph.m_DataAllColor);
 		App->WriteProfileInt("COLOR","2",(UINT) m_Doc.m_Graph.m_DataShortColor);
@@ -1269,19 +1162,12 @@ void CMainFrame::OnGraphicsSettingsForCurvers()
 		m_Doc.m_Graph.ReDrawAll();
 
 		}// end IDOK
-	
-	else 
-		{
-		//AfxMessageBox("IDCANCEL");
-		}
-
 	::EnableWindow(m_Doc.m_ViewWnd.m_hWnd, TRUE);
 	::EnableWindow(m_pRegionWnd->m_hWnd, TRUE);
 }
 
 void CMainFrame::OnGraphicsSettingsForViewer() 
 {
-	// TODO: Add your command handler code here
 	CDlgSetViewer Dlg;
 	Dlg.m_pMainFrame = this;
 	if(::IsWindow(m_pRegionWnd->m_hWnd))
@@ -1302,70 +1188,15 @@ void CMainFrame::OnGraphicsSettingsForViewer()
 		m_Doc.m_ViewWnd.m_ViewGraph.m_TextColor = Dlg.m_ColorFont;
 		
 		if(Dlg.m_Font) ::DeleteObject((HGDIOBJ) Dlg.m_Font);
-		//m_Doc.m_ViewWnd.m_ViewGraph.m_Font = Dlg.m_Font;
 		memmove((void*) m_Doc.m_ViewWnd.m_ViewGraph.m_pLogFont,
 						(void*) &Dlg.m_LogFont, sizeof(LOGFONT));
 		if(m_Doc.m_ViewWnd.m_ViewGraph.m_Font) 
 			::DeleteObject((HGDIOBJ) m_Doc.m_ViewWnd.m_ViewGraph.m_Font);
 		m_Doc.m_ViewWnd.m_ViewGraph.m_Font = (HFONT) ::CreateFontIndirect(&Dlg.m_LogFont);
-
-		//if(!m_Doc.m_ViewWnd.m_ViewGraph.m_Font) AfxMessageBox("m_Doc.m_ViewWnd.m_ViewGraph.m_Font==NULL");
-		//else AfxMessageBox("m_Doc.m_ViewWnd.m_ViewGraph.m_Font!=NULL");
-		
 		m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
 		
-		
-		
-		/*
-		m_Doc.m_Graph.m_DataShortColor = Dlg.m_ColorCurr;
-		m_Doc.m_Graph.m_LineShort = Dlg.m_CheckCurrLine;
-		m_Doc.m_Graph.m_PointsShort = Dlg.m_CheckCurrPoints;
-		m_Doc.m_Graph.m_SizePointsShort = Dlg.m_SizePointsCurr;
-
-		m_Doc.m_Graph.m_DataAllColor = Dlg.m_ColorRes;
-		m_Doc.m_Graph.m_LineAll = Dlg.m_CheckResLine;
-		m_Doc.m_Graph.m_PointsAll = Dlg.m_CheckResPoints;
-		m_Doc.m_Graph.m_SizePointsAll = Dlg.m_SizePointsRes;
-		
-		m_Doc.m_Graph.m_GridColor = Dlg.m_ColorGrid;
-		m_Doc.m_Graph.m_Grid = Dlg.m_CheckGrid;
-
-		
-		m_Doc.m_ViewWnd.m_ViewGraph.m_DataAllColor = Dlg.m_ColorRes;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_LineAll = Dlg.m_CheckResLine;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_PointsAll = Dlg.m_CheckResPoints;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_SizePointsAll = Dlg.m_SizePointsRes;
-		
-		m_Doc.m_ViewWnd.m_ViewGraph.m_GridColor = Dlg.m_ColorGrid;
-		m_Doc.m_ViewWnd.m_ViewGraph.m_Grid = Dlg.m_CheckGrid;
-
-		if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd)) m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
-		
-		
-		CWinApp* App = AfxGetApp();
-		App->WriteProfileInt("COLOR","1",(UINT) m_Doc.m_Graph.m_DataAllColor);
-		App->WriteProfileInt("COLOR","2",(UINT) m_Doc.m_Graph.m_DataShortColor);
-		App->WriteProfileInt("COLOR","3",(UINT) m_Doc.m_Graph.m_GridColor);
-		
-		App->WriteProfileInt("SettingsGraph","LineAll", (UINT) m_Doc.m_Graph.m_LineAll);
-		App->WriteProfileInt("SettingsGraph","PointsAll", (UINT) m_Doc.m_Graph.m_PointsAll);
-		App->WriteProfileInt("SettingsGraph","SizePointsAll", (UINT) m_Doc.m_Graph.m_SizePointsAll);
-
-		App->WriteProfileInt("SettingsGraph","LineShort", (UINT) m_Doc.m_Graph.m_LineShort);
-		App->WriteProfileInt("SettingsGraph","PointsShort", (UINT) m_Doc.m_Graph.m_PointsShort);
-		App->WriteProfileInt("SettingsGraph","SizePointsShort", (UINT) m_Doc.m_Graph.m_SizePointsShort);
-		
-		App->WriteProfileInt("SettingsGraph","Grid", (UINT) m_Doc.m_Graph.m_Grid);
-		
-		m_Doc.m_Graph.ReDrawAll();
-		*/
 		}// end IDOK
 	
-	else 
-		{
-		//AfxMessageBox("IDCANCEL");
-		}
-
 	::EnableWindow(m_Doc.m_ViewWnd.m_hWnd, TRUE);
 	::EnableWindow(m_pRegionWnd->m_hWnd, TRUE);
 	
@@ -1373,14 +1204,12 @@ void CMainFrame::OnGraphicsSettingsForViewer()
 
 void CMainFrame::OnUpdateGraphicsSettingsForViewer(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd)) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);	
 }
 
 void CMainFrame::OnFileSaveAsEasyplotMc() 
 {
-	// TODO: Add your command handler code here
 	m_Doc.m_TypeFile = m_Doc.EasyPlotMC; 
 	m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
 	WindowSaveAsOpen(this);		
@@ -1394,15 +1223,13 @@ void CMainFrame::OnUpdateFileSaveAsEasyplotMc(CCmdUI* pCmdUI)
 
 void CMainFrame::OnSettingsFitable() 
 {
-	// TODO: Add your command handler code here
 	CFiTableDlg dlg((CWnd*) this);
-		dlg.m_pFiTable=&m_Doc.m_ThrComm.FiTable;
+	dlg.m_pFiTable=&m_Doc.m_ThrComm.FiTable;
 	dlg.DoModal();	
 }
 
 void CMainFrame::OnFileSaveAsOrigin() 
 {
-	// TODO: Add your command handler code here
 	m_Doc.m_TypeFile = m_Doc.Origin; 
 	m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
 	WindowSaveAsOpen(this);	
@@ -1410,21 +1237,16 @@ void CMainFrame::OnFileSaveAsOrigin()
 
 void CMainFrame::OnUpdateFileSaveAsOrigin(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(CRegion::m_NReg > 0) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);	
 }
 
 void CMainFrame::OnProgramDxpsTable() 
 {
-//CDxpsDlg dlg;
-//dlg.DoModal();
-	// TODO: Add your command handler code here
 	if(::IsWindow(m_pDxpsDlg->m_hWnd))
 		{	m_pDxpsDlg->ShowWindow(SW_SHOWNORMAL);
 			::SetFocus(m_pDxpsDlg->m_hWnd);
 		}
-
 }
 
 void CMainFrame::OnUpdateProgramDxpsTable(CCmdUI* pCmdUI) 
@@ -1453,14 +1275,12 @@ LRESULT CMainFrame::OnPostCreateWindow(WPARAM WParam, LPARAM LParam)
 
 void CMainFrame::OnAbout() 
 {
-CDlgAbout dlg;
-dlg.DoModal();	
+	CDlgAbout dlg;
+	dlg.DoModal();	
 }
 
 BOOL CMainFrame::OnEraseBkgnd(CDC* pDC) 
 {
-	// TODO: Add your message handler code here and/or call default
-	
 	return 0;//CFrameWnd::OnEraseBkgnd(pDC);
 }
 
@@ -1627,7 +1447,6 @@ m_Graph.ShowWindow(SW_HIDE);
 if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	{
 	m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
-//	m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
 	::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
 	m_Doc.m_ViewWnd.DestroyWindow();
 	}
@@ -1680,39 +1499,33 @@ SetWindowText(m_Doc.m_WindowCaption);
 m_Doc.CheckDocType();
 if(m_Doc.m_DocType==m_Doc.XPS)
 	{
-	//if( !(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd)) ) 
 	CRegion *pReg;
 	if(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd))
-	//	{
-	//else
-		{	
+	{	
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ 
 			SetNewRegionItemForListView(m_pRegionWnd->m_pListRegionWnd, pReg);
 			if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
 			}
-		}
+	}
 
-	if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
-		{
+	if( ::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) )
+	{
 		char str[32];
 		sprintf(str, "No Comments");
 		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
 									0, (LPARAM) str);
 		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
 									0, (LPARAM) str);
-		}	
-
-
-	//	}// end if(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd))
+	}	
 
 	// С какого региона начинать
-	///*
+	
 	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-		{
+	{
 		if(pReg->m_NDataOutCurr != 0) { m_Doc.m_ThrComm.pRegNow = pReg;	break;}
-		}
-	//*/
+	}
+
 	OnRegions();
 
 	SetNewTIME(&m_Doc.m_ThrComm.TIME);

@@ -97,7 +97,6 @@ else
 		sprintf(m_WindowCaption, "%s - %s", theApp.m_pMainFrame->AppTitle, "[unsaved]");
 		theApp.m_pMainFrame->SetWindowText(m_WindowCaption);
 		}
-
 	}
 return m_DocType;
 }
