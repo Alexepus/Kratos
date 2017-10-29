@@ -237,97 +237,69 @@ item.iImage=Image;
 item.mask = LVIF_IMAGE;
 if(::IsWindow(pList->m_hWnd))
 	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-	//::PostMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 }
-/*
-void RemoveIconForReg(CListRegionWnd* pList, CRegion* pReg)
-{
-LV_ITEM item;
-memset(&item, 0, sizeof(LV_ITEM));
-item.iItem = pReg->ID;
-item.iSubItem=0;
-item.iImage=0;
-item.mask = LVIF_IMAGE;
-if(::IsWindow(pList->m_hWnd))
-	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-}
-*/
+
 void SetNewRegionItemForListView(CListRegionWnd* pList, CRegion* pReg)
 {
 LV_ITEM item;
 memset(&item, 0, sizeof(LV_ITEM));
 item.iItem = pList->GetItemCount();
-//if(item.iItem == 0 ) item.state = (LVIS_CUT);
-//else item.state = 0;
+
 item.iImage=0;
 item.mask= (LVIF_TEXT | LVIF_STATE | LVIF_IMAGE );
-//item.mask= (LVIF_STATE );
+
 item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
 item.iSubItem=0;
 char s[5];
 
-
 sprintf(s, "R%i",pReg->ID+1);
 item.pszText=s;
 item.cchTextMax= strlen(item.pszText);
-//pList->InsertItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_INSERTITEM, 0, (LPARAM) &item);
 				
 item.iSubItem = 1;
 item.pszText = pReg->str.KE_BE;
 item.cchTextMax = strlen(pReg->str.KE_BE);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 2;
 item.pszText = pReg->str.Name_h_nu;
 item.cchTextMax = strlen(pReg->str.Name_h_nu);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
-
 item.iSubItem = 3;
-//item.mask=LVIF_TEXT;
-//item.stateMask = 0;
 item.pszText = pReg->str.HV;
 item.cchTextMax = strlen(pReg->str.HV);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 				
 item.iSubItem = 4;
 item.pszText = pReg->str.KE_Start;
 item.cchTextMax = strlen(pReg->str.KE_Start);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 5;
 item.pszText = pReg->str.KE_End;
 item.cchTextMax = strlen(pReg->str.KE_End);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 6;
 item.pszText = pReg->str.Step;
 item.cchTextMax = strlen(pReg->str.Step);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 7;
 item.pszText = pReg->str.N_;
 item.cchTextMax = strlen(pReg->str.N_);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 8;
 item.pszText = pReg->str.Curr_N;
 item.cchTextMax = strlen(pReg->str.Curr_N);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 9;
 item.pszText = pReg->str.Time;
 item.cchTextMax = strlen(pReg->str.Time);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 
 item.iSubItem = 10;
@@ -338,7 +310,6 @@ else
 	item.pszText = NullComments;
 
 item.cchTextMax = strlen(pReg->str.Comments);
-//pList->SetItem(&item);
 ::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 }
 //===============
@@ -349,59 +320,46 @@ LV_ITEM item;
 memset(&item, 0, sizeof(LV_ITEM));
 item.iItem = pReg->ID;
 item.iSubItem=0;
-//item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
-//item.state = (LVIS_SELECTED | LVIS_FOCUSED);
 char s[5];
 sprintf(s, "R%i",pReg->ID+1);
 item.pszText=s;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::SendMessage(hWnd, LVM_SETITEMSTATE, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 1;
 item.pszText = pReg->str.KE_BE;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 				
 item.iSubItem = 2;
 item.pszText = pReg->str.Name_h_nu;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 3;
 item.pszText = pReg->str.HV;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 4;
 item.pszText = pReg->str.KE_Start;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 5;
 item.pszText = pReg->str.KE_End;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 6;
 item.pszText = pReg->str.Step;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 7;
 item.pszText = pReg->str.N_;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 8;
 item.pszText = pReg->str.Curr_N;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 9;
 item.pszText = pReg->str.Time;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 
 item.iSubItem = 10;
 char *Comments="Comments", *NullComments="";
@@ -410,7 +368,6 @@ if(strcmp(pReg->str.Comments,Comments))
 else
 	item.pszText = NullComments;
 ::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-//::PostMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
 }
 //=====================
 
@@ -536,15 +493,8 @@ void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSing
 if(tsLock.IsLocked())
 { 
 	tsLock.Unlock();
-	//LogFile("UnLock", __FILE__, __LINE__);
 }
-/*if(!UserStop)
-{
-char *str="Abnormal thread stop.\nSave current \"Kratos.log\" file in other location and show it to the developer.";
-LogFile(str);
-AfxMessageBox(str);
-}*/
-//SetIconForReg(pList, pReg, 0);
+
 ::SendMessage(pMainFrame->m_hToolBar, TB_CHECKBUTTON  , 
 							(WPARAM) ID_PROGRAMM_START, (LPARAM) MAKELONG(FALSE, 0));
 ::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
@@ -554,15 +504,7 @@ AfxMessageBox(str);
 
 HMENU	SysMenu = ::GetSystemMenu(pMainFrame->m_hWnd, FALSE);
 ::EnableMenuItem(SysMenu, SC_CLOSE, MF_ENABLED);
-/*
-if(pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
-	{	
-	if(pReg->m_NDataOutCurr > 0)
-		{
-		pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
-		pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOutCurr;
-		}
-	}*/
+
 pMainFrame->m_Doc.m_Graph.ReDrawAll();
 
 pMainFrame->m_StartStop = pMainFrame->Start;
@@ -606,8 +548,7 @@ void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
 char TimeStr[64];
 SetNewTIME(&pMainFrame->m_Doc.m_ThrComm.TIME);
 TIME2Str(pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-//::SendMessage(pMainFrame->m_hStatusBar, SB_SETTEXT, 
-//							2, (LPARAM) (LPSTR) TimeStr);
+
 ::PostMessage(pMainFrame->m_hStatusBar, SB_SETTEXT, 
 							2, (LPARAM) (LPSTR) TimeStr);
 
@@ -652,80 +593,6 @@ if(TIME>=0)
 	sprintf(str, "%.2i:%.2i:%.2i",hh,mm,ss);
 else
 	sprintf(str, "-%.2i:%.2i:%.2i",hh,mm,ss);
-}
-
-
-//========
-void SaveStyle(HWND hWnd)
-{
-DWORD Style[]={WS_BORDER,WS_CAPTION,WS_CHILD,WS_CLIPCHILDREN,WS_CLIPSIBLINGS,WS_DISABLED,
-							WS_DLGFRAME,WS_GROUP,WS_HSCROLL,WS_VSCROLL,WS_MAXIMIZE,WS_MINIMIZE,
-							WS_MAXIMIZEBOX,WS_MINIMIZEBOX,WS_OVERLAPPED,WS_POPUP,WS_SYSMENU,
-							WS_TABSTOP,WS_THICKFRAME,WS_VISIBLE,
-							LVS_ALIGNLEFT,LVS_ALIGNTOP,LVS_AUTOARRANGE,LVS_EDITLABELS,
-							LVS_ICON,LVS_LIST,LVS_NOCOLUMNHEADER,LVS_NOLABELWRAP,
-							LVS_NOSCROLL,LVS_NOSORTHEADER,LVS_OWNERDRAWFIXED,LVS_REPORT,
-							LVS_SHAREIMAGELISTS,LVS_SHOWSELALWAYS,LVS_SINGLESEL,
-							LVS_SMALLICON,LVS_SORTASCENDING,LVS_SORTDESCENDING};
-
-
-char* StyleName[]={"WS_BORDER","WS_CAPTION","WS_CHILD","WS_CLIPCHILDREN","WS_CLIPSIBLINGS","WS_DISABLED",
-					"WS_DLGFRAME","WS_GROUP","WS_HSCROLL","WS_VSCROLL","WS_MAXIMIZE","WS_MINIMIZE",
-					"WS_MAXIMIZEBOX","WS_MINIMIZEBOX","WS_OVERLAPPED","WS_POPUP","WS_SYSMENU",
-					"WS_TABSTOP","WS_THICKFRAME","WS_VISIBLE",
-					"LVS_ALIGNLEFT","LVS_ALIGNTOP","LVS_AUTOARRANGE","LVS_EDITLABELS",
-					"LVS_ICON","LVS_LIST","LVS_NOCOLUMNHEADER","LVS_NOLABELWRAP",
-					"LVS_NOSCROLL","LVS_NOSORTHEADER","LVS_OWNERDRAWFIXED","LVS_REPORT",
-					"LVS_SHAREIMAGELISTS","LVS_SHOWSELALWAYS","LVS_SINGLESEL",
-					"LVS_SMALLICON","LVS_SORTASCENDING","LVS_SORTDESCENDING"};
-
-DWORD ExStyle[]={WS_EX_ACCEPTFILES,WS_EX_CLIENTEDGE,
-			WS_EX_CONTEXTHELP,WS_EX_CONTROLPARENT,WS_EX_DLGMODALFRAME,
-			WS_EX_LEFT,WS_EX_LEFTSCROLLBAR,WS_EX_LTRREADING,WS_EX_MDICHILD,
-			WS_EX_NOPARENTNOTIFY,WS_EX_RIGHT,WS_EX_RIGHTSCROLLBAR,WS_EX_RTLREADING,
-			WS_EX_STATICEDGE,WS_EX_TOOLWINDOW,WS_EX_TOPMOST,
-			WS_EX_TRANSPARENT,WS_EX_WINDOWEDGE,
-			LVS_EX_CHECKBOXES,
-			LVS_EX_FULLROWSELECT,LVS_EX_GRIDLINES,LVS_EX_HEADERDRAGDROP,
-			LVS_EX_ONECLICKACTIVATE,
-			LVS_EX_SUBITEMIMAGES,LVS_EX_TRACKSELECT,
-			LVS_EX_TWOCLICKACTIVATE};
-
-char* ExStyleName[]={"WS_EX_ACCEPTFILES","WS_EX_CLIENTEDGE",
-			"WS_EX_CONTEXTHELP","WS_EX_CONTROLPARENT","WS_EX_DLGMODALFRAME",
-			"WS_EX_LEFT","WS_EX_LEFTSCROLLBAR","WS_EX_LTRREADING","WS_EX_MDICHILD",
-			"WS_EX_NOPARENTNOTIFY","WS_EX_RIGHT","WS_EX_RIGHTSCROLLBAR","WS_EX_RTLREADING",
-			"WS_EX_STATICEDGE","WS_EX_TOOLWINDOW","WS_EX_TOPMOST",
-			"WS_EX_TRANSPARENT","WS_EX_WINDOWEDGE",
-			"LVS_EX_CHECKBOXES",
-			"LVS_EX_FULLROWSELECT","LVS_EX_GRIDLINES","LVS_EX_HEADERDRAGDROP",
-			"LVS_EX_ONECLICKACTIVATE",
-			"LVS_EX_SUBITEMIMAGES","LVS_EX_TRACKSELECT",
-			"LVS_EX_TWOCLICKACTIVATE"};
-
-
-FILE* fp;
-fp=fopen("Stiles.txt","w");
-if(!fp) {AfxMessageBox("Can't open file"); return;}
-fprintf(fp,"STYLE:\n");
-LONG style = ::GetWindowLong(hWnd, GWL_STYLE);
-int i,N;
-N=sizeof(Style)/sizeof(DWORD);
-for(i=0; i<N; ++i)
-	{
-	if(style & Style[i]) fprintf(fp,"\n %s", StyleName[i]);
-	}
-
-fprintf(fp,"\n\n\n EX STYLE:\n");
-style = ::GetWindowLong(hWnd, GWL_EXSTYLE);
-N=sizeof(ExStyle)/sizeof(DWORD);
-for(i=0; i<N; ++i)
-	{
-	if(style & ExStyle[i]) fprintf(fp,"\n %s", ExStyleName[i]);
-	}
-
-AfxMessageBox("File write OK");
-fclose(fp);
 }
 
 long GetRegisterHVCodeFromHV(double HV)

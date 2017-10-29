@@ -44,15 +44,11 @@ void UpdateTextItem(HWND hWnd, CRegion* pReg);
 
 void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image);
 
-//void RemoveIconForReg(CListRegionWnd* pList, CRegion* pReg);
-
 int FindSelectedItem(HWND hWnd);
 #define USER_STOP 1
 void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CSingleLock &tsLock, BOOL UserStop=FALSE);
 void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSingleLock &tsLock, BOOL UserStop=FALSE);
 void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData);
-
-void SaveStyle(HWND hWnd);
 
 int D2I(double d);
 double I2D(int i);
