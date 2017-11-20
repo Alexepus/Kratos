@@ -36,7 +36,12 @@ BOOL ReadLOGFONTFromIniFile(LPCTSTR lpszSection, LOGFONT* LogFont);
 BOOL WriteLOGFONTToIniFile(LPCTSTR lpszSection, LOGFONT* LogFont);
 BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color);
 
-BOOL NewOreEditParamToReg(CRegion* pReg, CDialogParamRegion* pDlgParamReg);
+/**
+* \brief Применяет параметры региона, заданные пользователем, в модели региона
+* \param pReg Объект региона, в котором нужно изменить параметры
+* \param pDlgParamReg Диалог, в котором пользователь поменял параметры
+*/
+bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamReg);
 
 void SetNewRegionItemForListView(CListRegionWnd* pList, CRegion* pReg);
 

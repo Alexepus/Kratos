@@ -198,56 +198,48 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
 				if(m_pDlgParamReg->DoModal()==IDOK)
 					{
-					if(NewOreEditParamToReg(pReg, m_pDlgParamReg))
+					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
+					SetNewRegionItemForListView(m_pListRegionWnd, pReg);
+					if(pReg->m_DataIn.Off) SetIconForReg(m_pListRegionWnd, pReg, 2);
+					else SetIconForReg(m_pListRegionWnd, pReg, 0);
+					m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
+					if(m_pMainFrame->m_Doc.fpPrj)
 						{
-						SetNewRegionItemForListView(m_pListRegionWnd, pReg);
-						if(pReg->m_DataIn.Off) SetIconForReg(m_pListRegionWnd, pReg, 2);
-						else SetIconForReg(m_pListRegionWnd, pReg, 0);
-						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
-						if(m_pMainFrame->m_Doc.fpPrj)
-							{
-							CWaitCursor WCur;
+						CWaitCursor WCur;
 							
-							THRI_LOCK();
-							fclose(m_pMainFrame->m_Doc.fpPrj);
-							m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
-							if(!m_pMainFrame->m_Doc.fpPrj)
-								m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-							else 
-								{
-								SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
-								m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
-								m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-								}
-							THRI_UNLOCK();
-							} // end if(m_pMainFrame->m_Doc.fpPrj)
+						THRI_LOCK();
+						fclose(m_pMainFrame->m_Doc.fpPrj);
+						m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
+						if(!m_pMainFrame->m_Doc.fpPrj)
+							m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
+						else 
+							{
+							SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
+							m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
+							m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
+							}
+						THRI_UNLOCK();
+						} // end if(m_pMainFrame->m_Doc.fpPrj)
 			
 						
-						if( (::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
-							{
-							char str[32];
-							sprintf(str, "Region %i", pReg->ID+1);
-							::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
-														0, (LPARAM) str);
-							::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
-														0, (LPARAM) pReg->m_DataIn.Comments);
-							}	
-						
-						
-						char TimeStr[64];
-						SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-						TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-						::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT, 
-							2, (LPARAM) (LPSTR) TimeStr);
-
-						theApp.m_pMainFrame->m_Doc.CheckDocType();
-						} // end if(NewOreEditParamToReg(pReg, m_pDlgParamReg))
-					else 
+					if( ::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd) )
 						{
-						::MessageBox(m_pListRegionWnd->m_hWnd, "Can't alloc memory for region", "Attention", MB_OK);
-						delete pReg;
-						}			
+						char str[32];
+						sprintf(str, "Region %i", pReg->ID+1);
+						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
+													0, (LPARAM) str);
+						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
+													0, (LPARAM) pReg->m_DataIn.Comments);
+						}	
+						
+						
+					char TimeStr[64];
+					SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+					TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
+					::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT, 
+						2, (LPARAM) (LPSTR) TimeStr);
 
+					theApp.m_pMainFrame->m_Doc.CheckDocType();
 					} // end if(m_pDlgParamReg->DoModal()==IDOK)
 				else {delete pReg;} // OK!
 				
@@ -322,10 +314,8 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						if( (D2I(m_pDlgParamReg->m_KE_Start) != pReg->m_DataIn.KE_Start) || (D2I(m_pDlgParamReg->m_KE_End) != pReg->m_DataIn.KE_End) || (D2I(m_pDlgParamReg->m_Step)!=pReg->m_DataIn.Step))
 							{ ReWriteFile = TRUE;}
 
-						if(!NewOreEditParamToReg(pReg, m_pDlgParamReg))
-								::MessageBox(m_pListRegionWnd->m_hWnd, 
-														"Can't realloc memory for region.\n", "Attention", MB_OK);
-						else if(m_pMainFrame->m_Doc.fpPrj != NULL) 
+						SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
+						if(m_pMainFrame->m_Doc.fpPrj != NULL) 
 							{
 							CWaitCursor WCur;
 							m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;

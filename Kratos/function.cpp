@@ -87,30 +87,29 @@ BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color)
 	return FALSE;
 }
 
-//==============
-BOOL NewOreEditParamToReg(CRegion* pReg, CDialogParamRegion* pDlgParamReg)
+
+/**
+ * \brief Применяет параметры региона, заданные пользователем, в модели региона
+ * \param pReg Объект региона, в котором нужно изменить параметры
+ * \param pDlgParamReg Диалог, в котором пользователь поменял параметры
+ */
+bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamReg)
 {
-///*
-BOOL RETURN = TRUE;
 int i,k;
-int NBytes;
 int Step = D2I(pDlgParamReg->m_Step);
-//int N_Step = (((int) (10*pDlgParamReg->m_KE_End)) - ((int) (10*pDlgParamReg->m_KE_Start))) / Step;
 int N_Step = ( D2I(pDlgParamReg->m_KE_End)  - D2I(pDlgParamReg->m_KE_Start)) / Step;
 if(pReg->m_NewOreEdit==pReg->New)
 	{
 	pReg->m_NDataOut = N_Step+1;
 	pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
-	if(pReg->m_pDataOut == NULL) return FALSE;
+	if (pReg->m_pDataOut == NULL) 
+		return false;
 	for(i=0; i<pReg->m_NDataOut; ++i) 
 		{pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
 		 pReg->m_pDataOut[i].y = 0;}
 	}
 else if(pReg->m_NewOreEdit==pReg->Edit)
 	{
-	
-	
-	DATA_OUT* pNewDataOut=NULL;
 	int NNewDataOut = N_Step+1;
 	int KE_Start = D2I(pDlgParamReg->m_KE_Start);
 	int KE_End = D2I(pDlgParamReg->m_KE_End);
@@ -118,25 +117,23 @@ else if(pReg->m_NewOreEdit==pReg->Edit)
 	int del_KE_End = abs(pReg->m_DataIn.KE_End - KE_End);
 	int NewArrayBegin = 0;
 	int OldArrayBegin = 0;
-	//int NewArrayEnd = NNewDataOut;
-	//int OldArrayEnd = pReg->m_NDataOut;
-	NBytes = NNewDataOut*sizeof(DATA_OUT);
-	pNewDataOut = (DATA_OUT*) malloc(NBytes); 
-	if(pNewDataOut==NULL) return FALSE;
+	int NBytes = NNewDataOut * sizeof(DATA_OUT);
+	auto pNewDataOut = (DATA_OUT*)malloc(NBytes);
+	if (pNewDataOut == NULL) return false;
 	memset(pNewDataOut, 0, NBytes);
-	for(i=0; i<NNewDataOut; ++i) pNewDataOut[i].x = KE_Start + i*Step;
+	for (i = 0; i<NNewDataOut; ++i) 
+		pNewDataOut[i].x = KE_Start + i*Step;
 	if(pReg->m_DataIn.Curr_N>0 || pReg->m_NDataOutCurr > 0)
 		{
-		
 		if(pReg->m_DataIn.KE_Start < KE_Start) 
 			{
 			OldArrayBegin = del_KE_Start/Step;
 			pReg->m_NDataOutCurr -= OldArrayBegin;
-			if(pReg->m_NDataOutCurr < 0) pReg->m_NDataOutCurr = 0;//AfxMessageBox("pReg->m_NDataOutCurr < 0");
-			//else AfxMessageBox("pReg->m_NDataOutCurr >= 0");
+			if(pReg->m_NDataOutCurr < 0) pReg->m_NDataOutCurr = 0;
 			if(KE_Start > pReg->m_DataIn.KE_End) 
-				{OldArrayBegin = pReg->m_NDataOut;
-				 pReg->m_NDataOutCurr = 0;
+				{
+				OldArrayBegin = pReg->m_NDataOut;
+				pReg->m_NDataOutCurr = 0;
 				}
 			} // end if(pReg->m_DataIn.KE_Start < KE_Start) 
 		else if(pReg->m_DataIn.KE_Start > KE_Start) 
@@ -156,36 +153,26 @@ else if(pReg->m_NewOreEdit==pReg->Edit)
 				if(pReg->m_DataIn.Curr_N > pReg->m_DataIn.N_) 
 					pReg->m_DataIn.Curr_N = pReg->m_DataIn.N_;
 				if(pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegEdit==pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow)	
-					//if (pRegEdit == pRegNow)
 					pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow = CRegion::GetNext(pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow);
 			}
 		
-		//if(pReg->m_DataIn.KE_End < KE_End) NewArrayBegin = del_KE_Start/Step;
 		for(i=OldArrayBegin, k=NewArrayBegin; i<pReg->m_NDataOut && k<NNewDataOut; ++i, ++k)
-			{pNewDataOut[k].x = pReg->m_pDataOut[i].x; 
-			pNewDataOut[k].y = pReg->m_pDataOut[i].y;}
+			{
+			pNewDataOut[k].x = pReg->m_pDataOut[i].x;
+			pNewDataOut[k].y = pReg->m_pDataOut[i].y;
+			}
 		} // end if(pReg->m_DataIn.Curr_N>0)
 	else pReg->m_NDataOutCurr=0;  // else if(pReg->m_DataIn.Curr_N==0)
-	
 	
 	free(pReg->m_pDataOut);
 	pReg->m_pDataOut = pNewDataOut;
 	pReg->m_NDataOut = NNewDataOut;
-	//*/
-	
 	} // end else if(pReg->m_NewOreEdit==pReg->Edit)
 	
-	
-//pReg->m_DataIn.HV = (int) (10*pDlgParamReg->m_HV);
 pReg->m_DataIn.HV = D2I(pDlgParamReg->m_HV);
-if(RETURN)
-	{//pReg->m_DataIn.KE_Start = (int) (10*pDlgParamReg->m_KE_Start);
-	 pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
-	 //pReg->m_DataIn.KE_End = (int) (10*pDlgParamReg->m_KE_End);}
-	 pReg->m_DataIn.KE_End = D2I(pDlgParamReg->m_KE_End);
-	}
+pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
+pReg->m_DataIn.KE_End = D2I(pDlgParamReg->m_KE_End);
 
-//pReg->m_DataIn.Step = (int) (10*pDlgParamReg->m_Step);
 pReg->m_DataIn.Step = D2I(pDlgParamReg->m_Step);
 pReg->m_DataIn.N_ = pDlgParamReg->m_N;
 pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
@@ -195,8 +182,7 @@ pReg->m_DataIn.Off = pDlgParamReg->m_Off;
 if(pDlgParamReg->m_KE_BE == pReg->m_DataIn.KE)
 	{ pReg->m_DataIn.KE_BE = pReg->m_DataIn.KE;
 		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
-																+ D2I(100.0);	
-	 //pReg->m_DataIn.N_h_nu = 0;
+				+ D2I(100.0);	
 	}
 else 
 	{pReg->m_DataIn.KE_BE = pReg->m_DataIn.BE;
@@ -205,12 +191,6 @@ else
 																+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
 																+ D2I(100.0);
 	}
-
-//char ss[64];
-//sprintf(ss, "DeltaVolt = %.3lf", I2D(pReg->m_DataIn.DeltaVolts));
-//AfxMessageBox(ss);
-
-//sprintf(pReg->m_DataIn.Comments, "%s", "Comments");
 
 sprintf(pReg->str.HV, "%.0lf", I2D(pReg->m_DataIn.HV) );
 sprintf(pReg->str.KE_Start, "%.3lf", I2D(pReg->m_DataIn.KE_Start) );
@@ -223,8 +203,9 @@ if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)  sprintf(pReg->str.KE_BE, "%s", "K
 else  sprintf(pReg->str.KE_BE, "%s", "BE");
 sprintf(pReg->str.Name_h_nu, "%s", pReg->h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
 pReg->str.Comments = pReg->m_DataIn.Comments;
-return RETURN;
+return true;
 }
+
 //============
 void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image)
 {
