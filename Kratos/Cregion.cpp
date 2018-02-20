@@ -31,24 +31,12 @@ void CRegion::CreateNewRegion()
 	m_DataIn.KE_BE = m_DataIn.KE;
 	m_DataIn.N_h_nu = 0; 
 	m_DataIn.DeltaVolts = 0;
+	m_DataIn.Priority = 10;
 
 	m_NDataOut=0;
 	m_NDataOutCurr=0;
 
-	sprintf(m_DataIn.Comments, "%s", "");
-	sprintf(str.HV, "%.0lf", I2D(m_DataIn.HV));
-	sprintf(str.KE_Start, "%.3lf", I2D(m_DataIn.KE_Start));
-	sprintf(str.KE_End, "%.3lf", I2D(m_DataIn.KE_End));
-	sprintf(str.Step, "%.3lf", I2D(m_DataIn.Step));
-	sprintf(str.Time, "%.2lf", I2D(m_DataIn.Time));
-	sprintf(str.N_, "%i", m_DataIn.N_);
-	if(m_DataIn.KE_BE == m_DataIn.KE) 
-		sprintf(str.KE_BE, "%s", "KE");
-	else  
-		sprintf(str.KE_BE, "%s", "BE");
-	sprintf(str.Name_h_nu, "%s", h_nu_Info.strName_h_nu[m_DataIn.N_h_nu]);
-	sprintf(str.Curr_N, "%i", m_DataIn.Curr_N);
-	str.Comments = m_DataIn.Comments;
+	UpdateStrValues();	
 
 	m_NDataOut = 0;
 	m_pDataOut = NULL;
@@ -64,6 +52,28 @@ void CRegion::CreateNewRegion()
 	}
 	// Initial KE, HV, and over data of region
 }
+
+/**
+* \brief Обновить значения в структуре STR_PAR str из данных DATA_IN m_DataIn
+*/
+void CRegion::UpdateStrValues()
+{
+	sprintf(str.HV, "%.0lf", I2D(m_DataIn.HV));
+	sprintf(str.KE_Start, "%.3lf", I2D(m_DataIn.KE_Start));
+	sprintf(str.KE_End, "%.3lf", I2D(m_DataIn.KE_End));
+	sprintf(str.Step, "%.3lf", I2D(m_DataIn.Step));
+	sprintf(str.Time, "%.2lf", I2D(m_DataIn.Time));
+	sprintf(str.N_, "%i", m_DataIn.N_);
+	sprintf(str.Curr_N, "%i", m_DataIn.Curr_N);
+	if (m_DataIn.KE_BE == m_DataIn.KE) 
+		sprintf(str.KE_BE, "%s", "KE");
+	else  
+		sprintf(str.KE_BE, "%s", "BE");
+	sprintf(str.Name_h_nu, "%s", h_nu_Info.strName_h_nu[m_DataIn.N_h_nu]);
+	str.Comments = m_DataIn.Comments;
+	sprintf(str.Priority, "%i", m_DataIn.Priority);
+}
+
 
 CRegion::~CRegion()
 {

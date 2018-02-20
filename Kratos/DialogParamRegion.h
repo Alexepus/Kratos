@@ -81,6 +81,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButtonResetAll();
+	int m_Priority;
 };
 
 //{{AFX_INSERT_LOCATION}}

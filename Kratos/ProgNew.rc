@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Russian resources
+// Russian (Russia) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
-#ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -66,18 +64,24 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Icon3.ico"
+
 IDI_ICON_FOR_REG        ICON                    "res\\iconforreg.ico"
+
 IDI_ICON_FOR_REG_NULL   ICON                    "res\\icon_for.ico"
+
 IDI_ICON_FOR_REG_ONOFF  ICON                    "res\\iconOnOff.ico"
+
 IDI_ICON_DXPS           ICON                    "res\\DXPS.ico"
+
 IDI_ICON_XPS            ICON                    "res\\XPS.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENUEX 
+IDR_MAINFRAME MENUEX
 BEGIN
     POPUP "&File",                          65535,MFT_STRING,MFS_ENABLED
     BEGIN
@@ -135,23 +139,28 @@ END
 //
 
 IDR_BITMAPTOOLBAR       BITMAP                  "res\\Toolbar.bmp"
+
 IDB_BITMAP_ICONFORREG   BITMAP                  "res\\Iconforeg.bmp"
+
 IDB_BITMAP_OFF          BITMAP                  "res\\bitmap1.bmp"
+
 IDB_BITMAP_CUR          BITMAP                  "res\\bmp00001.bmp"
+
 IDB_BITMAP_DEF          BITMAP                  "res\\bmp00002.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_DIALOG_PARAM_REGION DIALOGEX 0, 0, 340, 221
+IDD_DIALOG_PARAM_REGION DIALOGEX 0, 0, 340, 224
 STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Region"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,99,197,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,182,197,50,14
+    DEFPUSHBUTTON   "OK",IDOK,100,203,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,183,203,50,14
     EDITTEXT        IDC_EDIT_HV,96,20,37,14,ES_AUTOHSCROLL | ES_NUMBER | WS_GROUP
     PUSHBUTTON      "Table",IDC_BUTTON_HV_TABLE,138,21,32,13
     EDITTEXT        IDC_EDIT_KE_BEGIN,96,46,76,14,ES_AUTOHSCROLL | ES_NUMBER
@@ -159,7 +168,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_STEP,96,95,76,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_N,96,120,76,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_TIME,96,145,76,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_COMMENTS,96,170,192,14,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    EDITTEXT        IDC_EDIT_COMMENTS,96,170,192,22,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Start ,   [ eV ]",IDC_STATIC_PARAM_KE_BEGIN,9,47,81,12,NOT WS_GROUP
     LTEXT           "Finish ,  [ eV ]",IDC_STATIC_PARAM_KE_END,9,71,81,11,NOT WS_GROUP
     LTEXT           "Step ,    [ eV ]",IDC_STATIC_PARAM_STEP,9,96,81,12,NOT WS_GROUP
@@ -173,7 +182,7 @@ BEGIN
     GROUPBOX        "",IDC_STATIC_STEP,6,89,170,23
     GROUPBOX        "",IDC_STATIC_N,6,114,170,23
     GROUPBOX        "",IDC_STATIC_TIME,6,139,170,23
-    GROUPBOX        "",IDC_STATIC_COMMENTS,6,164,326,23
+    GROUPBOX        "",IDC_STATIC_COMMENTS,6,164,326,32
     GROUPBOX        "",IDC_STATIC_KEBE,189,14,137,22
     LTEXT           " HV ,     [ eV ]",IDC_STATIC_PARAM_HV1,7,22,81,11,NOT WS_GROUP
     CONTROL         "KE",IDC_RADIO_KE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,242,22,25,10
@@ -182,7 +191,7 @@ BEGIN
     GROUPBOX        "",IDC_STATIC_ANODE,189,39,137,23
     LTEXT           "Anode :",IDC_STATIC_ANODE_TXT,197,47,26,8
     COMBOBOX        IDC_COMBO_ANODE,242,46,81,61,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "",IDC_STATIC_ONOFF,190,89,137,22
+    GROUPBOX        "",IDC_STATIC_ONOFF,190,89,143,22
     CONTROL         "On",IDC_RADIO_ON,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,243,97,25,10
     CONTROL         "Off",IDC_RADIO_OFF,"Button",BS_AUTORADIOBUTTON,284,97,25,10
     LTEXT           "On / Off",IDC_STATIC_ONOFF_TXT,196,97,27,8
@@ -190,9 +199,12 @@ BEGIN
     PUSHBUTTON      "Edit",IDC_BUTTON_COMMENTS_EDIT,295,171,32,13
     COMBOBOX        IDC_COMBO_HV,96,22,37,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Reset ALL Out Data",IDC_BUTTON_RESET_ALL,191,145,135,14
+    EDITTEXT        IDC_EDIT_PRIORITY,253,72,65,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Priority",IDC_STATIC_PARAM_KE_END2,202,75,46,9,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC_KE_END2,189,65,137,23
 END
 
-IDD_DLG_KE_END DIALOG  0, 0, 249, 122
+IDD_DLG_KE_END DIALOG 0, 0, 249, 122
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Attention"
 FONT 8, "MS Sans Serif"
@@ -209,7 +221,7 @@ BEGIN
     LTEXT           "Static",IDC_STATIC_CAPTION_SMALL,35,52,34,8,NOT WS_GROUP
 END
 
-IDD_DLG_MEASURE_OPT DIALOG  0, 0, 204, 189
+IDD_DLG_MEASURE_OPT DIALOG 0, 0, 204, 189
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Measuring Options"
 FONT 8, "MS Sans Serif"
@@ -235,7 +247,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,5,118,10
 END
 
-IDD_DLG_SETTINGS_FOR_CURVERS DIALOG  0, 0, 362, 146
+IDD_DLG_SETTINGS_FOR_CURVERS DIALOG 0, 0, 362, 146
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Settings for Curves"
 FONT 8, "MS Sans Serif"
@@ -275,7 +287,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_CURSOR_SAMPLE,305,81,40,30,ES_AUTOHSCROLL | WS_DISABLED | NOT WS_TABSTOP
 END
 
-IDD_DLG_VIEWER_SET DIALOG  0, 0, 242, 141
+IDD_DLG_VIEWER_SET DIALOG 0, 0, 242, 141
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Viewer Settings"
 FONT 8, "MS Sans Serif"
@@ -305,7 +317,7 @@ BEGIN
     PUSHBUTTON      "Font ...",IDC_BUTTON_FONT_COLOR,129,76,45,15
 END
 
-IDD_DLG_FI_TABLE DIALOG  0, 0, 198, 213
+IDD_DLG_FI_TABLE DIALOG 0, 0, 198, 213
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fi Table"
 FONT 8, "MS Sans Serif"
@@ -315,7 +327,7 @@ BEGIN
     CONTROL         "List1",IDC_FI_LIST,"SysListView32",WS_BORDER | WS_TABSTOP,4,4,126,202
 END
 
-IDD_DIALOG_COMMENTS_EDIT DIALOG  0, 0, 296, 79
+IDD_DIALOG_COMMENTS_EDIT DIALOG 0, 0, 296, 79
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Comments"
 FONT 8, "MS Sans Serif"
@@ -325,7 +337,7 @@ BEGIN
     EDITTEXT        IDC_EDIT,3,2,289,49,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
 END
 
-IDD_DIALOG_PARAM_DXPS DIALOG  0, 0, 339, 198
+IDD_DIALOG_PARAM_DXPS DIALOG 0, 0, 339, 198
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "DXPS Parameters"
 FONT 8, "MS Sans Serif"
@@ -370,7 +382,7 @@ BEGIN
     COMBOBOX        IDC_COMBO_DXPSPAR_DIVISOR,147,15,27,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_DLG_HARDWARE DIALOG  0, 0, 169, 65
+IDD_DLG_HARDWARE DIALOG 0, 0, 169, 65
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Hardware Setup"
 FONT 8, "MS Sans Serif"
@@ -433,14 +445,14 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG_PARAM_REGION, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 333
         TOPMARGIN, 7
-        BOTTOMMARGIN, 214
+        BOTTOMMARGIN, 217
     END
 
     IDD_DLG_KE_END, DIALOG
@@ -566,25 +578,34 @@ BEGIN
     0
 END
 
-#endif    // Russian resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_PARAM_REGION AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MENU_DXPS_POPUP MENU 
+IDR_MENU_DXPS_POPUP MENU
 BEGIN
     POPUP "Root"
     BEGIN
@@ -711,7 +732,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_PROGNEW_DIALOG, DIALOG
     BEGIN
@@ -726,6 +747,14 @@ BEGIN
         LEFTMARGIN, 7
         TOPMARGIN, 7
         BOTTOMMARGIN, 197
+    END
+
+    IDD_CAM_SETUP_DLG, DIALOG
+    BEGIN
+    END
+
+    IDD_CAM_SETUP_HP_DLG, DIALOG
+    BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -768,7 +797,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

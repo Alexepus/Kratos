@@ -16,7 +16,7 @@ class CMainFrame;
 CListRegionWnd::CListRegionWnd()
 {
 	m_iniSectionName = "ListRegionWnd";
-	char* str[] = {"Region","KE/BE","Anode","HV, [eV]","Start, [eV]","Finish, [eV]","Step, [eV]","N","n","Time, [sec]","Comments"};
+	char* str[] = {"Region","KE/BE","Anode","HV, [eV]","Start, [eV]","Finish, [eV]","Step, [eV]","N","n","Time, [sec]","Priority","Comments"};
 	N_Column = sizeof(str)/sizeof(char*);
 	for (int i = 0; i < N_Column; ++i)
 		m_columnsNames.push_back(str[i]);
@@ -147,7 +147,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				pReg->m_NDataOutCurr = 0;
 				pReg->m_DataIn.Curr_N = 0;
 				SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
-				sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
+				pReg->UpdateStrValues();
 				UpdateTextItem(m_hWnd, pReg);
 			}
 		}

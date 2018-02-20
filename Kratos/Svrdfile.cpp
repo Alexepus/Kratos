@@ -258,20 +258,10 @@ else {AfxMessageBox("This file is not a project file."); throw (8);}
 					break;
 					}
 				}
-			//sprintf(pReg->m_DataIn.Comments, "%s", "Comments");
-			sprintf(pReg->str.HV, "%.0lf", I2D(pReg->m_DataIn.HV));
-			sprintf(pReg->str.KE_Start, "%.3lf", I2D(pReg->m_DataIn.KE_Start));
-			sprintf(pReg->str.KE_End, "%.3lf", I2D(pReg->m_DataIn.KE_End));
-			sprintf(pReg->str.Step, "%.3lf", I2D(pReg->m_DataIn.Step));
-			sprintf(pReg->str.Time, "%.2lf", I2D(pReg->m_DataIn.Time));
-			sprintf(pReg->str.N_, "%i", pReg->m_DataIn.N_);
-			sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
-			if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE) sprintf(pReg->str.KE_BE, "%s", "KE");
-			else  sprintf(pReg->str.KE_BE, "%s", "BE");
+			
 			if(pReg->m_DataIn.N_h_nu<0) pReg->m_DataIn.N_h_nu=0;
 			if(pReg->m_DataIn.N_h_nu>3) pReg->m_DataIn.N_h_nu=3;
-			sprintf(pReg->str.Name_h_nu, "%s", pReg->h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
-			pReg->str.Comments = pReg->m_DataIn.Comments;
+			pReg->UpdateStrValues();
 			}  // end if(pReg != NULL)
 		else
 			{

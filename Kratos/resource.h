@@ -55,6 +55,7 @@
 #define IDC_STATIC_PARAM_COMMENTS       1021
 #define IDC_STATIC_PARAM_HV1            1022
 #define IDC_EDIT_HV                     1023
+#define IDC_STATIC_PARAM_KE_END2        1024
 #define IDC_EDIT_KE_BEGIN               1025
 #define IDC_STATIC_HV                   1026
 #define IDC_STATIC_KE_BEGIN             1027
@@ -86,8 +87,11 @@
 #define IDC_RADIO                       1042
 #define IDC_RADIO_SMALL                 1042
 #define IDC_STATIC_ANODE2               1042
+#define IDC_EDIT_KE_END2                1042
+#define IDC_EDIT_PRIORITY               1042
 #define IDC_STATIC_CAPTION              1043
 #define IDC_EDIT_DXPSPAR_DELAY          1043
+#define IDC_STATIC_KE_END2              1043
 #define IDC_RADIO_OVER                  1044
 #define IDC_STATIC_BORDER               1045
 #define IDC_STATIC_BIG                  1046
@@ -287,7 +291,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        177
+#define _APS_NEXT_RESOURCE_VALUE        178
 #define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1162
 #define _APS_NEXT_SYMED_VALUE           114

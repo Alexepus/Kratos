@@ -31,6 +31,7 @@ class CMainFrame;
 
 CDialogParamRegion::CDialogParamRegion(CWnd* pParent /*=NULL*/)
 	: CDialog(CDialogParamRegion::IDD, pParent)
+	, m_Priority(0)
 {
 ///*
 	//{{AFX_DATA_INIT(CDialogParamRegion)
@@ -52,7 +53,7 @@ CDialogParamRegion::CDialogParamRegion(CWnd* pParent /*=NULL*/)
 void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-///*	
+	///*	
 	//{{AFX_DATA_MAP(CDialogParamRegion)
 	DDX_Control(pDX, IDC_COMBO_HV, m_ComboHV);
 	DDX_Text(pDX, IDC_EDIT_KE_BEGIN, m_KE_Start);
@@ -66,287 +67,246 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 	DDX_CBIndex(pDX, IDC_COMBO_ANODE, m_Anode);
 	DDX_Text(pDX, IDC_EDIT_TIME, m_Time);
 	DDV_MinMaxDouble(pDX, m_Time, 1.e-002, 50);
+	DDX_Text(pDX, IDC_EDIT_PRIORITY, m_Priority);
+	DDV_MinMaxInt(pDX, m_Priority, 1, 99);
 	//}}AFX_DATA_MAP
-//*/
-	if(!theApp.Ini.HighPressureMode.Value) //KRATOS
+	//*/
+	if (!theApp.Ini.HighPressureMode.Value) //KRATOS
 	{
 		DDX_Text(pDX, IDC_EDIT_HV, m_HV);
 		DDV_MinMaxDouble(pDX, m_HV, 1., 255.);
 	}
-	
+
 	double MinKE = -50.0;
 	double MaxKE = 1518;  //?????????????????????
 	double MinBegin;
 	double MaxEnd;
 	char MessageString[256];
-	HWND hWndCtrl;
 
+	if (pDX->m_bSaveAndValidate)
+	{
 
-
-
-	if(pDX->m_bSaveAndValidate)
-		{
-
-		if(m_KE_BE == m_pReg->m_DataIn.KE) {MinBegin = MinKE;  MaxEnd = MaxKE;}
+		if (m_KE_BE == m_pReg->m_DataIn.KE) { MinBegin = MinKE;  MaxEnd = MaxKE; }
 		else
-			{	MinBegin = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MaxKE;
-				MaxEnd = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MinKE;
-			}
-//		sprintf(MessageString,"MinBegin = %.10lf\nMaxEnd = %.10lf",MinBegin, MaxEnd);
-//		AfxMessageBox(MessageString);
+		{
+			MinBegin = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MaxKE;
+			MaxEnd = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MinKE;
+		}
 
+		HWND hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_HV);
 
-		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_HV);
-		
-		if(D2I(m_HV)%1000) 
-			{::MessageBox(this->m_hWnd, "HV must be integer", "Attention", MB_OK );
-			 sprintf(MessageString,"%.0lf",m_HV);
-			 ::SetWindowText(hWndCtrl, MessageString);
-			 pDX->Fail();
-			}		
-	/*
-		if((m_pReg->m_NewOreEdit==m_pReg->Edit) && ( I2D(m_pReg->m_DataIn.HV) != m_HV) && (m_pReg->m_DataIn.Curr_N > 0))
-			{sprintf(MessageString, "You can't change the HV.\nHV must be equal %.0lf",
-														I2D(m_pReg->m_DataIn.HV));
-			 ::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK );
-			 m_HV = I2D(m_pReg->m_DataIn.HV);
-			 //pDX->Fail();
-		 	}		
-	*/
-	//------
-		
-		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_STEP);
-		if(D2I(m_KE_Start + m_Step) > D2I(MaxEnd)) 
-			{
-			::MessageBox(this->m_hWnd, "Parametr Step (or Start) too large",
-					"Attention", MB_OK );
-			 
-			
-			sprintf(MessageString,"%.3lf",m_Step);
-			 ::SetWindowText(hWndCtrl, MessageString);
+		if (D2I(m_HV) % 1000)
+		{
+			::MessageBox(this->m_hWnd, "HV must be integer", "Attention", MB_OK);
+			sprintf(MessageString, "%.0lf", m_HV);
+			::SetWindowText(hWndCtrl, MessageString);
 			pDX->Fail();
-			}
-		//if((m_pReg->m_NewOreEdit==m_pReg->Edit) && ( ((double) m_pReg->m_DataIn.Step)/10 != m_Step) && (m_pReg->m_DataIn.Curr_N > 0))
-		if(D2I(m_Step)%25)
-			{::MessageBox(this->m_hWnd, "Step must be divisible by 0.025", "Attention", MB_OK );
-			 sprintf(MessageString,"%.3lf",m_Step);
-			 ::SetWindowText(hWndCtrl, MessageString);
-			 pDX->Fail();			
-			}
-//---------------		
-		
-		if(D2I(m_KE_Start) < D2I(MinBegin) || D2I(m_KE_Start) > D2I(MaxEnd - 0.024999999999))
-			{	hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
-				sprintf(MessageString, "Start must be within :\n\n  Min : %.3lf\n\n  Max : %.3lf", 
-																						MinBegin, MaxEnd - 0.025);
-			  ::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK );
-			 sprintf(MessageString,"%.3lf",m_KE_Start);
-			 ::SetWindowText(hWndCtrl, MessageString);
-				//if(m_KE_Start < MinBegin) hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
-				//else hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_END);
-			  pDX->Fail();			
-			}				
-		
-		if(D2I(m_KE_Start)%25)
-			{hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
-			 ::MessageBox(this->m_hWnd, "Start must be divisible by 0.025", "Attention", MB_OK );
-			 sprintf(MessageString,"%.3lf",m_KE_Start);
-			 ::SetWindowText(hWndCtrl, MessageString);
-			 pDX->Fail();			
-			}				
-		
-		//if((m_pReg->m_NewOreEdit==m_pReg->Edit) && (m_pReg->m_DataIn.Curr_N > 0) && (((double) m_pReg->m_DataIn.KE_Start)/10 != m_KE_Start))
-		if((m_pReg->m_NewOreEdit==m_pReg->Edit) 
-				&& (m_pReg->m_DataIn.Curr_N > 0 || m_pReg->m_NDataOutCurr > 0) 
-				&& ( I2D(m_pReg->m_DataIn.KE_Start) != m_KE_Start))
-			{
+		}
+
+		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_STEP);
+		if (D2I(m_KE_Start + m_Step) > D2I(MaxEnd))
+		{
+			::MessageBox(this->m_hWnd, "Parametr Step (or Start) too large",
+				"Attention", MB_OK);
+
+
+			sprintf(MessageString, "%.3lf", m_Step);
+			::SetWindowText(hWndCtrl, MessageString);
+			pDX->Fail();
+		}
+		if (D2I(m_Step) % 25)
+		{
+			::MessageBox(this->m_hWnd, "Step must be divisible by 0.025", "Attention", MB_OK);
+			sprintf(MessageString, "%.3lf", m_Step);
+			::SetWindowText(hWndCtrl, MessageString);
+			pDX->Fail();
+		}
+
+		if (D2I(m_KE_Start) < D2I(MinBegin) || D2I(m_KE_Start) > D2I(MaxEnd - 0.024999999999))
+		{
 			hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
-			if(m_pReg->m_DataIn.KE_Start > D2I(m_KE_Start))
-				{sprintf(MessageString, "Start must be more or equal %.3lf", 
-																							I2D(m_pReg->m_DataIn.KE_Start));
-				 ::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK );
-				 sprintf(MessageString,"%.3lf",m_KE_Start);
-			   ::SetWindowText(hWndCtrl, MessageString);
-				 pDX->Fail();			
-				}				
-			int del = abs( (int) ( (m_pReg->m_DataIn.KE_Start) - D2I(m_KE_Start) ) );
-			int N_St = abs( (int) ( ( I2D(m_pReg->m_DataIn.KE_Start)-m_KE_Start)/(m_Step) ) );
-			if( del % ( D2I(m_Step) ) )
-				{
+			sprintf(MessageString, "Start must be within :\n\n  Min : %.3lf\n\n  Max : %.3lf",
+				MinBegin, MaxEnd - 0.025);
+			::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK);
+			sprintf(MessageString, "%.3lf", m_KE_Start);
+			::SetWindowText(hWndCtrl, MessageString);
+			pDX->Fail();
+		}
+
+		if (D2I(m_KE_Start) % 25)
+		{
+			hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
+			::MessageBox(this->m_hWnd, "Start must be divisible by 0.025", "Attention", MB_OK);
+			sprintf(MessageString, "%.3lf", m_KE_Start);
+			::SetWindowText(hWndCtrl, MessageString);
+			pDX->Fail();
+		}
+
+		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+			&& (m_pReg->m_DataIn.Curr_N > 0 || m_pReg->m_NDataOutCurr > 0)
+			&& (I2D(m_pReg->m_DataIn.KE_Start) != m_KE_Start))
+		{
+			hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_BEGIN);
+			if (m_pReg->m_DataIn.KE_Start > D2I(m_KE_Start))
+			{
+				sprintf(MessageString, "Start must be more or equal %.3lf",
+					I2D(m_pReg->m_DataIn.KE_Start));
+				::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK);
+				sprintf(MessageString, "%.3lf", m_KE_Start);
+				::SetWindowText(hWndCtrl, MessageString);
+				pDX->Fail();
+			}
+			int del = abs((int)((m_pReg->m_DataIn.KE_Start) - D2I(m_KE_Start)));
+			int N_St = abs((int)((I2D(m_pReg->m_DataIn.KE_Start) - m_KE_Start) / (m_Step)));
+			if (del % (D2I(m_Step)))
+			{
 				double FirstStart;// = m_KE_Start + (N_Step+1)*m_Step;
 				double SecondStart;// = m_KE_Start + N_Step*m_Step;
-				if( I2D(m_pReg->m_DataIn.KE_Start) > m_KE_Start)
-					{
-					FirstStart = I2D(m_pReg->m_DataIn.KE_Start - (N_St+1) * D2I(m_Step) );
-					SecondStart = I2D(m_pReg->m_DataIn.KE_Start - (N_St) * D2I(m_Step) );
-					if(FirstStart < MinBegin) FirstStart = SecondStart;
-					}
+				if (I2D(m_pReg->m_DataIn.KE_Start) > m_KE_Start)
+				{
+					FirstStart = I2D(m_pReg->m_DataIn.KE_Start - (N_St + 1) * D2I(m_Step));
+					SecondStart = I2D(m_pReg->m_DataIn.KE_Start - (N_St)* D2I(m_Step));
+					if (FirstStart < MinBegin) FirstStart = SecondStart;
+				}
 				else
-					{
-					FirstStart = I2D(m_pReg->m_DataIn.KE_Start + N_St * D2I(m_Step) );
-					SecondStart = I2D(m_pReg->m_DataIn.KE_Start + (N_St+1) * D2I(m_Step) );
-					}
-				//if(BigEnd > MaxKE) BigEnd = SmallEnd;
+				{
+					FirstStart = I2D(m_pReg->m_DataIn.KE_Start + N_St * D2I(m_Step));
+					SecondStart = I2D(m_pReg->m_DataIn.KE_Start + (N_St + 1) * D2I(m_Step));
+				}
+
 				char sFirst[30];
 				char sSecond[30];
-				sprintf(sFirst,"%.3lf",FirstStart);
-				sprintf(sSecond,"%.3lf",SecondStart);
-				//CString
+				sprintf(sFirst, "%.3lf", FirstStart);
+				sprintf(sSecond, "%.3lf", SecondStart);
+
 				m_pDlgKEEnd = NULL;
-				m_pDlgKEEnd = new CDlgKEEnd((CWnd*) this);
-				if(m_pDlgKEEnd)
-					{	
+				m_pDlgKEEnd = new CDlgKEEnd((CWnd*)this);
+				if (m_pDlgKEEnd)
+				{
 					m_pDlgKEEnd->m_StaticBig += sFirst;
 					m_pDlgKEEnd->m_StaticSmall += sSecond;
-					//m_pDlgKEEnd->m_StaticCaption += "Parametr KE_end must be equal  KE_begin + integer * Step"; 
-					m_pDlgKEEnd->m_StaticCaption += "Parametr Start must be equal:"; 
+					m_pDlgKEEnd->m_StaticCaption += "Parametr Start must be equal:";
 					m_pDlgKEEnd->m_StaticCaptionBig += "Start = ";
 					m_pDlgKEEnd->m_StaticCaptionSmall += "Start = ";
-					if(m_pDlgKEEnd->DoModal() == IDOK)
-						{
-						if(m_pDlgKEEnd->m_Radio == 0) m_KE_Start = FirstStart; 
-						else if(m_pDlgKEEnd->m_Radio == 1) m_KE_Start = SecondStart;
-						else if(m_pDlgKEEnd->m_Radio == 2) pDX->Fail();
-						//AfxMessageBox("m_pDlgKEEnd->DoModal() == IDOK");
-						
-						HWND hWnd = ::GetDlgItem(this->m_hWnd,IDC_EDIT_KE_BEGIN);
+					if (m_pDlgKEEnd->DoModal() == IDOK)
+					{
+						if (m_pDlgKEEnd->m_Radio == 0) m_KE_Start = FirstStart;
+						else if (m_pDlgKEEnd->m_Radio == 1) m_KE_Start = SecondStart;
+						else if (m_pDlgKEEnd->m_Radio == 2) pDX->Fail();
+
+						HWND hWnd = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
 						char strWin[32];
-						sprintf(strWin, "%.3lf",m_KE_Start);
+						sprintf(strWin, "%.3lf", m_KE_Start);
 						::SetWindowText(hWnd, strWin);
 
-						}
-					delete m_pDlgKEEnd;
 					}
+					delete m_pDlgKEEnd;
 				}
-			} // end if((m_pReg->m_NewOreEdit==m_pReg->Edit) && (m_pReg->m_DataIn.Curr_N > 0))
-		
-//--------
-//ÏÎÑÌÎÒÐÅÒÜ ÃÄÅ ÏÅÐÅÂÛÄÅËßÅÒÑß ÏÀÌßÒÜ
-		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_END);
-		if(D2I(m_KE_End) > D2I(MaxEnd) || D2I(m_KE_End) < D2I(MinBegin + 0.025))
-			{sprintf(MessageString, "Finish must be within :\n\n  Min : %.3lf\n\n  Max : %.3lf", 
-																						MinBegin + 0.025, MaxEnd);
-			 ::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK );
-			 sprintf(MessageString,"%.3lf",m_KE_End);
-			 ::SetWindowText(hWndCtrl, MessageString);
-			 pDX->Fail();			
-			}				
-
-		if((m_pReg->m_NewOreEdit==m_pReg->Edit) 
-				&& (m_pReg->m_DataIn.Curr_N > 0 ) 
-				&& ( I2D(m_pReg->m_DataIn.KE_End) != m_KE_End))		
-			{
-			if(m_pReg->m_DataIn.KE_End < D2I(m_KE_End))
-				{sprintf(MessageString, "Finish must be less or equal %.3lf", 
-																							I2D(m_pReg->m_DataIn.KE_End));
-				 ::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK );
-				 sprintf(MessageString,"%.3lf",m_KE_End);
-				 ::SetWindowText(hWndCtrl, MessageString);
-				 pDX->Fail();			
-				}				
 			}
-		if(D2I(m_KE_End) < D2I(m_KE_Start + m_Step) )
-			{
-			::MessageBox(this->m_hWnd, "Parameter Finish must be more (or equal)\n then Start + Step",
-					"Attention", MB_OK );
-	 	  sprintf(MessageString,"%.3lf",m_KE_End);
+		} // end if((m_pReg->m_NewOreEdit==m_pReg->Edit) && (m_pReg->m_DataIn.Curr_N > 0))
+
+		  //--------
+		  //ÏÎÑÌÎÒÐÅÒÜ ÃÄÅ ÏÅÐÅÂÛÄÅËßÅÒÑß ÏÀÌßÒÜ
+		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_KE_END);
+		if (D2I(m_KE_End) > D2I(MaxEnd) || D2I(m_KE_End) < D2I(MinBegin + 0.025))
+		{
+			sprintf(MessageString, "Finish must be within :\n\n  Min : %.3lf\n\n  Max : %.3lf",
+				MinBegin + 0.025, MaxEnd);
+			::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK);
+			sprintf(MessageString, "%.3lf", m_KE_End);
 			::SetWindowText(hWndCtrl, MessageString);
 			pDX->Fail();
-			}
-		
-		int delta = D2I(m_KE_End) - D2I(m_KE_Start);
-		int N_Step = (int) ((m_KE_End - m_KE_Start)/m_Step);
-		if( delta %  D2I(m_Step) )
+		}
+
+		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+			&& (m_pReg->m_DataIn.Curr_N > 0)
+			&& (I2D(m_pReg->m_DataIn.KE_End) != m_KE_End))
+		{
+			if (m_pReg->m_DataIn.KE_End < D2I(m_KE_End))
 			{
-			double BigEnd = I2D( D2I(m_KE_Start)  + (N_Step+1) * D2I(m_Step) );
-			double SmallEnd = I2D( D2I(m_KE_Start)  + (N_Step) * D2I(m_Step) );//m_KE_Start + N_Step*m_Step;
-			if(BigEnd > MaxEnd) BigEnd = SmallEnd;
+				sprintf(MessageString, "Finish must be less or equal %.3lf",
+					I2D(m_pReg->m_DataIn.KE_End));
+				::MessageBox(this->m_hWnd, MessageString, "Attention", MB_OK);
+				sprintf(MessageString, "%.3lf", m_KE_End);
+				::SetWindowText(hWndCtrl, MessageString);
+				pDX->Fail();
+			}
+		}
+		if (D2I(m_KE_End) < D2I(m_KE_Start + m_Step))
+		{
+			::MessageBox(this->m_hWnd, "Parameter Finish must be more (or equal)\n then Start + Step",
+				"Attention", MB_OK);
+			sprintf(MessageString, "%.3lf", m_KE_End);
+			::SetWindowText(hWndCtrl, MessageString);
+			pDX->Fail();
+		}
+
+		int delta = D2I(m_KE_End) - D2I(m_KE_Start);
+		int N_Step = (int)((m_KE_End - m_KE_Start) / m_Step);
+		if (delta %  D2I(m_Step))
+		{
+			double BigEnd = I2D(D2I(m_KE_Start) + (N_Step + 1) * D2I(m_Step));
+			double SmallEnd = I2D(D2I(m_KE_Start) + (N_Step)* D2I(m_Step));//m_KE_Start + N_Step*m_Step;
+			if (BigEnd > MaxEnd) BigEnd = SmallEnd;
 			char sBig[30];
 			char sSmall[30];
-			sprintf(sBig,"%.3lf",BigEnd);
-			sprintf(sSmall,"%.3lf",SmallEnd);
-			//CString
+			sprintf(sBig, "%.3lf", BigEnd);
+			sprintf(sSmall, "%.3lf", SmallEnd);
+
 			m_pDlgKEEnd = NULL;
-			m_pDlgKEEnd = new CDlgKEEnd((CWnd*) this);
-			if(m_pDlgKEEnd)
-				{	
+			m_pDlgKEEnd = new CDlgKEEnd((CWnd*)this);
+			if (m_pDlgKEEnd)
+			{
 				m_pDlgKEEnd->m_StaticBig += sBig;
 				m_pDlgKEEnd->m_StaticSmall += sSmall;
-				m_pDlgKEEnd->m_StaticCaption += "Parameter Finish must be equal  Start + integer * Step"; 
+				m_pDlgKEEnd->m_StaticCaption += "Parameter Finish must be equal  Start + integer * Step";
 				m_pDlgKEEnd->m_StaticCaptionBig += "Finish = ";
 				m_pDlgKEEnd->m_StaticCaptionSmall += "Finish = ";
-				if(m_pDlgKEEnd->DoModal() == IDOK)
+				if (m_pDlgKEEnd->DoModal() == IDOK)
+				{
+					if (m_pDlgKEEnd->m_Radio == 0)
 					{
-					//char ss[32];
-					//sprintf(ss,"IDOK Radio = %i",m_pDlgKEEnd->m_Radio);
-					//ss[0]='\0';
-					//AfxMessageBox(ss);
-					//FILE* fp;
-					//fp=fopen("AAAAA.txt","w");
-					//if(!fp) AfxMessageBox("fp==NULL");
-					
-					if(m_pDlgKEEnd->m_Radio == 0) 
-						{ m_KE_End = BigEnd; ++N_Step;}// AfxMessageBox("BigEnd");}
-					else if(m_pDlgKEEnd->m_Radio == 1) 
-						{this->m_KE_End = SmallEnd; }// AfxMessageBox("SmallEnd");}
-					else if(m_pDlgKEEnd->m_Radio == 2) {pDX->Fail();}
-					else pDX->Fail();
-					
-					HWND hWnd = ::GetDlgItem(this->m_hWnd,IDC_EDIT_KE_END);
-					char strWin[32];
-					sprintf(strWin, "%.3lf",m_KE_End);
-					::SetWindowText(hWnd, strWin);
-					
-					//AfxMessageBox("m_pDlgKEEnd->DoModal() == IDOK");
-					
-					//fprintf(fp,"Radio=%i\nBigEnd=%.4lf\nSmallEnd=%.4lf\nm_KE_End=%.4lf",
-					//		m_pDlgKEEnd->m_Radio,BigEnd,SmallEnd,m_KE_End);
-					//fclose(fp);
-				
+						m_KE_End = BigEnd; ++N_Step;
 					}
-				delete m_pDlgKEEnd;
+					else if (m_pDlgKEEnd->m_Radio == 1)
+					{
+						this->m_KE_End = SmallEnd;
+					}
+					else if (m_pDlgKEEnd->m_Radio == 2) { pDX->Fail(); }
+					else pDX->Fail();
+
+					HWND hWnd = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
+					char strWin[32];
+					sprintf(strWin, "%.3lf", m_KE_End);
+					::SetWindowText(hWnd, strWin);
 				}
-			} //end if( delta %  D2I(m_Step)  )		
-		
-		/*
-		if(m_pReg->m_NewOreEdit==m_pReg->New)
-			{
-			char sb[10];
-			sprintf(sb,"N_Step = %i NBytes = %i",N_Step, N_Step*sizeof(DATA_OUT));
-			if( (m_pReg->m_pDataOut = (DATA_OUT*) malloc(N_Step*sizeof(DATA_OUT)) ) != NULL)
-				//AfxMessageBox("m_pReg->m_pDataOut != NULL");
-				AfxMessageBox(sb);
-			else AfxMessageBox("m_pReg->m_pDataOut == NULL");
+				delete m_pDlgKEEnd;
 			}
-		*/
-	
-		if((m_pReg->m_NewOreEdit==m_pReg->Edit) 
-				&& (m_pReg->m_DataIn.Curr_N > 0) 
-				&& (m_pReg->m_DataIn.Curr_N > m_N) )
-			{
+		} //end if( delta %  D2I(m_Step)  )		
+
+		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+			&& (m_pReg->m_DataIn.Curr_N > 0)
+			&& (m_pReg->m_DataIn.Curr_N > m_N))
+		{
 			hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_N);
 			char sp[80];
-			sprintf(sp, "You can't set number of passage less then %i",m_pReg->m_DataIn.Curr_N);
-			::MessageBox(this->m_hWnd, sp, "Attention",MB_OK);
- 		  sprintf(MessageString,"%.i",m_N);
+			sprintf(sp, "You can't set number of passage less then %i", m_pReg->m_DataIn.Curr_N);
+			::MessageBox(this->m_hWnd, sp, "Attention", MB_OK);
+			sprintf(MessageString, "%.i", m_N);
 			::SetWindowText(hWndCtrl, MessageString);
 			pDX->Fail();
-			}
-		
+		}
+
 		hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_TIME);
-		if(D2I(m_Time)%10) 
-			{::MessageBox(this->m_hWnd, "Time must be divisible by 0.01", "Attention", MB_OK );
-			 //HWND hWndTime = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-			 char strTime[16];
-			 sprintf(strTime, "%.2lf", m_Time);
-			 ::SetWindowText(hWndCtrl, strTime);
-			 pDX->Fail();
-			}
-
-
-
-		} // end if(pDX->m_bSaveAndValidate)
-
+		if (D2I(m_Time) % 10)
+		{
+			::MessageBox(this->m_hWnd, "Time must be divisible by 0.01", "Attention", MB_OK);
+			char strTime[16];
+			sprintf(strTime, "%.2lf", m_Time);
+			::SetWindowText(hWndCtrl, strTime);
+			pDX->Fail();
+		}
+	} // end if(pDX->m_bSaveAndValidate)
 }
 
 

@@ -1,7 +1,7 @@
 #ifndef _REGION_H_INCLUDED_
 #define _REGION_H_INCLUDED_
 
-typedef struct _DATA_IN
+typedef struct
 {
 int HV;
 int KE_Start;
@@ -15,6 +15,7 @@ enum{KE, BE} KE_BE;
 char N_h_nu; // «десь просто байт
 int DeltaVolts;
 char Comments[256];
+int Priority; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
 } DATA_IN;
 
 #define TYPE_BE 0
@@ -36,7 +37,7 @@ char Comments[256];
 //enum{Al, Mg, He1, He2};
 };
 //===============
-typedef struct _STR_PAR
+typedef struct
 {
 char HV[16];
 char KE_Start[16];
@@ -48,10 +49,11 @@ char KE_BE[16];
 char Name_h_nu[16];
 char Curr_N[16];
 char* Comments;
+char Priority[16];
 } STR_PAR;
 
 //=============
-typedef struct _DATA_OUT
+typedef struct
 {
 int x;
 float y;
@@ -95,6 +97,11 @@ CRegion();
 CRegion(int n);
 ~CRegion();
 void CreateNewRegion();
+
+/**
+ * \brief ќбновить значени€ в структуре STR_PAR str из данных DATA_IN m_DataIn
+ */
+void UpdateStrValues();
 static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
 static CRegion* GetAtPosition(int position);
