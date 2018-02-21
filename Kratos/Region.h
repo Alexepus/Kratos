@@ -11,7 +11,12 @@ int Time;   // Время измерения на точку
 int N_;     // Заданное число сканов
 int Curr_N; // Число пройденных сканов
 BOOL Off;
-enum{KE, BE} KE_BE;
+enum class EnergyType
+{
+	KE,
+	BE
+};
+EnergyType KE_BE;
 char N_h_nu; // Здесь просто байт
 int DeltaVolts;
 char Comments[256];

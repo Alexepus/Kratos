@@ -228,7 +228,7 @@ if(DocType==CDoc::XPS)
 			continue;
 		sprintf(Value,"R%i",pReg->ID+1);
 		fprintf(fp,";|%4s|",Value);
-		if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+		if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 			{sprintf(Value," %s", "KE");
 			 fprintf(fp,"%5s|",Value);
 			 //sprintf(Value,"%s", "None");

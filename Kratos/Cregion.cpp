@@ -28,7 +28,7 @@ void CRegion::CreateNewRegion()
 	m_DataIn.HV = 1000;
 	m_DataIn.Time = 10;
 	m_DataIn.Off = FALSE;
-	m_DataIn.KE_BE = m_DataIn.KE;
+	m_DataIn.KE_BE = DATA_IN::EnergyType::KE;
 	m_DataIn.N_h_nu = 0; 
 	m_DataIn.DeltaVolts = 0;
 	m_DataIn.Priority = 10;
@@ -65,7 +65,7 @@ void CRegion::UpdateStrValues()
 	sprintf(str.Time, "%.2lf", I2D(m_DataIn.Time));
 	sprintf(str.N_, "%i", m_DataIn.N_);
 	sprintf(str.Curr_N, "%i", m_DataIn.Curr_N);
-	if (m_DataIn.KE_BE == m_DataIn.KE) 
+	if (m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 		sprintf(str.KE_BE, "%s", "KE");
 	else  
 		sprintf(str.KE_BE, "%s", "BE");

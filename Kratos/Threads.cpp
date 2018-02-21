@@ -110,7 +110,7 @@ Met_BeginRegion:
 		
 		if(!theApp.Ini.HighPressureMode.Value) //KRATOS
 		{
-			if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+			if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 				{
 				pReg->m_DataIn.DeltaVolts = D2I((double) ThComm->FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
 																	+ D2I(100.0);	
@@ -126,7 +126,7 @@ Met_BeginRegion:
 		}
 		else //High Pressure
 		{
-			if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+			if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 				{
 				pReg->m_DataIn.DeltaVolts = D2I((double) ThComm->FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV)))-pReg->m_DataIn.HV;	
 				Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
@@ -187,7 +187,7 @@ Met_BeginRegion:
 	ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort = NewData;
 	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShort = pReg->m_NDataOut;
 	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr=pReg->m_NDataOutCurr;
-	if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+	if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 		sprintf(ThComm->pMainFrame->m_Doc.m_Graph.m_strCaption, 
 						"Region %i ( KE, Anode: %s )", pReg->ID+1, pReg->str.Name_h_nu);
 	else 
@@ -221,7 +221,7 @@ Met_NextSubmeasuring:
 			if( (pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE) )
 				{goto Met_EndRegion;}
 			DataOut.x = pReg->m_pDataOut[k].x;
-			if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+			if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 				Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
 			else 
 				Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;

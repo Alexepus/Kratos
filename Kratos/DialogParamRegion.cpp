@@ -1,13 +1,3 @@
-// DialogParamRegion.cpp : implementation file
-//
-/*
-#include "stdafx.h"
-#include <string.h>
-#include "ProgNew.h"
-#include "Region.h"
-#include "DlgKEEnd.h"
-#include "DialogParamRegion.h"
-*/
 #include "stdafx.h"
 #include "Main.h"
 #include "hardware.h"
@@ -33,7 +23,6 @@ CDialogParamRegion::CDialogParamRegion(CWnd* pParent /*=NULL*/)
 	: CDialog(CDialogParamRegion::IDD, pParent)
 	, m_Priority(0)
 {
-///*
 	//{{AFX_DATA_INIT(CDialogParamRegion)
 	m_HV = 0.0;
 	m_KE_Start = 10.0;
@@ -44,9 +33,6 @@ CDialogParamRegion::CDialogParamRegion(CWnd* pParent /*=NULL*/)
 	m_Anode = -1;
 	m_Time = 0.0;
 	//}}AFX_DATA_INIT
-//*/
-	//if(!m_pReg) AfxMessageBox("m_pReg = NULL");
-	//else AfxMessageBox("m_pReg != NULL");
 }
 
 
@@ -69,6 +55,8 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_Time, 1.e-002, 50);
 	DDX_Text(pDX, IDC_EDIT_PRIORITY, m_Priority);
 	DDV_MinMaxInt(pDX, m_Priority, 1, 99);
+	DDX_Control(pDX, IDC_STATIC_ANODE_TXT, m_AnodeTxtControl);
+	DDX_Control(pDX, IDC_COMBO_ANODE, m_ComboAnodeControl);
 	//}}AFX_DATA_MAP
 	//*/
 	if (!theApp.Ini.HighPressureMode.Value) //KRATOS
@@ -86,7 +74,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 	if (pDX->m_bSaveAndValidate)
 	{
 
-		if (m_KE_BE == m_pReg->m_DataIn.KE) { MinBegin = MinKE;  MaxEnd = MaxKE; }
+		if (m_KE_BE == DATA_IN::EnergyType::KE) { MinBegin = MinKE;  MaxEnd = MaxKE; }
 		else
 		{
 			MinBegin = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MaxKE;
@@ -342,33 +330,12 @@ void CDialogParamRegion::OnOK()
 	CDialog::OnOK();
 }
 
-void CDialogParamRegion::OnDestroy() 
-{
-	CDialog::OnDestroy();
-	
-	// TODO: Add your message handler code here
-	
-	//if(::IsWindow(this->m_hWnd)) ;
-	//		{
-			//m_pDlgParamReg->EndDialog(IDCANCEL);
-		//	if(m_pDlgParamReg->IsWindow(m_pDlgParamReg->m_hWnd)) AfxMessageBox("Dlg is window");
-			//AfxMessageBox("Dlg is window");
-			//}
-	
-}
-
-
-
 BOOL CDialogParamRegion::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
 	
 	SubClassingWindows();
-	HWND hWndChild;
 	char str[64];
-	int i;
-	// TODO: Add extra initialization here
-	//m_HV = 111;
 	if(theApp.Ini.HighPressureMode.Value && m_pReg->m_NewOreEdit==m_pReg->New)
 		m_HV = 10;
 	else
@@ -380,10 +347,9 @@ BOOL CDialogParamRegion::OnInitDialog()
 	}
 	else
 	{
-		int Index;
 		GetDlgItem(IDC_EDIT_HV)->ShowWindow(SW_HIDE);
 		sprintf(str,"%i", (int)m_HV);
-		Index = m_ComboHV.FindStringExact(0,str);
+		int Index = m_ComboHV.FindStringExact(0,str);
 		if(Index>0)
 			m_ComboHV.SetCurSel(Index);
 		else
@@ -397,10 +363,12 @@ BOOL CDialogParamRegion::OnInitDialog()
 	m_Comments = m_pReg->m_DataIn.Comments;
 	m_KE_BE = m_pReg->m_DataIn.KE_BE;
 	m_Anode = m_pReg->m_DataIn.N_h_nu;
+	m_Priority = m_pReg->m_DataIn.Priority;
+
 	UpdateData(FALSE);
 
-	hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-	for(i=0; i<m_pReg->h_nu_Info.Nelem; ++i)
+	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
+	for(int i = 0; i<m_pReg->h_nu_Info.Nelem; ++i)
 		{
 		sprintf(str, "%s     (%.1lf eV)", 
 							m_pReg->h_nu_Info.strName_h_nu[i], m_pReg->h_nu_Info.Value_h_nu[i]);
@@ -409,20 +377,20 @@ BOOL CDialogParamRegion::OnInitDialog()
 	//if(m_pReg->m_DataIn.N_h_nu != 0)
 	::SendMessage(hWndChild, CB_SETCURSEL , (WPARAM) (m_pReg->m_DataIn.N_h_nu), 0);
 	
-	if(m_KE_BE == m_pReg->m_DataIn.KE) 
+	if(m_KE_BE == DATA_IN::EnergyType::KE)
 		{
 		::EnableWindow(hWndChild, FALSE);
 		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
 		::EnableWindow(hWndChild, FALSE);
 		}
 
-	if(m_pReg->m_DataIn.KE_BE == m_pReg->m_DataIn.KE)
+	if(m_pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 		{hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_KE);
-		 m_KE_BE = m_pReg->m_DataIn.KE;
+		 m_KE_BE = DATA_IN::EnergyType::KE;
 		}
 	else 
 		{hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
-		 m_KE_BE = m_pReg->m_DataIn.BE;
+		 m_KE_BE = DATA_IN::EnergyType::BE;
 		}
 	::SendMessage(hWndChild, BM_SETCHECK, BST_CHECKED, 0);
 	
@@ -498,103 +466,43 @@ BOOL CDialogParamRegion::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE 
 }
 
-
-
 void CDialogParamRegion::OnRadioOn() 
 {
-	// TODO: Add your control notification handler code here
 	m_Off = FALSE;
-	//SetIconForReg(m_pMainFrame->m_pRegionWnd->m_pListRegionWnd, m_pReg, 2);
 }
 
 void CDialogParamRegion::OnRadioOff() 
 {
-	// TODO: Add your control notification handler code here
 	m_Off = TRUE;
 }
 
+void CDialogParamRegion::SetKeBe(DATA_IN::EnergyType energyType)
+{
+	m_KE_BE = energyType;	
+
+	m_ComboAnodeControl.EnableWindow(m_KE_BE == DATA_IN::EnergyType::BE);
+	m_AnodeTxtControl.EnableWindow(m_KE_BE == DATA_IN::EnergyType::BE);
+
+	int NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_Start);
+	m_KE_Start = I2D(NewValue);
+
+	NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_End);
+	m_KE_End = I2D(NewValue);
+	
+	std::swap(m_KE_Start, m_KE_End);
+
+	UpdateData(FALSE);
+}
 
 void CDialogParamRegion::OnRadioKE() 
 {
-	// TODO: Add your control notification handler code here
-	//AfxMessageBox("OnRadioKE()");
-	HWND hWndChild;
-	//char str[32];
-	if(m_KE_BE != m_pReg->m_DataIn.KE)
-		{
-		//AfxMessageBox("OnRadioKE()");
-		int NewValue;
-		double Tmp;
-		m_KE_BE = m_pReg->m_DataIn.KE;
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
-		::EnableWindow(hWndChild, FALSE);
-
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
-		//m_KE_Start = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - m_KE_Start;
-		NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10. ) - D2I(m_KE_Start);
-		m_KE_Start = I2D(NewValue);
-		//sprintf(str, "%.3lf", m_KE_Start);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
-		//::SetWindowText(hWndChild, str);
-		
-		
-		//m_KE_End = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - m_KE_End;
-		NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_End);
-		m_KE_End = I2D(NewValue);
-		//sprintf(str, "%.3lf", m_KE_End);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
-		//::SetWindowText(hWndChild, str);
-		
-		Tmp = m_KE_Start;
-		m_KE_Start = m_KE_End;
-		m_KE_End = Tmp;
-			
-		UpdateData(FALSE);
-		}
+	SetKeBe(DATA_IN::EnergyType::KE);
 }
 
 
 void CDialogParamRegion::OnRadioBE() 
 {
-	// TODO: Add your control notification handler code here
-	//SubClassingWindows();
-	HWND hWndChild;
-	//char str[32];
-	if(m_KE_BE != m_pReg->m_DataIn.BE)
-		{
-		int NewValue;
-		double Tmp;
-		m_KE_BE = m_pReg->m_DataIn.BE;
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
-		::EnableWindow(hWndChild, TRUE);
-
-		NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_Start);
-		m_KE_Start = I2D(NewValue);
-		//sprintf(str, "%.3lf", m_KE_Start);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
-		//::SetWindowText(hWndChild, str);
-		
-
-		NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10. ) - D2I(m_KE_End);
-		m_KE_End = I2D(NewValue);
-		//sprintf(str, "%.3lf", m_KE_End);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
-		//::SetWindowText(hWndChild, str);
-		
-		//m_KE_Start = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - m_KE_Start;
-		//m_KE_End = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - m_KE_End;
-
-		Tmp = m_KE_Start;
-		m_KE_Start = m_KE_End;
-		m_KE_End = Tmp;
-
-		UpdateData(FALSE);
-
-		}
+	SetKeBe(DATA_IN::EnergyType::BE);
 }
 
 void CDialogParamRegion::OnSelEndOkComboAnode() 
@@ -604,31 +512,14 @@ void CDialogParamRegion::OnSelEndOkComboAnode()
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
 	res = (UINT) ::SendMessage(hWndChild, CB_GETCURSEL , 0, 0);
 	if(res!=CB_ERR) 
-		{
-		/*int NewValue;
-		NewValue = D2I(m_KE_Start) - D2I(m_pReg->h_nu_Info.Value_h_nu[m_Anode]);
-		NewValue += D2I(m_pReg->h_nu_Info.Value_h_nu[res]);
-		m_KE_Start = I2D(NewValue);
-
-		NewValue = D2I(m_KE_End) - D2I(m_pReg->h_nu_Info.Value_h_nu[m_Anode]);
-		NewValue += D2I(m_pReg->h_nu_Info.Value_h_nu[res]);
-		m_KE_End = I2D(NewValue);
-		*/
-		//m_KE_Start = m_KE_Start - m_pReg->h_nu_Info.Value_h_nu[m_Anode];
-		//m_KE_Start += m_pReg->h_nu_Info.Value_h_nu[res];
-		
-		//m_KE_End = m_KE_End - m_pReg->h_nu_Info.Value_h_nu[m_Anode];
-		//m_KE_End += m_pReg->h_nu_Info.Value_h_nu[res];
-		
+	{
 		m_Anode = res;
 		UpdateData(FALSE);
-		}
-	
+	}	
 }
 
 void CDialogParamRegion::OnKillFocusEditKEBegin() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64], *endptr;
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
 	::GetWindowText(hWndChild, str, 64);
@@ -637,7 +528,6 @@ void CDialogParamRegion::OnKillFocusEditKEBegin()
 
 void CDialogParamRegion::OnKillFocusEditKEEnd() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64], *endptr;
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
 	::GetWindowText(hWndChild, str, 64);
@@ -646,51 +536,23 @@ void CDialogParamRegion::OnKillFocusEditKEEnd()
 
 void CDialogParamRegion::SubClassingWindows()
 {
-HWND hWndChild;
+	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
+	SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
 
-//WNDCLASS WC;
-//::GetClassInfo(AfxGetInstanceHandle(), "edit", &WC);
-//EditNormalProc = (FARPROC) WC.lpfnWndProc;
-/*
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
-//EditNumberProc = (FARPROC) ::GetWindowLong(hWnd, GWL_WNDPROC);
-EditNumberProc = (FARPROC) ::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
+	hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
+	::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
 
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
-EditNumberProc = (FARPROC) ::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
+	hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
+	::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
 
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
-EditNumberProc = (FARPROC) ::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
-
-//if(!EditNumberProc) AfxMessageBox("EditNumberProc == NULL");
-//else AfxMessageBox("EditNumberProc != NULL");
-*/
-
-// см Initinstance()
-//WNDCLASS WC;
-//::GetClassInfo(AfxGetInstanceHandle(), "edit", &WC);
-//EditNumberProc = (FARPROC) WC.lpfnWndProc;
-
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_BEGIN);
-//EditNumberProc = (FARPROC) ::GetWindowLong(hWnd, GWL_WNDPROC);
-SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
-
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_KE_END);
-::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
-
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
-::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
-
-hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
-
+	hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
+	::SetWindowLong(hWndChild, GWL_WNDPROC, (LONG) EditSuperNumberProc);
 }
 
 void CDialogParamRegion::OnKillFocusEditHV() 
 {	
 	if(!theApp.Ini.HighPressureMode.Value) //KRATOS
 	{
-		// TODO: Add your control notification handler code here
 		char str[64], *endptr;
 		HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_HV);
 		::GetWindowText(hWndChild, str, 64);
@@ -700,7 +562,6 @@ void CDialogParamRegion::OnKillFocusEditHV()
 
 void CDialogParamRegion::OnKillFocusEditStep() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64], *endptr;
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
 	::GetWindowText(hWndChild, str, 64);
@@ -709,7 +570,6 @@ void CDialogParamRegion::OnKillFocusEditStep()
 
 void CDialogParamRegion::OnKillFocusEditN() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64];
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_N);
 	::GetWindowText(hWndChild, str, 64);
@@ -718,21 +578,14 @@ void CDialogParamRegion::OnKillFocusEditN()
 
 void CDialogParamRegion::OnKillFocusEditTime() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64], *endptr;
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
 	::GetWindowText(hWndChild, str, 64);
 	m_Time = strtod(str, &endptr);	
-
-//	char str[64];
-//	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-//	::GetWindowText(hWndChild, str, 64);
-//	m_Time = atoi(str);		
 }
 
 void CDialogParamRegion::OnKillFocusEditComments() 
 {
-	// TODO: Add your control notification handler code here
 	char str[64];
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_COMMENTS);
 	::GetWindowText(hWndChild, str, 64);
@@ -741,16 +594,11 @@ void CDialogParamRegion::OnKillFocusEditComments()
 
 void CDialogParamRegion::OnButtonReset()
 {
-	// TODO: Add your control notification handler code here
 	char str[128];
-	int i;
-	HWND hWndChild;
-	LONG style;
 	sprintf(str,"Are you sure you want\nto reset all measured data ?");
 	if(::MessageBox(this->m_hWnd, str, "Attention",MB_YESNO) == IDYES)
 		{
-		//memset(m_pReg->m_pDataOut, 0, m_pReg->m_NDataOut*sizeof(DATA_OUT));
-		for(i=0; i<m_pReg->m_NDataOut; ++i) 
+		for(int i = 0; i<m_pReg->m_NDataOut; ++i) 
 			{
 			m_pReg->m_pDataOut[i].y = 0;
 			SaveDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg, i, &m_pReg->m_pDataOut[i]);
@@ -758,13 +606,11 @@ void CDialogParamRegion::OnButtonReset()
 		m_pReg->m_NDataOutCurr = 0;
 		m_pReg->m_DataIn.Curr_N = 0;
 		SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
-//		if(::IsWindow(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
 		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
 		UpdateTextItem(m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, m_pReg);
-
 		
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
-		style = ::GetWindowLong(hWndChild, GWL_STYLE);
+		HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
+		LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
 		style = style | WS_DISABLED;
 		::SetWindowLong(hWndChild, GWL_STYLE, style);
 		
@@ -793,31 +639,18 @@ void CDialogParamRegion::OnButtonReset()
 		::EnableWindow(hWndChild, TRUE);
 		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
 		::EnableWindow(hWndChild, TRUE);
-
-		}
-		
+		}		
 }
 
 void CDialogParamRegion::OnButtonHVTable() 
 {
-	// TODO: Add your control notification handler code here
-/*
-	CFiTableDlg* dlg = new CFiTableDlg((CWnd*) this);
-	dlg->m_pFiTable=&m_pMainFrame->m_Doc.m_ThrComm.FiTable;
-	dlg->DoModal();
-	delete dlg;
-*/
 	CFiTableDlg dlg((CWnd*) this);
 	dlg.m_pFiTable=&m_pMainFrame->m_Doc.m_ThrComm.FiTable;
-	//AfxMessageBox("Befor DoModal()");
 	dlg.DoModal();
-	//AfxMessageBox("After DoModal()");
-
 }
 
 void CDialogParamRegion::OnButtonCommentsEdit() 
 {
-	// TODO: Add your control notification handler code here
 	CDlgCommentsEdit dlg((CWnd*) this);
 	dlg.m_pDlgParam = this;
 	int res = dlg.DoModal();

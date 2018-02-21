@@ -1,3 +1,4 @@
+#include "afxwin.h"
 #if !defined(AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_)
 #define AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_
 
@@ -21,10 +22,9 @@ class CDialogParamRegion : public CDialog
 // Construction
 public:
 	BOOL CheckHV();
-//	CFiTableDlg* m_pDlg;
 
 	void SubClassingWindows();
-	int m_KE_BE;
+	DATA_IN::EnergyType m_KE_BE;
 	BOOL m_Off;
 	
 	CMainFrame* m_pMainFrame;
@@ -36,6 +36,8 @@ public:
 	//{{AFX_DATA(CDialogParamRegion)
 	enum { IDD = IDD_DIALOG_PARAM_REGION };
 	CComboBox	m_ComboHV;
+	CStatic m_AnodeTxtControl;
+	CComboBox m_ComboAnodeControl;
 	double	m_HV;
 	double	m_KE_Start;
 	double	m_KE_End;
@@ -44,8 +46,8 @@ public:
 	CString	m_Comments;
 	int		m_Anode;
 	double	m_Time;
+	int m_Priority;
 	//}}AFX_DATA
-
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -53,17 +55,14 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
-
-// Implementation
-protected:
+	virtual void OnOK();
+	virtual BOOL OnInitDialog();
 
 	// Generated message map functions
 	//{{AFX_MSG(CDialogParamRegion)
-	virtual void OnOK();
-	afx_msg void OnDestroy();
-	virtual BOOL OnInitDialog();
 	afx_msg void OnRadioOn();
 	afx_msg void OnRadioOff();
+	void SetKeBe(DATA_IN::EnergyType energyType);
 	afx_msg void OnRadioKE();
 	afx_msg void OnRadioBE();
 	afx_msg void OnSelEndOkComboAnode();
@@ -77,14 +76,9 @@ protected:
 	afx_msg void OnButtonReset();
 	afx_msg void OnButtonHVTable();
 	afx_msg void OnButtonCommentsEdit();
+	afx_msg void OnBnClickedButtonResetAll();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnBnClickedButtonResetAll();
-	int m_Priority;
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Developer Studio will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_)

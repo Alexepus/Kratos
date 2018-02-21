@@ -583,7 +583,7 @@ int NLine = 0;
 char Value[16];
 	sprintf(Value,"R%i",pReg->ID+1);
 	fprintf(fp,";|%4s|",Value);
-	if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+	if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 		{sprintf(Value," %s", "KE");
 		 fprintf(fp,"%5s|",Value);
 		 //sprintf(Value,"%s", "None");
@@ -632,7 +632,7 @@ fprintf(fp,"\n");
 fprintf(fp,"%s ", "KE/BE");
 for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 	{
-	if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE) fprintf(fp, "%s ", "KE"); 
+	if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE) fprintf(fp, "%s ", "KE");
 	else fprintf(fp, "%s ", "BE"); 
 	}
 fprintf(fp,"\n");

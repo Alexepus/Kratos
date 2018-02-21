@@ -548,7 +548,7 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 							NULL,NULL);
 					}
 				
-				if(pReg->m_DataIn.KE_BE == pReg->m_DataIn.KE)
+				if(pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 						sprintf(m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_strCaption, 
 						"Region %i ( KE, Anode: %s )", pReg->ID+1, pReg->str.Name_h_nu);
 				else 

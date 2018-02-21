@@ -179,13 +179,13 @@ pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
 sprintf(pReg->m_DataIn.Comments, "%s", (LPCSTR)pDlgParamReg->m_Comments);
 pReg->m_DataIn.Comments[255] = '\0';
 pReg->m_DataIn.Off = pDlgParamReg->m_Off;
-if(pDlgParamReg->m_KE_BE == pReg->m_DataIn.KE)
-	{ pReg->m_DataIn.KE_BE = pReg->m_DataIn.KE;
+if(pDlgParamReg->m_KE_BE == DATA_IN::EnergyType::KE)
+	{ pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::KE;
 		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
 				+ D2I(100.0);	
 	}
 else 
-	{pReg->m_DataIn.KE_BE = pReg->m_DataIn.BE;
+	{pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::BE;
 	 pReg->m_DataIn.N_h_nu = pDlgParamReg->m_Anode;
 	 pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
 																+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
