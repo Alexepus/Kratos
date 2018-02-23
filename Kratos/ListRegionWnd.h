@@ -16,14 +16,22 @@ class CListRegionWnd : public CListCtrl
 // Construction
 public:
 	CListRegionWnd();
-	void SaveColumnsWidthsToIni();
-	void Create(CWnd* parentCWnd, RECT controlPosition);
+	virtual ~CListRegionWnd();
 
 	// Attributes
 public:
+	CCommentsWnd m_CommentsWnd;
+	CMainFrame* m_pMainFrame;
+	CImageList m_ImageIcon;
+	int N_Column;
 
 // Operations
 public:
+	void CreateColumns();
+	void SetNewRegionItem(CRegion* pReg);
+	void UpdateTextItem(CRegion* pReg);
+	void SaveColumnsWidthsToIni();
+	void Create(CWnd* parentCWnd, RECT controlPosition);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -32,15 +40,6 @@ public:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	
 	//}}AFX_VIRTUAL
 	void OnCustomdraw(NMHDR* pNMHDR, LRESULT* pResult);
-
-// Implementation
-public:
-	CCommentsWnd m_CommentsWnd;
-	CMainFrame* m_pMainFrame;
-	CImageList m_ImageIcon;
-	void CreateColumns();
-	int N_Column;
-	virtual ~CListRegionWnd();
 
 private:
 	CString m_iniSectionName;

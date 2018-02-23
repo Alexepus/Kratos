@@ -148,7 +148,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				pReg->m_DataIn.Curr_N = 0;
 				SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 				pReg->UpdateStrValues();
-				UpdateTextItem(m_hWnd, pReg);
+				UpdateTextItem(pReg);
 			}
 		}
 		else if(wID == IDC_BUTTON_COMMENTS)
@@ -323,4 +323,77 @@ void CListRegionWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 		m_pMainFrame->m_pRegionWnd->SendMessage(WM_COMMAND,(BN_CLICKED<<16)|IDC_BUTTON_EDIT,0);
 	
 	CListCtrl::OnLButtonDblClk(nFlags, point);
+}
+
+void CListRegionWnd::SetNewRegionItem(CRegion* pReg)
+{
+	LV_ITEM item;
+	memset(&item, 0, sizeof(LV_ITEM));
+	item.iItem = pReg->ID;
+	item.iImage = 0;
+	item.mask = (LVIF_TEXT | LVIF_STATE | LVIF_IMAGE);
+	item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
+	::SendMessage(m_hWnd, LVM_INSERTITEM, 0, (LPARAM)&item);
+
+	UpdateTextItem(pReg);	
+}
+
+void CListRegionWnd::UpdateTextItem(CRegion* pReg)
+{
+	LV_ITEM item;
+	memset(&item, 0, sizeof(LV_ITEM));
+	item.iItem = pReg->ID;
+	item.iSubItem = 0;
+	char s[5];
+	sprintf(s, "R%i", pReg->ID + 1);
+	item.pszText = s;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 1;
+	item.pszText = pReg->str.KE_BE;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 2;
+	item.pszText = pReg->str.Name_h_nu;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 3;
+	item.pszText = pReg->str.HV;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 4;
+	item.pszText = pReg->str.KE_Start;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 5;
+	item.pszText = pReg->str.KE_End;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 6;
+	item.pszText = pReg->str.Step;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 7;
+	item.pszText = pReg->str.N_;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 8;
+	item.pszText = pReg->str.Curr_N;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 9;
+	item.pszText = pReg->str.Time;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 10;
+	item.pszText = pReg->str.Priority;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	item.iSubItem = 11;
+	char *Comments = "Comments", *NullComments = "";
+	if (strcmp(pReg->str.Comments, Comments))
+		item.pszText = pReg->str.Comments;
+	else
+		item.pszText = NullComments;
+	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
 }

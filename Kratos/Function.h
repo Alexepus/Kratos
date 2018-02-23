@@ -43,10 +43,6 @@ BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color);
 */
 bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamReg);
 
-void SetNewRegionItemForListView(CListRegionWnd* pList, CRegion* pReg);
-
-void UpdateTextItem(HWND hWnd, CRegion* pReg);
-
 void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image);
 
 int FindSelectedItem(HWND hWnd);

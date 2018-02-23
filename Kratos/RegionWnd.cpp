@@ -134,7 +134,7 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		{
 		CRegion* pReg = NULL;
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-			SetNewRegionItemForListView(m_pListRegionWnd, pReg);
+			m_pListRegionWnd->SetNewRegionItem(pReg);
 		}
 	
 	return 0;
@@ -193,13 +193,13 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			THRI_UNLOCK();
 			if(pReg!=NULL)
 				{
-				pReg->m_NewOreEdit = pReg->New;
+				pReg->m_NewOrEdit = pReg->New;
 				m_pDlgParamReg->m_pReg = pReg;
 				::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
 				if(m_pDlgParamReg->DoModal()==IDOK)
 					{
 					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
-					SetNewRegionItemForListView(m_pListRegionWnd, pReg);
+					m_pListRegionWnd->SetNewRegionItem(pReg);
 					if(pReg->m_DataIn.Off) SetIconForReg(m_pListRegionWnd, pReg, 2);
 					else SetIconForReg(m_pListRegionWnd, pReg, 0);
 					m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
@@ -292,7 +292,7 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 					{
 					m_pDlgParamReg = new CDialogParamRegion((CWnd*) this);
 					m_pDlgParamReg->m_pMainFrame = this->m_pMainFrame;
-					pReg->m_NewOreEdit = pReg->Edit; 
+					pReg->m_NewOrEdit = pReg->Edit; 
 					m_pDlgParamReg->m_pReg = pReg;
 					if(m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut)
 						{ 
@@ -356,7 +356,7 @@ BOOL CRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 						::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT, 
 							2, (LPARAM) (LPSTR) TimeStr);
 						
-						UpdateTextItem(m_pListRegionWnd->m_hWnd, pReg);
+						m_pListRegionWnd->UpdateTextItem(pReg);
 						if(pReg->m_DataIn.Off) SetIconForReg(m_pListRegionWnd, pReg, 2);
 						else SetIconForReg(m_pListRegionWnd, pReg, 0);
 						}

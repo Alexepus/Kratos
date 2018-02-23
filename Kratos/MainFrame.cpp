@@ -751,7 +751,7 @@ if(m_Doc.m_DocType==m_Doc.XPS)
 		{	
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ 
-			SetNewRegionItemForListView(m_pRegionWnd->m_pListRegionWnd, pReg);
+			m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(pReg);
 			if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
 			}
 		}
@@ -1504,7 +1504,7 @@ if(m_Doc.m_DocType==m_Doc.XPS)
 	{	
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ 
-			SetNewRegionItemForListView(m_pRegionWnd->m_pListRegionWnd, pReg);
+			m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(pReg);
 			if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
 			}
 	}

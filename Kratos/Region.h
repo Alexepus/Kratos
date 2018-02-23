@@ -89,7 +89,7 @@ DATA_IN  m_DataIn;
 STR_PAR str;
 int ID;
 UINT m_ptrInFile;
-enum {New, Edit} m_NewOreEdit;
+enum {New, Edit} m_NewOrEdit;
 
 ////////////////////////KE, HV, and over data of region
 CRegion* m_pNext;

@@ -98,7 +98,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 int i,k;
 int Step = D2I(pDlgParamReg->m_Step);
 int N_Step = ( D2I(pDlgParamReg->m_KE_End)  - D2I(pDlgParamReg->m_KE_Start)) / Step;
-if(pReg->m_NewOreEdit==pReg->New)
+if(pReg->m_NewOrEdit==pReg->New)
 	{
 	pReg->m_NDataOut = N_Step+1;
 	pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
@@ -108,7 +108,7 @@ if(pReg->m_NewOreEdit==pReg->New)
 		{pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
 		 pReg->m_pDataOut[i].y = 0;}
 	}
-else if(pReg->m_NewOreEdit==pReg->Edit)
+else if(pReg->m_NewOrEdit==pReg->Edit)
 	{
 	int NNewDataOut = N_Step+1;
 	int KE_Start = D2I(pDlgParamReg->m_KE_Start);
@@ -167,7 +167,7 @@ else if(pReg->m_NewOreEdit==pReg->Edit)
 	free(pReg->m_pDataOut);
 	pReg->m_pDataOut = pNewDataOut;
 	pReg->m_NDataOut = NNewDataOut;
-	} // end else if(pReg->m_NewOreEdit==pReg->Edit)
+	} // end else if(pReg->m_NewOrEdit==pReg->Edit)
 	
 pReg->m_DataIn.HV = D2I(pDlgParamReg->m_HV);
 pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
@@ -209,142 +209,6 @@ item.mask = LVIF_IMAGE;
 if(::IsWindow(pList->m_hWnd))
 	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
 }
-
-void SetNewRegionItemForListView(CListRegionWnd* pList, CRegion* pReg)
-{
-LV_ITEM item;
-memset(&item, 0, sizeof(LV_ITEM));
-item.iItem = pList->GetItemCount();
-
-item.iImage=0;
-item.mask= (LVIF_TEXT | LVIF_STATE | LVIF_IMAGE );
-
-item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
-item.iSubItem=0;
-char s[5];
-
-sprintf(s, "R%i",pReg->ID+1);
-item.pszText=s;
-item.cchTextMax= strlen(item.pszText);
-::SendMessage(pList->m_hWnd, LVM_INSERTITEM, 0, (LPARAM) &item);
-				
-item.iSubItem = 1;
-item.pszText = pReg->str.KE_BE;
-item.cchTextMax = strlen(pReg->str.KE_BE);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 2;
-item.pszText = pReg->str.Name_h_nu;
-item.cchTextMax = strlen(pReg->str.Name_h_nu);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 3;
-item.pszText = pReg->str.HV;
-item.cchTextMax = strlen(pReg->str.HV);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-				
-item.iSubItem = 4;
-item.pszText = pReg->str.KE_Start;
-item.cchTextMax = strlen(pReg->str.KE_Start);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 5;
-item.pszText = pReg->str.KE_End;
-item.cchTextMax = strlen(pReg->str.KE_End);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 6;
-item.pszText = pReg->str.Step;
-item.cchTextMax = strlen(pReg->str.Step);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 7;
-item.pszText = pReg->str.N_;
-item.cchTextMax = strlen(pReg->str.N_);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 8;
-item.pszText = pReg->str.Curr_N;
-item.cchTextMax = strlen(pReg->str.Curr_N);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 9;
-item.pszText = pReg->str.Time;
-item.cchTextMax = strlen(pReg->str.Time);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-
-item.iSubItem = 10;
-char *Comments="Comments", *NullComments="";
-if(strcmp(pReg->str.Comments,Comments))
-	item.pszText = pReg->str.Comments;
-else
-	item.pszText = NullComments;
-
-item.cchTextMax = strlen(pReg->str.Comments);
-::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-}
-//===============
-
-void UpdateTextItem(HWND hWnd, CRegion* pReg)
-{
-LV_ITEM item;
-memset(&item, 0, sizeof(LV_ITEM));
-item.iItem = pReg->ID;
-item.iSubItem=0;
-char s[5];
-sprintf(s, "R%i",pReg->ID+1);
-item.pszText=s;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 1;
-item.pszText = pReg->str.KE_BE;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-				
-item.iSubItem = 2;
-item.pszText = pReg->str.Name_h_nu;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 3;
-item.pszText = pReg->str.HV;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 4;
-item.pszText = pReg->str.KE_Start;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 5;
-item.pszText = pReg->str.KE_End;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 6;
-item.pszText = pReg->str.Step;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 7;
-item.pszText = pReg->str.N_;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 8;
-item.pszText = pReg->str.Curr_N;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 9;
-item.pszText = pReg->str.Time;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-
-item.iSubItem = 10;
-item.pszText = pReg->str.Priority;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM)(LV_ITEM FAR*) &item);
-
-item.iSubItem = 11;
-char *Comments="Comments", *NullComments="";
-if(strcmp(pReg->str.Comments,Comments))
-	item.pszText = pReg->str.Comments;
-else
-	item.pszText = NullComments;
-::SendMessage(hWnd, LVM_SETITEMTEXT, (WPARAM) (int) pReg->ID, (LPARAM) (LV_ITEM FAR*) &item);
-}
-//=====================
 
 int FindSelectedItem(HWND hWnd)
 {

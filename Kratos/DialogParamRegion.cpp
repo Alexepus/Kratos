@@ -130,7 +130,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 			pDX->Fail();
 		}
 
-		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+		if ((m_pReg->m_NewOrEdit == m_pReg->Edit)
 			&& (m_pReg->m_DataIn.Curr_N > 0 || m_pReg->m_NDataOutCurr > 0)
 			&& (I2D(m_pReg->m_DataIn.KE_Start) != m_KE_Start))
 		{
@@ -191,7 +191,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 					delete m_pDlgKEEnd;
 				}
 			}
-		} // end if((m_pReg->m_NewOreEdit==m_pReg->Edit) && (m_pReg->m_DataIn.Curr_N > 0))
+		} // end if((m_pReg->m_NewOrEdit==m_pReg->Edit) && (m_pReg->m_DataIn.Curr_N > 0))
 
 		  //--------
 		  //ÏÎÑÌÎÒÐÅÒÜ ÃÄÅ ÏÅÐÅÂÛÄÅËßÅÒÑß ÏÀÌßÒÜ
@@ -206,7 +206,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 			pDX->Fail();
 		}
 
-		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+		if ((m_pReg->m_NewOrEdit == m_pReg->Edit)
 			&& (m_pReg->m_DataIn.Curr_N > 0)
 			&& (I2D(m_pReg->m_DataIn.KE_End) != m_KE_End))
 		{
@@ -272,7 +272,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 			}
 		} //end if( delta %  D2I(m_Step)  )		
 
-		if ((m_pReg->m_NewOreEdit == m_pReg->Edit)
+		if ((m_pReg->m_NewOrEdit == m_pReg->Edit)
 			&& (m_pReg->m_DataIn.Curr_N > 0)
 			&& (m_pReg->m_DataIn.Curr_N > m_N))
 		{
@@ -336,7 +336,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 	
 	SubClassingWindows();
 	char str[64];
-	if(theApp.Ini.HighPressureMode.Value && m_pReg->m_NewOreEdit==m_pReg->New)
+	if(theApp.Ini.HighPressureMode.Value && m_pReg->m_NewOrEdit==m_pReg->New)
 		m_HV = 10;
 	else
 		m_HV = I2D( m_pReg->m_DataIn.HV );
@@ -422,7 +422,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 	if( !dataExists )
 		::EnableWindow(*GetDlgItem(IDC_BUTTON_RESET_ALL), FALSE);
 
-	if(m_pReg->m_NewOreEdit==m_pReg->New)
+	if(m_pReg->m_NewOrEdit==m_pReg->New)
 	{
 		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
 		::SendMessage(hWndChild, BM_CLICK, 0, 0);
@@ -458,7 +458,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 
 		}
 	
-	if(m_pReg->m_NewOreEdit==m_pReg->New) sprintf(str," %s", "New Region");
+	if(m_pReg->m_NewOrEdit==m_pReg->New) sprintf(str," %s", "New Region");
 	else sprintf(str," %s %i", "Region", m_pReg->ID+1);
 	::SetWindowText(this->m_hWnd, str);
 
@@ -607,7 +607,7 @@ void CDialogParamRegion::OnButtonReset()
 		m_pReg->m_DataIn.Curr_N = 0;
 		SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
 		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
-		UpdateTextItem(m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, m_pReg);
+		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(m_pReg);
 		
 		HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
 		LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
@@ -710,7 +710,7 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 			pReg->m_DataIn.Curr_N = 0;
 			SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 			sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
-			UpdateTextItem(m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, pReg);
+			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(pReg);
 		}
 		
 		::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET), FALSE);

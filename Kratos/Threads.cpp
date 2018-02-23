@@ -486,7 +486,7 @@ Met_NextSubmeasuring:
 		THR_UNLOCK();
 		if(::IsWindow(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
 			{
-			UpdateTextItem(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd, pReg);
+			ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(pReg);
 			}
 		THR_LOCK();
 		pReg->m_NDataOutCurr = 0;
