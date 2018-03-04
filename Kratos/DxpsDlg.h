@@ -53,6 +53,7 @@ public:
 protected:
 	void OnOK();
 	BOOL AdjustListLastColomn();
+	void MoveRegionWindow();
 	CFont m_Font;
 	BOOL Init;
 	HICON m_hIcon;

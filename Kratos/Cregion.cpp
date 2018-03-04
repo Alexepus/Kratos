@@ -21,13 +21,13 @@ void CRegion::CreateNewRegion()
 	++m_NReg;
 	memset(&m_DataIn, 0, sizeof(DATA_IN));
 	m_DataIn.N_ = 1;
-	m_DataIn.Step = 25;
+	m_DataIn.Step = D2I(0.1);
 	m_DataIn.KE_Start = D2I(-50.0);
-	m_DataIn.KE_End = D2I(-50.0 + 0.025);
+	m_DataIn.KE_End = D2I(-50.0 + 0.1);
 
-	m_DataIn.HV = 1000;
-	m_DataIn.Time = 10;
-	m_DataIn.Off = FALSE;
+	m_DataIn.HV = D2I(25);
+	m_DataIn.Time = D2I(0.3);
+	m_DataIn.Off = TRUE;
 	m_DataIn.KE_BE = DATA_IN::EnergyType::KE;
 	m_DataIn.N_h_nu = 0; 
 	m_DataIn.DeltaVolts = 0;

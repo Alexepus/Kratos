@@ -164,6 +164,26 @@ BOOL CDxpsDlg::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
+void CDxpsDlg::MoveRegionWindow()
+{
+	if(!theApp.m_pMainFrame->m_bSynchronousResize)
+	{
+		RECT rect;
+		GetWindowRect(&rect);
+		theApp.m_pMainFrame->m_bSynchronousResize=TRUE;
+		if(theApp.m_pMainFrame->m_pRegionWnd->GetSafeHwnd())
+			theApp.m_pMainFrame->m_pRegionWnd->MoveWindow(&rect,FALSE);
+		theApp.m_pMainFrame->m_bSynchronousResize=FALSE;
+	}
+
+	/*	GetWindowRect(&rect);
+	CWinApp* App=AfxGetApp();
+	App->WriteProfileInt("SizeOfRegionWindow", "Left", rect.left);
+	App->WriteProfileInt("SizeOfRegionWindow", "Top", rect.top);
+	App->WriteProfileInt("SizeOfRegionWindow", "Right", rect.right);
+	App->WriteProfileInt("SizeOfRegionWindow", "Bottom", rect.bottom);*/
+}
+
 void CDxpsDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialog::OnSize(nType, cx, cy);
@@ -172,21 +192,7 @@ void CDxpsDlg::OnSize(UINT nType, int cx, int cy)
 	{
 		MoveControls();
 
-		if(!theApp.m_pMainFrame->m_bSynchronousResize)
-		{
-			GetWindowRect(&theApp.m_pMainFrame->m_pRegionWnd->m_rectWnd);
-			theApp.m_pMainFrame->m_bSynchronousResize=TRUE;
-			if(theApp.m_pMainFrame->m_pRegionWnd->GetSafeHwnd())
-				theApp.m_pMainFrame->m_pRegionWnd->MoveWindow(&theApp.m_pMainFrame->m_pRegionWnd->m_rectWnd,FALSE);
-			theApp.m_pMainFrame->m_bSynchronousResize=FALSE;
-		}
-		
-	/*	GetWindowRect(&rect);
-		CWinApp* App=AfxGetApp();
-		App->WriteProfileInt("SizeOfRegionWindow", "Left", rect.left);
-		App->WriteProfileInt("SizeOfRegionWindow", "Top", rect.top);
-		App->WriteProfileInt("SizeOfRegionWindow", "Right", rect.right);
-		App->WriteProfileInt("SizeOfRegionWindow", "Bottom", rect.bottom);*/
+		MoveRegionWindow();
 	}
 }
 
@@ -267,22 +273,7 @@ void CDxpsDlg::OnMove(int x, int y)
 	CDialog::OnMove(x, y);
 	if(!Init)
 	{
-		/*RECT rect;
-		GetWindowRect(&rect);
-		CWinApp* App=AfxGetApp();
-		App->WriteProfileInt("SizeOfRegionWindow", "Left", rect.left);
-		App->WriteProfileInt("SizeOfRegionWindow", "Top", rect.top);
-		App->WriteProfileInt("SizeOfRegionWindow", "Right", rect.right);
-		App->WriteProfileInt("SizeOfRegionWindow", "Bottom", rect.bottom);*/
-		if(!theApp.m_pMainFrame->m_bSynchronousResize)
-		{
-			GetWindowRect(&theApp.m_pMainFrame->m_pRegionWnd->m_rectWnd);
-			theApp.m_pMainFrame->m_bSynchronousResize=TRUE;
-			if(theApp.m_pMainFrame->m_pRegionWnd->GetSafeHwnd())
-				theApp.m_pMainFrame->m_pRegionWnd->MoveWindow(&theApp.m_pMainFrame->m_pRegionWnd->m_rectWnd,FALSE);
-			theApp.m_pMainFrame->m_bSynchronousResize=FALSE;
-		}
-
+		MoveRegionWindow();
 	}
 }
 

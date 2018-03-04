@@ -95,60 +95,62 @@ BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color)
  */
 bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamReg)
 {
-int i,k;
-int Step = D2I(pDlgParamReg->m_Step);
-int N_Step = ( D2I(pDlgParamReg->m_KE_End)  - D2I(pDlgParamReg->m_KE_Start)) / Step;
-if(pReg->m_NewOrEdit==pReg->New)
+	int Step = D2I(pDlgParamReg->m_Step);
+	int N_Step = ( D2I(pDlgParamReg->m_KE_End) - D2I(pDlgParamReg->m_KE_Start)) / Step;
+	if(pReg->m_NewOrEdit==pReg->New)
 	{
-	pReg->m_NDataOut = N_Step+1;
-	pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
-	if (pReg->m_pDataOut == NULL) 
-		return false;
-	for(i=0; i<pReg->m_NDataOut; ++i) 
-		{pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
-		 pReg->m_pDataOut[i].y = 0;}
-	}
-else if(pReg->m_NewOrEdit==pReg->Edit)
-	{
-	int NNewDataOut = N_Step+1;
-	int KE_Start = D2I(pDlgParamReg->m_KE_Start);
-	int KE_End = D2I(pDlgParamReg->m_KE_End);
-	int del_KE_Start = abs(pReg->m_DataIn.KE_Start - KE_Start);
-	int del_KE_End = abs(pReg->m_DataIn.KE_End - KE_End);
-	int NewArrayBegin = 0;
-	int OldArrayBegin = 0;
-	int NBytes = NNewDataOut * sizeof(DATA_OUT);
-	auto pNewDataOut = (DATA_OUT*)malloc(NBytes);
-	if (pNewDataOut == NULL) return false;
-	memset(pNewDataOut, 0, NBytes);
-	for (i = 0; i<NNewDataOut; ++i) 
-		pNewDataOut[i].x = KE_Start + i*Step;
-	if(pReg->m_DataIn.Curr_N>0 || pReg->m_NDataOutCurr > 0)
+		pReg->m_NDataOut = N_Step+1;
+		pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
+		if (pReg->m_pDataOut == NULL) 
+			return false;
+		for(int i=0; i<pReg->m_NDataOut; ++i) 
 		{
-		if(pReg->m_DataIn.KE_Start < KE_Start) 
+			pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
+			pReg->m_pDataOut[i].y = 0;
+		}
+	}
+	else if(pReg->m_NewOrEdit==pReg->Edit)
+	{
+		int NNewDataOut = N_Step+1;
+		int KE_Start = D2I(pDlgParamReg->m_KE_Start);
+		int KE_End = D2I(pDlgParamReg->m_KE_End);
+		int del_KE_Start = abs(pReg->m_DataIn.KE_Start - KE_Start);
+		int del_KE_End = abs(pReg->m_DataIn.KE_End - KE_End);
+		int NewArrayBegin = 0;
+		int OldArrayBegin = 0;
+		int NBytes = NNewDataOut * sizeof(DATA_OUT);
+		auto pNewDataOut = (DATA_OUT*)malloc(NBytes);
+		if (pNewDataOut == NULL) return false;
+		memset(pNewDataOut, 0, NBytes);
+		for (int i = 0; i<NNewDataOut; ++i) 
+			pNewDataOut[i].x = KE_Start + i*Step;
+		if(pReg->m_DataIn.Curr_N>0 || pReg->m_NDataOutCurr > 0)
 			{
-			OldArrayBegin = del_KE_Start/Step;
-			pReg->m_NDataOutCurr -= OldArrayBegin;
-			if(pReg->m_NDataOutCurr < 0) pReg->m_NDataOutCurr = 0;
-			if(KE_Start > pReg->m_DataIn.KE_End) 
-				{
-				OldArrayBegin = pReg->m_NDataOut;
-				pReg->m_NDataOutCurr = 0;
-				}
+			if(pReg->m_DataIn.KE_Start < KE_Start) 
+			{
+				OldArrayBegin = del_KE_Start/Step;
+				pReg->m_NDataOutCurr -= OldArrayBegin;
+				if(pReg->m_NDataOutCurr < 0) pReg->m_NDataOutCurr = 0;
+				if(KE_Start > pReg->m_DataIn.KE_End) 
+					{
+					OldArrayBegin = pReg->m_NDataOut;
+					pReg->m_NDataOutCurr = 0;
+					}
 			} // end if(pReg->m_DataIn.KE_Start < KE_Start) 
-		else if(pReg->m_DataIn.KE_Start > KE_Start) 
+			else if(pReg->m_DataIn.KE_Start > KE_Start) 
 			{
-			NewArrayBegin = del_KE_Start/Step;
-			pReg->m_NDataOutCurr += NewArrayBegin;
-			if(pReg->m_NDataOutCurr >= NNewDataOut) pReg->m_NDataOutCurr = 0;
-			if(KE_End < pReg->m_DataIn.KE_Start)
-				{NewArrayBegin = NNewDataOut;
-				 pReg->m_NDataOutCurr = 0;
-				}
+				NewArrayBegin = del_KE_Start/Step;
+				pReg->m_NDataOutCurr += NewArrayBegin;
+				if(pReg->m_NDataOutCurr >= NNewDataOut) pReg->m_NDataOutCurr = 0;
+				if(KE_End < pReg->m_DataIn.KE_Start)
+					{NewArrayBegin = NNewDataOut;
+					 pReg->m_NDataOutCurr = 0;
+					}
 			} // end else if(pReg->m_DataIn.KE_Start > KE_Start) 
 		
-		if(pReg->m_NDataOutCurr > NNewDataOut-1)
-			{ pReg->m_NDataOutCurr = 0;
+			if(pReg->m_NDataOutCurr > NNewDataOut-1)
+			{ 
+				pReg->m_NDataOutCurr = 0;
 				++pReg->m_DataIn.Curr_N;
 				if(pReg->m_DataIn.Curr_N > pReg->m_DataIn.N_) 
 					pReg->m_DataIn.Curr_N = pReg->m_DataIn.N_;
@@ -156,44 +158,47 @@ else if(pReg->m_NewOrEdit==pReg->Edit)
 					pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow = CRegion::GetNext(pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.pRegNow);
 			}
 		
-		for(i=OldArrayBegin, k=NewArrayBegin; i<pReg->m_NDataOut && k<NNewDataOut; ++i, ++k)
+			for(int i=OldArrayBegin, k=NewArrayBegin; i<pReg->m_NDataOut && k<NNewDataOut; ++i, ++k)
 			{
-			pNewDataOut[k].x = pReg->m_pDataOut[i].x;
-			pNewDataOut[k].y = pReg->m_pDataOut[i].y;
+				pNewDataOut[k].x = pReg->m_pDataOut[i].x;
+				pNewDataOut[k].y = pReg->m_pDataOut[i].y;
 			}
 		} // end if(pReg->m_DataIn.Curr_N>0)
-	else pReg->m_NDataOutCurr=0;  // else if(pReg->m_DataIn.Curr_N==0)
+		else 
+			pReg->m_NDataOutCurr=0;  // else if(pReg->m_DataIn.Curr_N==0)
 	
-	free(pReg->m_pDataOut);
-	pReg->m_pDataOut = pNewDataOut;
-	pReg->m_NDataOut = NNewDataOut;
+		free(pReg->m_pDataOut);
+		pReg->m_pDataOut = pNewDataOut;
+		pReg->m_NDataOut = NNewDataOut;
 	} // end else if(pReg->m_NewOrEdit==pReg->Edit)
 	
-pReg->m_DataIn.HV = D2I(pDlgParamReg->m_HV);
-pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
-pReg->m_DataIn.KE_End = D2I(pDlgParamReg->m_KE_End);
+	pReg->m_DataIn.HV = D2I(pDlgParamReg->m_HV);
+	pReg->m_DataIn.KE_Start = D2I(pDlgParamReg->m_KE_Start);
+	pReg->m_DataIn.KE_End = D2I(pDlgParamReg->m_KE_End);
 
-pReg->m_DataIn.Step = D2I(pDlgParamReg->m_Step);
-pReg->m_DataIn.N_ = pDlgParamReg->m_N;
-pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
-sprintf(pReg->m_DataIn.Comments, "%s", (LPCSTR)pDlgParamReg->m_Comments);
-pReg->m_DataIn.Comments[255] = '\0';
-pReg->m_DataIn.Off = pDlgParamReg->m_Off;
-if(pDlgParamReg->m_KE_BE == DATA_IN::EnergyType::KE)
-	{ pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::KE;
+	pReg->m_DataIn.Step = D2I(pDlgParamReg->m_Step);
+	pReg->m_DataIn.N_ = pDlgParamReg->m_N;
+	pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
+	sprintf(pReg->m_DataIn.Comments, "%s", (LPCSTR)pDlgParamReg->m_Comments);
+	pReg->m_DataIn.Comments[255] = '\0';
+	pReg->m_DataIn.Off = pDlgParamReg->m_Off;
+	pReg->m_DataIn.Priority = pDlgParamReg->m_Priority;
+	if(pDlgParamReg->m_KE_BE == DATA_IN::EnergyType::KE)
+	{ 
+		pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::KE;
 		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
-				+ D2I(100.0);	
+					+ D2I(100.0);	
 	}
-else 
-	{pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::BE;
-	 pReg->m_DataIn.N_h_nu = pDlgParamReg->m_Anode;
-	 pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
-																+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
-																+ D2I(100.0);
+	else 
+	{
+		pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::BE;
+		pReg->m_DataIn.N_h_nu = pDlgParamReg->m_Anode;
+		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
+						+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) + D2I(100.0);
 	}
 
-pReg->UpdateStrValues();
-return true;
+	pReg->UpdateStrValues();
+	return true;
 }
 
 //========
