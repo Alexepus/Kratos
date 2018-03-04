@@ -41,7 +41,6 @@
 #define IDC_BUTTON_ADDNEW               1001
 #define IDC_BUTTON_DELETE               1002
 #define IDC_BUTTON_EDIT                 1003
-#define IDC_BUTTON_CLOSE                1004
 #define IDC_BUTTON_ONOFF                1005
 #define IDC_BUTTON_VIEW                 1006
 #define IDC_REPORT_REGION               1010

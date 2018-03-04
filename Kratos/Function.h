@@ -32,7 +32,6 @@ while(1){\
 class CListRegionWnd;
 
 BOOL ReadLOGFONTFromIniFile(LPCTSTR lpszSection, LOGFONT* LogFont);
-//BOOL SetFont(void);
 BOOL WriteLOGFONTToIniFile(LPCTSTR lpszSection, LOGFONT* LogFont);
 BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color);
 
@@ -43,9 +42,6 @@ BOOL ChooseNewFont(HWND hWnd, LOGFONT* LogFont, COLORREF* Color);
 */
 bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamReg);
 
-void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image);
-
-int FindSelectedItem(HWND hWnd);
 #define USER_STOP 1
 void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CSingleLock &tsLock, BOOL UserStop=FALSE);
 void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSingleLock &tsLock, BOOL UserStop=FALSE);

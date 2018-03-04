@@ -607,7 +607,7 @@ void CDialogParamRegion::OnButtonReset()
 		m_pReg->m_DataIn.Curr_N = 0;
 		SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
 		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
-		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(m_pReg);
+		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
 		
 		HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
 		LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
@@ -710,7 +710,7 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 			pReg->m_DataIn.Curr_N = 0;
 			SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 			sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
-			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(pReg);
+			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
 		}
 		
 		::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET), FALSE);

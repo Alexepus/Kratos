@@ -56,9 +56,7 @@ CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 	DeleteDC(dc);
 
 	m_pRegion = NULL;
-	m_pRegionWnd = new CRegionWnd;
-	m_pRegionWnd->RegisterRegionWndClass();
-	m_pRegionWnd->m_pMainFrame = this;
+	m_pRegionWnd = new CRegionWnd(this);
 	m_Doc.fpPrj=NULL;
 	m_Doc.m_NeedSave = m_Doc.NoNeed;
 	m_Doc.m_ThrComm.pRegNow = NULL;
@@ -173,10 +171,6 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	//if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
-	//	return -1;
-	
-	// TODO: Add your specialized creation code here
 	if(GetExStyle() & WS_EX_CLIENTEDGE) 
 		ModifyStyleEx(WS_EX_CLIENTEDGE,0,SWP_FRAMECHANGED);
 	::SetClassLong(this->m_hWnd, GCL_HBRBACKGROUND, (LONG) GetStockObject(LTGRAY_BRUSH));
@@ -184,25 +178,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_pDxpsDlg->Create();
 	m_bSynchronousResize = FALSE;
 
-	m_pRegionWnd->CreateEx(0, m_pRegionWnd->m_WC.lpszClassName, "Regions",
-		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-		m_pRegionWnd->m_rectWnd.left, m_pRegionWnd->m_rectWnd.top,
-		m_pRegionWnd->m_rectWnd.right - m_pRegionWnd->m_rectWnd.left,
-		m_pRegionWnd->m_rectWnd.bottom - m_pRegionWnd->m_rectWnd.top,
-		NULL,NULL);
+	m_pRegionWnd->Show();
 
 	if(this->m_StartStop == Stop) 
-		{
-		SetIconForReg(this->m_pRegionWnd->m_pListRegionWnd, m_Doc.m_ThrComm.pRegNow, 1);
-		}
-	
-	CRegion* pReg;
-	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-		{
-		if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
-		}
+		m_pRegionWnd->m_pListRegionWnd->SetIconForReg(m_Doc.m_ThrComm.pRegNow, 1);
 
-	if(!CreateClient(lpCreateStruct)) return -1; //if(CreateClient(lpCreateStruct) == FALSE) return -1;
+	for(CRegion * pReg = CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
+		if(pReg->m_DataIn.Off == TRUE) m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 2);
+
+	if(!CreateClient(lpCreateStruct)) return -1;
 	PostMessage(WM_POSTCREATEWINDOW);
 	SetRecentProjects();
 	m_RegDxpsMessageID=RegisterWindowMessage("RemoteDxpsState");
@@ -214,8 +198,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMainFrame::CreateClient(LPCREATESTRUCT lpcs) 
 {
-	// TODO: Add your specialized code here and/or call the base class
-	
 	if(!CreateStatusAndToolBar()) return FALSE; //if(CreateStatusAndToolBar() == FALSE) return FALSE;
 	if(!CreateHideWnd()) return FALSE;
 	RECT rect={50,50,200,200};
@@ -251,7 +233,6 @@ BOOL CMainFrame::CreateClient(LPCREATESTRUCT lpcs)
 	m_Graph.SetXGridNumber(6);
 	m_Graph.SetTrackMode(2); //Zoom
 	return TRUE;
-	//return CFrameWnd::OnCreateClient(lpcs, pContext);
 }
 
 BOOL CMainFrame::CreateStatusAndToolBar()
@@ -276,15 +257,11 @@ BOOL CMainFrame::CreateStatusAndToolBar()
 
 	if(m_hToolBar==NULL) return FALSE;
 	
-	//::SendMessage(m_hToolBar, TB_PRESSBUTTON, (WPARAM) ID_PROGRAMM_STOP,(LPARAM) MAKELONG(TRUE, 0));
 	::SendMessage(m_hToolBar, TB_CHECKBUTTON  , (WPARAM) ID_PROGRAMM_STOP,(LPARAM) MAKELONG(TRUE, 0));
-	
 	
 	m_SAndTBarHWND.Sb = m_hStatusBar;
 	m_SAndTBarHWND.Tb = m_hToolBar;
 
-	//::SendMessage(m_hToolBar, TB_ENABLEBUTTON , (WPARAM) ID_FILE_SAVE_PROJECT,(LPARAM) MAKELONG(FALSE, 0));
-	
 	return TRUE;
 }
 
@@ -394,7 +371,6 @@ BOOL CMainFrame::CreateHideWnd()
 	m_pHideWnd->m_hWnd = NULL;
 	m_pHideWnd->m_pBigClientWnd = NULL;
 	const char* class_name = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW,
-		//::LoadCursor(AfxGetInstanceHandle(), IDC_ARROW), 
 		AfxGetApp()->LoadStandardCursor(IDC_ARROW),
 		(HBRUSH) GetStockObject(LTGRAY_BRUSH), 0);
 	RECT rc_sb, rc_tb;
@@ -411,7 +387,6 @@ BOOL CMainFrame::CreateHideWnd()
 		this->m_hWnd, NULL, 0);
 	
 	if(m_pHideWnd->m_hWnd == NULL) return FALSE;
-	
 	
 	return TRUE;
 }
@@ -434,12 +409,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	if(::IsWindow(m_Graph.GetSafeHwnd()))
 	{
 		m_Graph.MoveWindow (rc_tb.left, rc_tb.bottom, rc_tb.right - rc_tb.left, rc_sb.top - rc_tb.bottom);
-	//LogFileFormat("%i, %i - %i, %i", rc_tb.left, rc_tb.bottom, rc_tb.right - rc_tb.left, rc_sb.top - rc_tb.bottom);
 	}
-	//else
-		//LogFileFormat("Invalid hWnd %i, %i - %i, %i", rc_tb.left, rc_tb.bottom, rc_tb.right - rc_tb.left, rc_sb.top - rc_tb.bottom);
-
-//*/
 }
 
 
@@ -496,43 +466,20 @@ void CMainFrame::RecalcClient() // Need del
 	::ScreenToClient(this->m_hWnd, (LPPOINT) &rc_sb.right);
 	::ScreenToClient(this->m_hWnd, (LPPOINT) &rc_tb);
 	::ScreenToClient(this->m_hWnd, (LPPOINT) &rc_tb.right);
-	
-	//if(m_pHideWnd && m_pHideWnd->m_hWnd) 
-	//		::SendMessage(m_pHideWnd->m_hWnd, WM)
-	
-	//if(m_pHideWnd==NULL) AfxMessageBox("m_pHideWnd == NULL");
-	//else AfxMessageBox("m_pHideWnd != NULL");
-	//if(!::IsWindow(m_pHideWnd->m_hWnd)) AfxMessageBox("m_pHideWnd->m_hWnd == NULL");
-	//
-	/*
-	if(m_pHideWnd)
-		::MoveWindow(m_pHideWnd->m_hWnd,
-					rc_tb.left, rc_tb.bottom, 
-					rc_tb.right - rc_tb.left, rc_sb.top - rc_tb.bottom,
-					FALSE);
-	*/
 }
 
 void CMainFrame::OnFileNew() 
 {
-CSingleLock sLock(&MutexThread);	
-	// TODO: Add your command handler code here
+CSingleLock sLock(&MutexThread);
 
-//	HMENU	SysMenu = ::GetSystemMenu(this->m_hWnd, FALSE);
-//	::EnableMenuItem(SysMenu, SC_CLOSE, MF_GRAYED);
-	//AfxMessageBox("MF_GRAYED");
-	//::EnableMenuItem(SysMenu, SC_CLOSE, MF_ENABLED);
-
-int YesNoCancel; 
-
-THRI_LOCK();
+	THRI_LOCK();
 //Дополнительное сохранение
 if(m_Doc.CheckDocType()!=m_Doc.NoDoc)
 	m_Doc.m_NeedSave = m_Doc.Need;
 if(m_Doc.m_NeedSave == m_Doc.Need)
 	{
-	YesNoCancel = AfxMessageBox("The progect has changed.\n\nDo you want save the changes?", 
-																MB_YESNOCANCEL);
+	int YesNoCancel = AfxMessageBox("The progect has changed.\n\nDo you want save the changes?", 
+	                                MB_YESNOCANCEL);
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
@@ -551,11 +498,9 @@ m_Doc.fpPrj=NULL;
 m_Doc.m_ThrComm.pRegNow = NULL;
 m_Doc.m_ProjectFile.FullPath[0] = '\0';
 
-
 m_Doc.m_Graph.m_pDataAll=NULL;
 m_Doc.m_Graph.m_pDataShort=NULL;
 m_Doc.m_Graph.ReDrawAll();
-
 
 if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	{
@@ -583,8 +528,7 @@ if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
 								0, (LPARAM) str);
 	::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
 								0, (LPARAM) str);
-	}	
-
+	}
 
 SetNewTIME(&m_Doc.m_ThrComm.TIME);
 SetStatusTime(m_Doc.m_ThrComm.TIME);
@@ -603,30 +547,11 @@ SetWindowText(m_Doc.m_WindowCaption);
 
 void CMainFrame::OnRegions() 
 {
-	// TODO: Add your command handler code here
-	if(::IsWindow(m_pRegionWnd->m_hWnd))
-		{	m_pRegionWnd->ShowWindow(SW_SHOWNORMAL);
-			::SetFocus(m_pRegionWnd->m_hWnd);
-		}
-	else
-		{
-		m_pRegionWnd->CreateEx(0, m_pRegionWnd->m_WC.lpszClassName, "Regions",
-			WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
-			m_pRegionWnd->m_rectWnd.left, m_pRegionWnd->m_rectWnd.top,
-			m_pRegionWnd->m_rectWnd.right - m_pRegionWnd->m_rectWnd.left,
-			m_pRegionWnd->m_rectWnd.bottom - m_pRegionWnd->m_rectWnd.top,
-			//0,0,0,0,
-			NULL,NULL);
-	}
-	
+	m_pRegionWnd->Show();	
 }
 
 void CMainFrame::OnDestroy() 
 {
-//	CFrameWnd::OnDestroy();
-	
-	// TODO: Add your message handler code here
-	//AfxMessageBox("Destroy Main Frame");
 	if(m_Doc.fpPrj != NULL)
 		{
 		fclose(m_Doc.fpPrj);
@@ -635,21 +560,8 @@ void CMainFrame::OnDestroy()
 	
 	if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd)) 
 		{
-		//m_Doc.m_ViewWnd.OnClose();
 		::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0, 0);
 		m_Doc.m_ViewWnd.DestroyWindow();
-		}
-
-	if(m_pRegionWnd->m_pDlgParamReg)
-		{
-		if(::IsWindow(m_pRegionWnd->m_pDlgParamReg->m_hWnd)) 
-			{
-			//m_pRegionWnd->m_pDlgParamReg->EndDialog(IDCANCEL);
-			//::EndDialog(m_pRegionWnd->m_pDlgParamReg->m_hWnd, IDCANCEL);
-			m_pRegionWnd->m_pDlgParamReg->DestroyWindow();
-			delete m_pRegionWnd->m_pDlgParamReg;
-			m_pRegionWnd->m_pDlgParamReg = NULL;
-			}
 		}
 	
 	CRegion* pReg;
@@ -662,153 +574,134 @@ void CMainFrame::OnDestroy()
 	
 CFrameWnd::OnDestroy();
 }
-//=========
+
 void CMainFrame::OnFileExit() 
 {
-	// TODO: Add your command handler code here
-	::SendMessage(this->m_hWnd, WM_CLOSE, 0, 0);
-	//DestroyWindow();
+	CloseWindow();
 }
-//=========
 
 void CMainFrame::OnFileOpenProject() 
 {
+	CRegion* pReg;
+	CSingleLock sLock(&MutexThread);
+	THRI_LOCK();
+	//Дополнительное сохранение
+	if(m_Doc.CheckDocType()!=m_Doc.NoDoc)
+		m_Doc.m_NeedSave = m_Doc.Need;
 
-int YesNoCancel; 
-CRegion* pReg;
-CSingleLock sLock(&MutexThread);
-THRI_LOCK();
-//Дополнительное сохранение
-if(m_Doc.CheckDocType()!=m_Doc.NoDoc)
-	m_Doc.m_NeedSave = m_Doc.Need;
-
-if(m_Doc.m_NeedSave == m_Doc.Need)
-	{
-	YesNoCancel = AfxMessageBox("The project has changed.\n\nDo you want save the changes?", 
-																MB_YESNOCANCEL);
-	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
-	else if(YesNoCancel == IDYES)
+	if(m_Doc.m_NeedSave == m_Doc.Need)
 		{
-		if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
-		else // if(m_Doc.fpPrj == NULL)
-			{	
-			m_Doc.m_TypeFile = m_Doc.Project; 
-			m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
-			WindowSaveAsOpen(this);			
+		int YesNoCancel = AfxMessageBox("The project has changed.\n\nDo you want save the changes?", 
+										MB_YESNOCANCEL);
+		if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
+		else if(YesNoCancel == IDYES)
+			{
+			if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
+			else // if(m_Doc.fpPrj == NULL)
+				{	
+				m_Doc.m_TypeFile = m_Doc.Project; 
+				m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
+				WindowSaveAsOpen(this);			
+				}
 			}
-		//return;
+		}// end if(m_Doc.m_NeedSave == m_Doc.Need)
+	if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
+	m_Doc.m_ThrComm.pRegNow = NULL;
+
+	m_Doc.m_Graph.m_pDataAll=NULL;
+	m_Doc.m_Graph.m_pDataShort=NULL;
+	m_Doc.m_Graph.ReDrawAll();
+	m_pHideWnd->ShowWindow(SW_SHOW);
+	m_Graph.ShowWindow(SW_HIDE);
+
+
+	if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
+		{
+		m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
+		::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
+		m_Doc.m_ViewWnd.DestroyWindow();
 		}
-	}// end if(m_Doc.m_NeedSave == m_Doc.Need)
-if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-m_Doc.m_ThrComm.pRegNow = NULL;
 
-m_Doc.m_Graph.m_pDataAll=NULL;
-m_Doc.m_Graph.m_pDataShort=NULL;
-m_Doc.m_Graph.ReDrawAll();
-m_pHideWnd->ShowWindow(SW_SHOW);
-m_Graph.ShowWindow(SW_HIDE);
-
-
-if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
-	{
-	m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
-//	m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
-	::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
-	m_Doc.m_ViewWnd.DestroyWindow();
-	}
-
-EmptyAllData();
-m_Doc.m_NeedSave = m_Doc.NoNeed;
-m_Doc.CheckDocType();
-
-sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[no data]");
-
-SetWindowText(m_Doc.m_WindowCaption);
-
-//Clear status
-char *strn="";
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 0, (LPARAM) (LPSTR) strn);
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) strn);
-
-m_Doc.m_TypeFile = m_Doc.Project; 
-m_Doc.m_SaveAsOpen = m_Doc.Open; 
-if( !WindowSaveAsOpen(this) )
-	{
-	THRI_UNLOCK();
 	EmptyAllData();
-	return;
-	}
-sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, m_Doc.m_ProjectFile.FileName);
-SetWindowText(m_Doc.m_WindowCaption);
-m_Doc.CheckDocType();
-if(m_Doc.m_DocType==m_Doc.XPS)
-	{
-	//if( !(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd)) ) 
+	m_Doc.m_NeedSave = m_Doc.NoNeed;
+	m_Doc.CheckDocType();
 
-	if(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd))
-	//	{
-	//else
-		{	
+	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[no data]");
+
+	SetWindowText(m_Doc.m_WindowCaption);
+
+	//Clear status
+	char *strn="";
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 0, (LPARAM) (LPSTR) strn);
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) strn);
+
+	m_Doc.m_TypeFile = m_Doc.Project; 
+	m_Doc.m_SaveAsOpen = m_Doc.Open; 
+	if( !WindowSaveAsOpen(this) )
+		{
+		THRI_UNLOCK();
+		EmptyAllData();
+		return;
+		}
+	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, m_Doc.m_ProjectFile.FileName);
+	SetWindowText(m_Doc.m_WindowCaption);
+	m_Doc.CheckDocType();
+	if(m_Doc.m_DocType==m_Doc.XPS)
+		{
+		if(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd))
+			{	
+			for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
+				{ 
+				m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(pReg);
+				if(pReg->m_DataIn.Off == TRUE) m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 2);
+				}
+			}
+
+		if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
+			{
+			char str[32];
+			sprintf(str, "No Comments");
+			::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
+										0, (LPARAM) str);
+			::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
+										0, (LPARAM) str);
+			}	
+
+		// С какого региона начинать
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-			{ 
-			m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(pReg);
-			if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
+			{
+			if(pReg->m_NDataOutCurr != 0) { m_Doc.m_ThrComm.pRegNow = pReg;	break;}
+			}
+		OnRegions();
+
+		SetNewTIME(&m_Doc.m_ThrComm.TIME);
+
+		SetStatusTime(m_Doc.m_ThrComm.TIME);
+		}
+	else if(m_Doc.m_DocType==m_Doc.DXPS)
+		{
+		CString str;
+		m_pDxpsDlg->FillTable();
+		str.Format("%g",CDxpsRegion::ScanTime);
+		m_pDxpsDlg->GetDlgItem(IDC_EDIT_DXPS_TIME)->SetWindowText((LPCSTR)str);
+			OnProgramDxpsTable();
+			if(CDxpsRegion::PassedNumberOfPoints>0)
+			{
+				m_pHideWnd->ShowWindow(SW_HIDE);
+				m_Graph.ShowWindow(SW_SHOW);
+				m_Graph.PlotData();
 			}
 		}
 
-	if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
-		{
-		char str[32];
-		sprintf(str, "No Comments");
-		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
-									0, (LPARAM) str);
-		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
-									0, (LPARAM) str);
-		}	
-
-
-	//	}// end if(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd))
-
-	// С какого региона начинать
-	///*
-	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-		{
-		if(pReg->m_NDataOutCurr != 0) { m_Doc.m_ThrComm.pRegNow = pReg;	break;}
-		}
-	//*/
-	OnRegions();
-
-	SetNewTIME(&m_Doc.m_ThrComm.TIME);
-
-	SetStatusTime(m_Doc.m_ThrComm.TIME);
-	}
-else if(m_Doc.m_DocType==m_Doc.DXPS)
-	{
-	CString str;
-	m_pDxpsDlg->FillTable();
-	str.Format("%g",CDxpsRegion::ScanTime);
-	m_pDxpsDlg->GetDlgItem(IDC_EDIT_DXPS_TIME)->SetWindowText((LPCSTR)str);
-		OnProgramDxpsTable();
-		if(CDxpsRegion::PassedNumberOfPoints>0)
-		{
-			m_pHideWnd->ShowWindow(SW_HIDE);
-			m_Graph.ShowWindow(SW_SHOW);
-			m_Graph.PlotData();
-		}
-	}
-
-THRI_UNLOCK();
-
+	THRI_UNLOCK();
 }
-//=========
 
 void CMainFrame::OnUpdateFileOpenProject(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_StartStop == Start) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);	
 }
-//=========
+
 void CMainFrame::OnFileSaveAsEasyPlot() 
 {
 	m_Doc.m_TypeFile = m_Doc.EasyPlot; 
@@ -832,7 +725,6 @@ void CMainFrame::OnUpdateFileSaveAsEasyPlot(CCmdUI* pCmdUI)
 
 void CMainFrame::OnUpdateFileSaveProjectAs(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_Doc.CheckDocType()!=-1) pCmdUI->Enable(TRUE);
 	else pCmdUI->Enable(FALSE);
 }
@@ -893,7 +785,6 @@ void CMainFrame::OnProgrammStart()
 
 void CMainFrame::OnUpdateProgrammStart(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_StartStop == Start) pCmdUI->Enable(TRUE);
 	else	pCmdUI->Enable(FALSE);
 }
@@ -901,7 +792,6 @@ void CMainFrame::OnUpdateProgrammStart(CCmdUI* pCmdUI)
 void CMainFrame::OnProgrammStop() 
 {
 	m_Doc.m_ThrComm.StopContinue = m_Doc.m_ThrComm.Stop;
-	//m_StartStop = Start;
 	::SendMessage(m_hToolBar, TB_CHECKBUTTON  , (WPARAM) ID_PROGRAMM_STOP, 
 																							(LPARAM) MAKELONG(TRUE, 0));
 	::SendMessage(m_hToolBar, TB_ENABLEBUTTON  , (WPARAM) ID_FILE_OPEN_PROJECT, 
@@ -915,7 +805,6 @@ void CMainFrame::OnProgrammStop()
 
 void CMainFrame::OnUpdateProgrammStop(CCmdUI* pCmdUI) 
 {
-	// TODO: Add your command update UI handler code here
 	if(m_StartStop == Stop) pCmdUI->Enable(TRUE);
 	else	pCmdUI->Enable(FALSE);
 }
@@ -932,7 +821,6 @@ void CMainFrame::OnSettingsCamacSetup()
 		CCamSetupDlg dlg(AfxGetApp(), this);
 		dlg.DoModal();
 	}
-
 }
 
 void CMainFrame::OnSettingsHardwareSetup() 
@@ -953,7 +841,6 @@ void CMainFrame::OnSettingsMeasuringOptions()
 
 void CMainFrame::OnGraphicsFont() 
 {
-	// TODO: Add your command handler code here
 LOGFONT NewLogFont;
 memmove((void*) &NewLogFont, (void*) m_Doc.m_Graph.m_pLogFont, sizeof(LOGFONT));	
 if(ChooseNewFont(this->m_hWnd, &NewLogFont, &m_Doc.m_Graph.m_TextColor))	
@@ -1105,8 +992,8 @@ EmptyAllData();
 
 void CMainFrame::OnGraphicsGrid() 
 {
-	if(m_Doc.m_Graph.m_Grid == TRUE) {m_Doc.m_Graph.m_Grid = FALSE;}// AfxMessageBox("TRUE->FALSE");}
-	else {m_Doc.m_Graph.m_Grid = TRUE;}//  AfxMessageBox("FALSE->TRUE");}
+	if(m_Doc.m_Graph.m_Grid == TRUE) {m_Doc.m_Graph.m_Grid = FALSE;}
+	else {m_Doc.m_Graph.m_Grid = TRUE;}
 	m_Doc.m_Graph.ReDrawAll();
 }
 
@@ -1198,8 +1085,7 @@ void CMainFrame::OnGraphicsSettingsForViewer()
 		}// end IDOK
 	
 	::EnableWindow(m_Doc.m_ViewWnd.m_hWnd, TRUE);
-	::EnableWindow(m_pRegionWnd->m_hWnd, TRUE);
-	
+	::EnableWindow(m_pRegionWnd->m_hWnd, TRUE);	
 }
 
 void CMainFrame::OnUpdateGraphicsSettingsForViewer(CCmdUI* pCmdUI) 
@@ -1409,8 +1295,6 @@ OnFileRecentProjects(3);
 
 void CMainFrame::OnFileRecentProjects(int Index)
 {
-
-int YesNoCancel; 
 CSingleLock sLock(&MutexThread);
 THRI_LOCK();
 //Дополнительное сохранение
@@ -1419,13 +1303,13 @@ if(m_Doc.CheckDocType()!=m_Doc.NoDoc)
 
 if(m_Doc.m_NeedSave == m_Doc.Need)
 	{
-	YesNoCancel = AfxMessageBox("The project has changed.\n\nDo you want save the changes?", 
-																MB_YESNOCANCEL);
+	int YesNoCancel = AfxMessageBox("The project has changed.\n\nDo you want save the changes?", 
+	                                MB_YESNOCANCEL);
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
 		if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
-		else // if(m_Doc.fpPrj == NULL)
+		else
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
 			m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
@@ -1505,7 +1389,7 @@ if(m_Doc.m_DocType==m_Doc.XPS)
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ 
 			m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(pReg);
-			if(pReg->m_DataIn.Off == TRUE) SetIconForReg(m_pRegionWnd->m_pListRegionWnd, pReg, 2);
+			if(pReg->m_DataIn.Off == TRUE) m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 2);
 			}
 	}
 
@@ -1548,7 +1432,6 @@ else if(m_Doc.m_DocType==m_Doc.DXPS)
 	}
 
 THRI_UNLOCK();
-
 }
 
 // Удаленный запуск из приложения Spec

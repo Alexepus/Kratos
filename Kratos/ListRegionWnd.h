@@ -29,7 +29,10 @@ public:
 public:
 	void CreateColumns();
 	void SetNewRegionItem(CRegion* pReg);
-	void UpdateTextItem(CRegion* pReg);
+	void UpdateItem(CRegion* pReg);
+	int FindSelectedItem();
+	void SetIconForReg(CRegion* pReg, int Image);
+	void SetOnOffIcon(CRegion* pReg);
 	void SaveColumnsWidthsToIni();
 	void Create(CWnd* parentCWnd, RECT controlPosition);
 

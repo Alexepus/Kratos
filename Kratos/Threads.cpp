@@ -100,7 +100,7 @@ Met_BeginRegion:
 		if( (pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE) )
 				{goto Met_EndRegion;}
 		THR_UNLOCK();
-		SetIconForReg(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd, pReg, 1);
+		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
 		THR_LOCK();
 		ThComm->pRegNow = pReg;
 		k = pReg->m_NDataOutCurr;  //current measuring in the region
@@ -486,7 +486,7 @@ Met_NextSubmeasuring:
 		THR_UNLOCK();
 		if(::IsWindow(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
 			{
-			ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateTextItem(pReg);
+			ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
 			}
 		THR_LOCK();
 		pReg->m_NDataOutCurr = 0;
@@ -505,18 +505,16 @@ Met_NextSubmeasuring:
 
 Met_EndRegion:
 		
-		THR_UNLOCK();
-		if(pReg->m_DataIn.Off == TRUE)
-			SetIconForReg(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd, pReg, 2);
-		else 
-			{
-			SetIconForReg(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd, pReg, 0);
+		THR_UNLOCK()
+		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetOnOffIcon(pReg);
+		if(!pReg->m_DataIn.Off)
+		{
 			if(ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
 				{
 				ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
 				ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
 				}
-			}
+		}
 		THR_LOCK();
 		pReg = CRegion::GetNext(pReg);
 		if(pReg) goto Met_BeginRegion;
@@ -534,8 +532,7 @@ Met_EndBigCircle:
 //!!!!!! Смотри конец функции 
 if(!theApp.Ini.CamacSimulation.Value)
 {
-	//Camac_WriteLong(CrateN, RegisterN, REGISTER_KE_A, REGISTER_POT_WRITE_F, 0L);
-							//Writing KE; (younger KE bit = 25 mV) 
+	//Writing KE; (younger KE bit = 25 mV) 
 	if(!theApp.Ini.HighPressureMode.Value) //KRATOS
 		Camac_WriteLong(CrateN, RegisterN, REGISTER_HV_A, REGISTER_POT_WRITE_F, 0L);
 							//Writing HV; (younger HV bit = 1 V)

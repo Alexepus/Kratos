@@ -132,7 +132,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			char str[128];
 			int i;
 			CRegion* pReg;
-			int SelectedItem = FindSelectedItem(this->m_hWnd);
+			int SelectedItem = FindSelectedItem();
 			for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 				{ if(pReg->ID == SelectedItem) break;}
 			sprintf(str,"Are you sure you want\nto reset all measured data ?");
@@ -148,13 +148,13 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				pReg->m_DataIn.Curr_N = 0;
 				SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 				pReg->UpdateStrValues();
-				UpdateTextItem(pReg);
+				UpdateItem(pReg);
 			}
 		}
 		else if(wID == IDC_BUTTON_COMMENTS)
 			{
 			char str[32];
-			int SelectedItem = FindSelectedItem(this->m_hWnd);
+			int SelectedItem = FindSelectedItem();
 			CRegion* pReg;
 
 			if(!::IsWindow(this->m_CommentsWnd.m_hWnd))
@@ -335,10 +335,10 @@ void CListRegionWnd::SetNewRegionItem(CRegion* pReg)
 	item.stateMask = (LVIS_SELECTED | LVIS_FOCUSED);
 	::SendMessage(m_hWnd, LVM_INSERTITEM, 0, (LPARAM)&item);
 
-	UpdateTextItem(pReg);	
+	UpdateItem(pReg);	
 }
 
-void CListRegionWnd::UpdateTextItem(CRegion* pReg)
+void CListRegionWnd::UpdateItem(CRegion* pReg)
 {
 	LV_ITEM item;
 	memset(&item, 0, sizeof(LV_ITEM));
@@ -396,4 +396,37 @@ void CListRegionWnd::UpdateTextItem(CRegion* pReg)
 	else
 		item.pszText = NullComments;
 	::SendMessage(m_hWnd, LVM_SETITEMTEXT, (WPARAM)(int)pReg->ID, (LPARAM) &item);
+
+	SetOnOffIcon(pReg);
+}
+
+int CListRegionWnd::FindSelectedItem()
+{
+	UINT N_Item = (UINT) ::SendMessage(m_hWnd, LVM_GETITEMCOUNT, 0, 0);
+	UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
+	for (UINT i = 0; i<N_Item; ++i)
+	{
+		UINT state = (UINT) ::SendMessage(m_hWnd, LVM_GETITEMSTATE, (LPARAM)(int)i, (WPARAM)mask);
+		if ((state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int)i);
+	}
+	return -1;
+}
+
+void CListRegionWnd::SetIconForReg(CRegion* pReg, int Image)
+{
+	if (pReg == nullptr) 
+		return;
+	LV_ITEM item;
+	memset(&item, 0, sizeof(LV_ITEM));
+	item.iItem = pReg->ID;
+	item.iSubItem = 0;
+	item.iImage = Image;
+	item.mask = LVIF_IMAGE;
+	if (::IsWindow(m_hWnd))
+		::SendMessage(m_hWnd, LVM_SETITEM, 0, (LPARAM)&item);
+}
+
+void CListRegionWnd::SetOnOffIcon(CRegion* pReg)
+{
+	SetIconForReg(pReg, pReg->m_DataIn.Off? 2 : 0);
 }

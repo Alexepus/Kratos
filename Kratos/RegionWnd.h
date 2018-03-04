@@ -1,13 +1,6 @@
 #if !defined(AFX_REGIONWND_H__C7EC35A2_81A9_11D5_9A4B_008048FD9845__INCLUDED_)
 #define AFX_REGIONWND_H__C7EC35A2_81A9_11D5_9A4B_008048FD9845__INCLUDED_
-
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
-// RegionWnd.h : header file
-//
-
-//class CListRegionWnd;
 
 typedef struct _BUTTON
 {
@@ -22,7 +15,6 @@ int cy;
 BUTTON AddNew;
 BUTTON Edit;
 BUTTON Delete;
-BUTTON Close;
 BUTTON OnOff;
 BUTTON View;
 } ALL_BUTTONS;
@@ -39,32 +31,28 @@ class CRegionWnd : public CWnd
 	HICON m_hIcon;
 // Construction
 	public:
-	CRegionWnd();
+	CRegionWnd(CMainFrame* pMainFrame);
+	virtual ~CRegionWnd();
 
-// Operations
-public:
+	// Operations
+	void Show();
+	RECT GetWindowRect();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CRegionWnd)
-	protected:
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
-// Implementation
 public:
-	CMainFrame* m_pMainFrame;
-	CDialogParamRegion* m_pDlgParamReg;
 	CListRegionWnd* m_pListRegionWnd;
 
-	ALL_BUTTONS m_Button;
+private:
+	CMainFrame* m_pMainFrame;
+	CDialogParamRegion* m_pDlgParamReg;
+	ALL_BUTTONS m_Buttons;
 	RECT m_rectWnd;
 	BOOL RegisterRegionWndClass();
-//	const char* m_ClassNameRegionWnd;
-	WNDCLASS m_WC;
-
-	
-	virtual ~CRegionWnd();
+	WNDCLASS m_WC;	
 
 	// Generated message map functions
 protected:
@@ -76,6 +64,11 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnButtonAddNew();
+	afx_msg void OnButtonEdit();
+	afx_msg void OnButtonDelete();
+	afx_msg void OnButtonView();
+	afx_msg void OnButtonOnOff();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

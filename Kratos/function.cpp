@@ -196,33 +196,6 @@ pReg->UpdateStrValues();
 return true;
 }
 
-//============
-void SetIconForReg(CListRegionWnd* pList, CRegion* pReg, int Image)
-{
-if(pReg == NULL) return;
-LV_ITEM item;
-memset(&item, 0, sizeof(LV_ITEM));
-item.iItem = pReg->ID;
-item.iSubItem=0;
-item.iImage=Image;
-item.mask = LVIF_IMAGE;
-if(::IsWindow(pList->m_hWnd))
-	::SendMessage(pList->m_hWnd, LVM_SETITEM, 0, (LPARAM) &item);
-}
-
-int FindSelectedItem(HWND hWnd)
-{
-UINT N_Item = (UINT) ::SendMessage(hWnd, LVM_GETITEMCOUNT, 0, 0);
-UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
-UINT state;
-for(UINT i=0; i<N_Item; ++i)
-	{
-	state = (UINT) ::SendMessage(hWnd, LVM_GETITEMSTATE, (LPARAM) (int) i, (WPARAM)  mask);	
-	if( (state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int) i);
-	}
-return -1;
-}
-
 //========
 void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CSingleLock &tsLock, BOOL UserStop)
 {
@@ -264,7 +237,6 @@ void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CS
 	if(tsLock.IsLocked())
 	{ 
 		tsLock.Unlock();
-		//LogFile("UnLock", __FILE__, __LINE__);
 	}
 	if(!UserStop)
 	{
@@ -272,7 +244,7 @@ void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CS
 		LogFile(str);
 		AfxMessageBox(str);
 	}
-	SetIconForReg(pList, pReg, 0);
+	pList->SetIconForReg(pReg, 0);
 	::SendMessage(pMainFrame->m_hToolBar, TB_CHECKBUTTON  , 
 								(WPARAM) ID_PROGRAMM_START, (LPARAM) MAKELONG(FALSE, 0));
 	::SendMessage(pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
