@@ -316,7 +316,7 @@ else if(DocType==CDoc::DXPS)
 	CTime time = CTime::GetCurrentTime();
 
 	fprintf(fp, ";File \"%s\", saved by %s in %s\n", FileName, theApp.m_pMainFrame->AppTitle, (LPCSTR)time.Format("%b %d, %Y at %H:%M:%S"));
-	fprintf(fp, ";Measurement started in \"%s\"\n", COleDateTime(CDxpsRegion::ScanStartDateTime).Format("%b %d, %Y at %H:%M:%S"));
+	fprintf(fp, ";Measurement started in \"%s\"\n", (LPCSTR)COleDateTime(CDxpsRegion::ScanStartDateTime).Format("%b %d, %Y at %H:%M:%S"));
 	fprintf(fp, ";Total scan time: %.2i:%.2i:%.2i. ",  ((int)CDxpsRegion::PassedCommonTime)/60/60,(((int)CDxpsRegion::PassedCommonTime)/60)%60, ((int)CDxpsRegion::PassedCommonTime)%60);
 	if(RegionsOff==0)
 		fprintf(fp, "Number of regions: %i\n", CDxpsRegion::GetRegNumber());

@@ -1,13 +1,4 @@
-// DxpsRegion.h: interface for the CDxpsRegion class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_DXPSREGION_H__61D1EF66_AF22_4915_8DA9_2B3DAC194F9E__INCLUDED_)
-#define AFX_DXPSREGION_H__61D1EF66_AF22_4915_8DA9_2B3DAC194F9E__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "Region.h"
 #include <list>
@@ -25,6 +16,25 @@ struct DxpsOutData
 	double Freq;
 	double Tref; // Задаточная температура, может быть NaN, т.е. не задана
 	double Tcur; // Текущая измеренная температура, может быть NaN, т.е. неизвестна
+};
+
+#define TYPE_BE 0
+#define TYPE_DIV 1
+
+struct DxpsRegPar
+{
+	BOOL Off;
+	int Type; //0 if "BE Print", 1 if Division Divident/Divisor
+	int Divident;
+	int Divisor;
+	double BE;
+	double HV;
+	int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
+	double Delay; //Задержка перед началом измерений
+	double Dwell;	//Время измерения
+	int ColorIndex;
+	char Comments[256];
+	//enum{Al, Mg, He1, He2};
 };
 
 class CDxpsData
@@ -74,5 +84,3 @@ public:
 	//DWORD m_NDataOut;
 	//DWORD m_NDataOutCurr;
 };
-
-#endif // !defined(AFX_DXPSREGION_H__61D1EF66_AF22_4915_8DA9_2B3DAC194F9E__INCLUDED_)

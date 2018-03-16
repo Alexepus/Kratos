@@ -36,3 +36,4 @@
 #include "DxpsParamDlg.h"
 #include "CamSetupDlg.h"
 #include "CamSetupHPDlg.h"
+#include "MfcHelper.h"

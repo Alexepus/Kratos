@@ -1,14 +1,7 @@
 #include"stdafx.h"
 #include"Main.h"
 #include <limits>
-/*
-#include<stdio.h>
-#include<alloc.h>
-#include<string.h>
-//#include"OnlyDOS.h"
-#include"Region.h"
-#include"SvRdFile.h"
-*/
+
 extern CProgNewApp theApp;
 extern CString FileSaveOpenErrorDescription;
 
@@ -174,8 +167,6 @@ return TRUE;
 }
 
 #define ERROR_READ_NREG 1
-#define ERROR_READ_REGION_PARAMS 3
-
 #define INCORRECT_FILE_VERSION 9
 #define NEWER_XPS_FILE_VERSION 10
 #define NEWER_DXPS_FILE_VERSION 11
@@ -183,95 +174,147 @@ return TRUE;
 #define ERROR_READ_OUTPUT_PARAMS 13
 #define ERROR_READ_DATA_OF_ABSENT_REG 14
 #define ERROR_TOO_MUCH_DATA_POINTS 15
+
+void ReadXpsFileV1(FILE* fp)
+{
+	int NReg;
+	if (fread(&NReg, sizeof(int), 1, fp) != 1)
+		throw(ERROR_READ_NREG);
+
+	for (int i = 0; i<NReg; ++i)
+	{
+		CRegion* pReg = new CRegion;
+		if (pReg != NULL)
+		{
+			if (fread(&pReg->m_ptrInFile, sizeof(UINT), 1, fp) != 1)
+				throw std::exception(Format("Error read file when reading pointer to file location in R%i", pReg->ID));
+			
+			if (fread(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp) != 1)
+				throw std::exception(Format("Error read file when reading region input parameters in R%i", pReg->ID));
+			
+			if (fread(&pReg->m_NDataOutCurr, sizeof(int), 1, fp) != 1)
+				throw std::exception(Format("Error read file when reading current point number in R%i", pReg->ID));
+			
+			if (fread(&pReg->m_NDataOut, sizeof(int), 1, fp) != 1)
+				throw std::exception(Format("Error read file when reading number of output points in R%i", pReg->ID));
+			
+			if (pReg->m_NDataOut<0 || pReg->m_NDataOut>60000)
+			{
+				FileSaveOpenErrorDescription.Format("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut);
+				pReg->m_NDataOut = 60000;
+				throw(ERROR_TOO_MUCH_DATA_POINTS);
+			}
+			if (pReg->m_NDataOut)
+			{
+				pReg->m_pDataOut = (DATA_OUT*)malloc(pReg->m_NDataOut * sizeof(DATA_OUT));
+				if (pReg->m_pDataOut != NULL)
+				{
+					memset(pReg->m_pDataOut, 0, pReg->m_NDataOut * sizeof(DATA_OUT));
+					int Read = fread(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+					if (Read != pReg->m_NDataOut)
+					{
+						throw std::exception(Format("Ошибка при чтении данных региона (Region R%i: open %i data points, need %i. Current point measured: %i)",
+							pReg->ID + 1, Read, pReg->m_NDataOut, pReg->m_NDataOutCurr));
+					}
+				}
+				else
+				{
+					delete pReg;
+					AfxMessageBox(Format("Can`t alloc memory for DataOut of region number %i", CRegion::m_NReg).GetString());
+					break;
+				}
+			}
+
+			if (pReg->m_DataIn.N_h_nu<0) pReg->m_DataIn.N_h_nu = 0;
+			if (pReg->m_DataIn.N_h_nu>3) pReg->m_DataIn.N_h_nu = 3;
+			pReg->UpdateStrValues();
+		}  // end if(pReg != NULL)
+		else
+		{
+			AfxMessageBox(Format("Can`t alloc memory for object CRegion number %i", CRegion::m_NReg + 1).GetString());
+			break;
+		}
+	}
+}
+
+void ReadXpsFileV2(FILE* fp)
+{
+
+}
+
+void ReadXpsFile(FILE* fp, int FileVersion)
+{
+	/* Структура XPS-файла (Ver.1 (0x13)):
+	____________________________________________________________
+	struct key
+	{
+	short	KratosKey=KRATOS_KEY={0x01,0x03};
+	char	DocumentType=XPS_TYPE=0xbc;
+	char	DocumentVersion=XPS_VER1=0x13;
+	};
+	int	NumberOfRegions;
+	struct
+	{
+	UINT	ptrCurr; //Указывает на m_DataIn
+	DATA_IN_V1 m_DataIn;
+	int		m_NDataOutCurr;
+	int		m_NDataOut;
+	DATA_OUT (*m_pDataOut)[m_NDataOut];
+
+	} FullRegionData[NumberOfRegions];
+
+
+	Структура XPS-файла (Ver.2 (0x14)):
+	____________________________________________________________
+	struct key
+	{
+	short	KratosKey=KRATOS_KEY={0x01,0x03};
+	char	DocumentType=XPS_TYPE=0xbc;
+	char	DocumentVersion=XPS_VER2=0x14;
+	};
+	int	NumberOfRegions;
+	struct
+	{
+	UINT	ptrCurr; //Указывает на позицию m_DataIn файле (скорее, для проверки корректности файла)
+	DATA_IN m_DataIn;
+	doubleTime m_BeginTime; // Время начала изменения
+	doubleTime m_EndTime; // Время последней записи выходных данных в файл
+	int		m_NDataOutCurr; // Текущая измеряемая позиция
+	int		m_NDataOut; // Количество выходных элементов DATA_OUT
+	DATA_OUT (*m_pDataOut)[m_NDataOut];
+	} FullRegionData[NumberOfRegions];
+	*/
+
+	//ParseXPSFile(fp);
+	//fseek(fp, 4, SEEK_SET);
+
+	if(FileVersion<XPS_VER1)
+		throw (INCORRECT_FILE_VERSION);
+	if (FileVersion == XPS_VER1)
+		ReadXpsFileV1(fp);
+	else if (FileVersion == XPS_VER2)
+		ReadXpsFileV2(fp);
+	else 
+		throw (NEWER_XPS_FILE_VERSION);
+}
+
 BOOL ReadBinaryFile(FILE* fp)
 {
 FileSaveOpenErrorDescription="";
-CRegion* pReg;
-CDxpsRegion* pDxpsReg;
 int NReg;
-int FileVersion;
-char str[80];
 unsigned char key[4];
 int i;
-//UINT ptrCurr = 0;
-ParseXPSFile(fp);
-fseek(fp, 0, SEEK_SET);
-//rewind(fp);
 
 try{
 if(!fread(key, sizeof(unsigned char), 4, fp)) //return FALSE;
 	{AfxMessageBox("ERROR read file.   "); throw (7);}
-FileVersion=(BYTE)key[3];
+int FileVersion = key[3];
 if(key[0]==0x01 && key[1]==0x03 && key[2]==0xbc) theApp.m_pMainFrame->m_Doc.m_DocType=CDoc::XPS;
 else if(key[0]==0x01 && key[1]==0x03 && key[2]==0xbd) theApp.m_pMainFrame->m_Doc.m_DocType=CDoc::DXPS;
 else {AfxMessageBox("This file is not a project file."); throw (8);}
 
-	if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::XPS)
-{
-	if(FileVersion<XPS_VER1)
-		throw (INCORRECT_FILE_VERSION);
-	if(FileVersion>XPS_VER1)
-		throw (NEWER_XPS_FILE_VERSION);
-	if(fread(&NReg, sizeof(int), 1, fp)!=1)
-		throw(ERROR_READ_NREG);
-
-	for(i=0; i<NReg; ++i)
-		{
-
-		pReg = new CRegion;
-		if(pReg != NULL)
-			{
-			if(fread(&pReg->m_ptrInFile, sizeof(UINT), 1, fp)!=1)
-				throw(2);
-			if(fread(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp)!=1)
-				throw(ERROR_READ_REGION_PARAMS);
-			if(fread(&pReg->m_NDataOutCurr, sizeof(int), 1, fp)!=1)
-				throw(4);
-			if(fread(&pReg->m_NDataOut, sizeof(int), 1, fp)!=1)
-				throw(5);
-			if(pReg->m_NDataOut<0 || pReg->m_NDataOut>60000)
-			{
-				FileSaveOpenErrorDescription.Format("Region R%i: incorrect number of data points (%i). ", pReg->ID+1,pReg->m_NDataOut);
-				pReg->m_NDataOut=60000;
-				throw(ERROR_TOO_MUCH_DATA_POINTS);
-			}
-			if(pReg->m_NDataOut)
-				{
-				pReg->m_pDataOut = (DATA_OUT*) malloc(pReg->m_NDataOut*sizeof(DATA_OUT));
-				if(pReg->m_pDataOut!=NULL)
-					{
-						int Read;
-						memset(pReg->m_pDataOut, 0, pReg->m_NDataOut*sizeof(DATA_OUT));
-						Read=fread(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
-						if(Read!=pReg->m_NDataOut)
-						{
-							FileSaveOpenErrorDescription.Format("(Region R%i: open %i data points, need %i. Current point measured: %i)", 
-								pReg->ID+1, Read, pReg->m_NDataOut, pReg->m_NDataOutCurr);
-							throw(6);
-						}
-					}
-				else
-					{
-					delete pReg;
-					sprintf(str, "Can`t alloc memory for DataOut of region number %i", CRegion::m_NReg);
-					AfxMessageBox(str);
-					break;
-					}
-				}
-			
-			if(pReg->m_DataIn.N_h_nu<0) pReg->m_DataIn.N_h_nu=0;
-			if(pReg->m_DataIn.N_h_nu>3) pReg->m_DataIn.N_h_nu=3;
-			pReg->UpdateStrValues();
-			}  // end if(pReg != NULL)
-		else
-			{
-			sprintf(str, "Can`t alloc memory for object CRegion number %i",
-					CRegion::m_NReg+1);
-			AfxMessageBox(str);
-			break;
-			}
-	}//for
-}//if(m_DocType==XPS)
+if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::XPS)
+	ReadXpsFile(fp, FileVersion);
 else if(theApp.m_pMainFrame->m_Doc.m_DocType==CDoc::DXPS)
 	{
 
@@ -370,17 +413,17 @@ ____________________________________________________________________
 		fgetpos(fp, &pos);
 		for(i=0; i<NReg; ++i)
 		{
-			pDxpsReg = CDxpsRegion::CreateNewRegion();
+			CDxpsRegion * pDxpsReg = CDxpsRegion::CreateNewRegion();
 			if (fread(&pDxpsReg->Parameters, sizeof(DxpsRegPar), 1, fp)!=1)
-				throw(ERROR_READ_REGION_PARAMS);
+				throw std::exception("Ошибка при чтении параметров региона");
 		}
 		fgetpos(fp, &pos);
 		if (fread(&CDxpsRegion::ScanTime, sizeof(double), 1, fp)!=1)
-			throw(ERROR_READ_REGION_PARAMS);
+			throw std::exception("Ошибка при чтении параметров региона");
 		if(FileVersion == DXPS_VER2)
 		{
 			if (fread(&CDxpsRegion::ScanStartDateTime, sizeof(double), 1, fp)!=1)
-				throw(ERROR_READ_REGION_PARAMS);
+				throw std::exception("Ошибка при чтении параметров региона");
 		}
 		if (fread(&CDxpsRegion::PassedCommonTime, sizeof(double), 1, fp)!=1)
 			throw(ERROR_READ_OUTPUT_PARAMS);
@@ -419,7 +462,6 @@ ____________________________________________________________________
 				CDxpsRegion::OutData.push_back(OutData);
 			}
 		}
-
 	}
 
 	if(!feof(fp)) //must be: eof==0
@@ -440,22 +482,6 @@ catch(int Place)
 	{
 	case ERROR_READ_NREG:
 		str2.Format("Number of regions");
-		FileSaveOpenErrorDescription+="Error read file when reading "+str2;
-		break;
-	case 2:
-		str2.Format("pointer to file location in R%i", pReg->ID);
-		FileSaveOpenErrorDescription+="Error read file when reading "+str2;
-		break;
-	case ERROR_READ_REGION_PARAMS:
-		str2.Format("region input parameters in R%i", pReg->ID);
-		FileSaveOpenErrorDescription+="Error read file when reading "+str2;
-		break;
-	case 4:
-		str2.Format("current point number in R%i", pReg->ID);
-		FileSaveOpenErrorDescription+="Error read file when reading "+str2;
-		break;
-	case 5:
-		str2.Format("number of output points in R%i", pReg->ID);
 		FileSaveOpenErrorDescription+="Error read file when reading "+str2;
 		break;
 	case 7:
@@ -491,9 +517,12 @@ catch(int Place)
 	case ERROR_TOO_MUCH_DATA_POINTS:
 		FileSaveOpenErrorDescription+="Too many data points. ";
 		break;
-
 	}
 	CDxpsRegion::PassedNumberOfPoints=CDxpsRegion::OutData.size();	
+}
+catch (std::exception ex)
+{
+	FileSaveOpenErrorDescription += ex.what();
 }
 return FALSE;
 }

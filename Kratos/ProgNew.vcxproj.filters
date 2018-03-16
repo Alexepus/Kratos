@@ -150,6 +150,9 @@
     <ClCompile Include="WndForCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ProgNew.rc">
@@ -323,6 +326,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WndForCurve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AlexepusTFS\Spec\MfcHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

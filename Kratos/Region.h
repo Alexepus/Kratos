@@ -1,7 +1,7 @@
-#ifndef _REGION_H_INCLUDED_
-#define _REGION_H_INCLUDED_
+#pragma once 
+#include "Time.h"
 
-typedef struct
+struct DATA_IN
 {
 int HV;
 int KE_Start;
@@ -21,28 +21,11 @@ char N_h_nu; // Здесь просто байт
 int DeltaVolts;
 char Comments[256];
 int Priority; // Приоритет региона. Регионы сканируются, начиная с минимального приоритета, до выполнения N_ сканов в каждом регионе с данным приоритетом
-} DATA_IN;
-
-#define TYPE_BE 0
-#define TYPE_DIV 1
-
-struct DxpsRegPar
-{
-BOOL Off;
-int Type; //0 if "BE Print", 1 if Division Divident/Divisor
-int Divident;
-int Divisor;
-double BE;
-double HV;
-int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
-double Delay; //Задержка перед началом измерений
-double Dwell;	//Время измерения
-int ColorIndex;
-char Comments[256];
-//enum{Al, Mg, He1, He2};
+doubleTime LastEditTime; //Время последнего изменения параметров региона
 };
-//===============
-typedef struct
+
+// Кэш строковых значений региона XPS для отображения в таблице
+struct STR_PAR
 {
 char HV[16];
 char KE_Start[16];
@@ -55,9 +38,9 @@ char Name_h_nu[16];
 char Curr_N[16];
 char* Comments;
 char Priority[16];
-} STR_PAR;
+} ;
 
-//=============
+//Элемент выходных значений региона XPS
 typedef struct
 {
 int x;
@@ -111,5 +94,3 @@ static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
 static CRegion* GetAtPosition(int position);
 };
-
-#endif //_REGION_H_INCLUDED_

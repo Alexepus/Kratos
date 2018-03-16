@@ -204,6 +204,7 @@
     </ClCompile>
     <ClCompile Include="SVRDFILE.CPP" />
     <ClCompile Include="Threads.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="TitleXWnd.cpp" />
     <ClCompile Include="ViewGraphics.cpp" />
     <ClCompile Include="ViewWnd.cpp" />
@@ -213,6 +214,7 @@
     <ResourceCompile Include="ProgNew.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AlexepusTFS\Spec\MfcHelper.h" />
     <ClInclude Include="BigClientWnd.h" />
     <ClInclude Include="CamSetupDlg.h" />
     <ClInclude Include="CamSetupHPDlg.h" />
@@ -265,6 +267,7 @@
     <ClInclude Include="SVRDFILE.H" />
     <ClInclude Include="Threads.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="TitleXWnd.h" />
     <ClInclude Include="ViewGraphics.h" />
     <ClInclude Include="ViewWnd.h" />
