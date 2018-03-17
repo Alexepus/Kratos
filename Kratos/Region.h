@@ -1,5 +1,6 @@
 #pragma once 
 #include "Time.h"
+#include <memory>
 
 struct DATA_IN
 {
@@ -20,8 +21,35 @@ EnergyType KE_BE;
 char N_h_nu; // «десь просто байт
 int DeltaVolts;
 char Comments[256];
-int Priority; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
-doubleTime LastEditTime; //¬рем€ последнего изменени€ параметров региона
+int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
+doubleTime LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
+};
+
+struct DATA_IN_V1
+{
+	int HV;
+	int KE_Start;
+	int KE_End;
+	int Step;
+	int Time;   // ¬рем€ измерени€ на точку
+	int N_;     // «аданное число сканов
+	int Curr_N; // „исло пройденных сканов
+	BOOL Off;
+	enum class EnergyType
+	{
+		KE,
+		BE
+	};
+	EnergyType KE_BE;
+	char N_h_nu; // «десь просто байт
+	int DeltaVolts;
+	char Comments[256];
+	DATA_IN ToDataIn() const
+	{
+		DATA_IN din {HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu };
+		std::copy(Comments, std::end(Comments), din.Comments);
+		return din;
+	}
 };
 
 //  эш строковых значений региона XPS дл€ отображени€ в таблице
@@ -73,6 +101,8 @@ STR_PAR str;
 int ID;
 UINT m_ptrInFile;
 enum {New, Edit} m_NewOrEdit;
+doubleTime m_BeginTime; // ¬рем€ начала сканировани€ региона
+doubleTime m_EndTime; // ¬рем€ окончани€ сканировани€ региона
 
 ////////////////////////KE, HV, and over data of region
 CRegion* m_pNext;
