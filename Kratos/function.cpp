@@ -105,7 +105,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 			return false;
 		for(int i=0; i<pReg->m_NDataOut; ++i) 
 		{
-			pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step; //??????
+			pReg->m_pDataOut[i].x = D2I(pDlgParamReg->m_KE_Start) + i*Step;
 			pReg->m_pDataOut[i].y = 0;
 		}
 	}
@@ -115,7 +115,6 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 		int KE_Start = D2I(pDlgParamReg->m_KE_Start);
 		int KE_End = D2I(pDlgParamReg->m_KE_End);
 		int del_KE_Start = abs(pReg->m_DataIn.KE_Start - KE_Start);
-		int del_KE_End = abs(pReg->m_DataIn.KE_End - KE_End);
 		int NewArrayBegin = 0;
 		int OldArrayBegin = 0;
 		int NBytes = NNewDataOut * sizeof(DATA_OUT);
@@ -125,7 +124,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 		for (int i = 0; i<NNewDataOut; ++i) 
 			pNewDataOut[i].x = KE_Start + i*Step;
 		if(pReg->m_DataIn.Curr_N>0 || pReg->m_NDataOutCurr > 0)
-			{
+		{
 			if(pReg->m_DataIn.KE_Start < KE_Start) 
 			{
 				OldArrayBegin = del_KE_Start/Step;

@@ -22,7 +22,7 @@ char N_h_nu; // «десь просто байт
 int DeltaVolts;
 char Comments[256];
 int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
-doubleTime LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
+time_t LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
 };
 
 struct DATA_IN_V1
@@ -101,8 +101,8 @@ STR_PAR str;
 int ID;
 UINT m_ptrInFile;
 enum {New, Edit} m_NewOrEdit;
-doubleTime m_BeginTime; // ¬рем€ начала сканировани€ региона
-doubleTime m_EndTime; // ¬рем€ окончани€ сканировани€ региона
+time_t m_BeginTime; // ¬рем€ начала сканировани€ региона
+time_t m_EndTime; // ¬рем€ окончани€ сканировани€ региона
 
 ////////////////////////KE, HV, and over data of region
 CRegion* m_pNext;

@@ -122,6 +122,8 @@ void CRegionWnd::OnButtonAddNew()
 			if (m_pDlgParamReg->DoModal() == IDOK)
 			{
 				SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
+				pReg->m_DataIn.LastEditTime = time(nullptr);
+
 				m_pListRegionWnd->SetNewRegionItem(pReg);
 				m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
 				if (m_pMainFrame->m_Doc.fpPrj)
@@ -237,8 +239,11 @@ void CRegionWnd::OnButtonEdit()
 					{
 						ReWriteFile = TRUE;
 					}
-
+					auto oldDataIn = pReg->m_DataIn;
 					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
+					if (memcmp(&oldDataIn, &pReg->m_DataIn, sizeof(DATA_IN)) != 0)
+						pReg->m_DataIn.LastEditTime = time(nullptr); // Если реально было изменение, то обновляем время редактирования
+
 					if (m_pMainFrame->m_Doc.fpPrj != NULL)
 					{
 						CWaitCursor WCur;

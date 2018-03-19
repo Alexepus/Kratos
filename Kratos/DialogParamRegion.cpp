@@ -22,6 +22,9 @@ class CMainFrame;
 CDialogParamRegion::CDialogParamRegion(CWnd* pParent /*=NULL*/)
 	: CDialog(CDialogParamRegion::IDD, pParent)
 	, m_Priority(0)
+	, m_BeginTime(_T("--.--.--  --:--"))
+	, m_EndTime(_T("--.--.--  --:--"))
+	, m_LastEditTime(_T(""))
 {
 	//{{AFX_DATA_INIT(CDialogParamRegion)
 	m_HV = 0.0;
@@ -96,7 +99,6 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 		{
 			::MessageBox(this->m_hWnd, "Parametr Step (or Start) too large",
 				"Attention", MB_OK);
-
 
 			sprintf(MessageString, "%.3lf", m_Step);
 			::SetWindowText(hWndCtrl, MessageString);
@@ -295,6 +297,9 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 			pDX->Fail();
 		}
 	} // end if(pDX->m_bSaveAndValidate)
+	DDX_Text(pDX, IDC_STATIC_BEGIN_TIME, m_BeginTime);
+	DDX_Text(pDX, IDC_STATIC_END_TIME, m_EndTime);
+	DDX_Text(pDX, IDC_STATIC_LAST_EDIT_TIME, m_LastEditTime);
 }
 
 
@@ -364,6 +369,9 @@ BOOL CDialogParamRegion::OnInitDialog()
 	m_KE_BE = m_pReg->m_DataIn.KE_BE;
 	m_Anode = m_pReg->m_DataIn.N_h_nu;
 	m_Priority = m_pReg->m_DataIn.Priority;
+	m_LastEditTime = m_pReg->m_DataIn.LastEditTime == 0 ? CString() : FormatTime(m_pReg->m_DataIn.LastEditTime, "Last edit: %d.%m.%Y  %H:%M");
+	m_BeginTime = m_pReg->m_BeginTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_BeginTime, "%d.%m.%Y  %H:%M");
+	m_EndTime = m_pReg->m_EndTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_BeginTime, "%d.%m.%Y  %H:%M");
 
 	UpdateData(FALSE);
 
@@ -374,7 +382,6 @@ BOOL CDialogParamRegion::OnInitDialog()
 							m_pReg->h_nu_Info.strName_h_nu[i], m_pReg->h_nu_Info.Value_h_nu[i]);
 		::SendMessage(hWndChild, CB_ADDSTRING, 0, (LPARAM) str);
 		}
-	//if(m_pReg->m_DataIn.N_h_nu != 0)
 	::SendMessage(hWndChild, CB_SETCURSEL , (WPARAM) (m_pReg->m_DataIn.N_h_nu), 0);
 	
 	if(m_KE_BE == DATA_IN::EnergyType::KE)
@@ -594,17 +601,17 @@ void CDialogParamRegion::OnKillFocusEditComments()
 
 void CDialogParamRegion::OnButtonReset()
 {
-	char str[128];
-	sprintf(str,"Are you sure you want\nto reset all measured data ?");
-	if(::MessageBox(this->m_hWnd, str, "Attention",MB_YESNO) == IDYES)
-		{
+	if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data?", "Attention",MB_YESNO) == IDYES)
+	{
 		for(int i = 0; i<m_pReg->m_NDataOut; ++i) 
-			{
+		{
 			m_pReg->m_pDataOut[i].y = 0;
 			SaveDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg, i, &m_pReg->m_pDataOut[i]);
-			}
+		}
 		m_pReg->m_NDataOutCurr = 0;
 		m_pReg->m_DataIn.Curr_N = 0;
+		m_pReg->m_BeginTime = 0;
+		m_pReg->m_EndTime = 0;
 		SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
 		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
 		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
@@ -639,7 +646,7 @@ void CDialogParamRegion::OnButtonReset()
 		::EnableWindow(hWndChild, TRUE);
 		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
 		::EnableWindow(hWndChild, TRUE);
-		}		
+	}		
 }
 
 void CDialogParamRegion::OnButtonHVTable() 
@@ -708,6 +715,8 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 			}
 			pReg->m_NDataOutCurr = 0;
 			pReg->m_DataIn.Curr_N = 0;
+			pReg->m_BeginTime = 0;
+			pReg->m_EndTime = 0;
 			SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 			sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
 			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);

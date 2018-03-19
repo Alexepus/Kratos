@@ -28,8 +28,8 @@ BOOL SaveBinaryFile(FILE* fp)
 			fwrite(&ptrCurr, sizeof(UINT), 1, fp);
 			pReg->m_ptrInFile = ptrCurr;
 			ptrCurr += (UINT) sizeof(DATA_IN)*fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
-			ptrCurr += (UINT) sizeof(doubleTime)*fwrite(&pReg->m_BeginTime, sizeof(doubleTime), 1, fp);
-			ptrCurr += (UINT) sizeof(doubleTime)*fwrite(&pReg->m_EndTime, sizeof(doubleTime), 1, fp);
+			ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
+			ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 			ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
 			ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 			ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
@@ -235,10 +235,10 @@ void ReadXpsFileV2(FILE* fp)
 			if (fread(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp) != 1)
 				throw std::exception(Format("Error read file when reading region input parameters in R%i", pReg->ID));
 			
-			if (fread(&pReg->m_BeginTime, sizeof(doubleTime), 1, fp) != 1)
+			if (fread(&pReg->m_BeginTime, sizeof(time_t), 1, fp) != 1)
 				throw std::exception(Format("Error read file when reading region begin time in R%i", pReg->ID));
 
-			if (fread(&pReg->m_EndTime, sizeof(doubleTime), 1, fp) != 1)
+			if (fread(&pReg->m_EndTime, sizeof(time_t), 1, fp) != 1)
 				throw std::exception(Format("Error read file when reading region begin time in R%i", pReg->ID));
 
 			if (fread(&pReg->m_NDataOutCurr, sizeof(int), 1, fp) != 1)
@@ -321,8 +321,8 @@ void ReadXpsFile(FILE* fp, int FileVersion)
 	{
 	UINT	ptrCurr; //Указывает на позицию m_DataIn файле (скорее, для проверки корректности файла)
 	DATA_IN m_DataIn;
-	doubleTime m_BeginTime; // Время начала изменения
-	doubleTime m_EndTime; // Время последней записи выходных данных в файл
+	time_t m_BeginTime; // Время начала изменения
+	time_t m_EndTime; // Время последней записи выходных данных в файл
 	int		m_NDataOutCurr; // Текущая измеряемая позиция
 	int		m_NDataOut; // Количество выходных элементов DATA_OUT
 	DATA_OUT (*m_pDataOut)[m_NDataOut];
@@ -578,7 +578,7 @@ BOOL SaveDataToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data)
 if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
 if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
 fseek(fp,
-	(pReg->m_ptrInFile + sizeof(DATA_IN) + +2*sizeof(doubleTime) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
+	(pReg->m_ptrInFile + sizeof(DATA_IN) + +2*sizeof(time_t) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
 	 SEEK_SET);
 fwrite(data, sizeof(DATA_OUT), 1, fp);
 return TRUE;
@@ -595,8 +595,8 @@ fread(&currentPos, sizeof(UINT), 1, fp);
 if (currentPos != pReg->m_ptrInFile)
 	AfxMessageBox("Файл поврежден: неверная запись о смещении хранения настроек региона");
 fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
-fwrite(&pReg->m_BeginTime, sizeof(doubleTime), 1, fp);
-fwrite(&pReg->m_EndTime, sizeof(doubleTime), 1, fp);
+fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
+fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
 fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 return TRUE;

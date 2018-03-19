@@ -229,8 +229,12 @@
 #define IDC_DXPS_HIDE_OFF               1161
 #define IDC_CHECK_DXPS_HIDE_OFF         1161
 #define IDC_EDIT_HP_REGIST_RETARD_TEST  1162
+#define IDC_STATIC_BEGIN_TIME           1162
 #define IDC_BUTTON_HP_TEST              1163
+#define IDC_STATIC_BEGIN_TIME2          1163
+#define IDC_STATIC_END_TIME             1163
 #define IDC_EDIT_HP_CRATE_TEST          1164
+#define IDC_STATIC_LAST_EDIT_TIME       1164
 #define IDC_EDIT_HP_COUNT_TEST          1165
 #define IDC_EDIT_HP_TIMER_TEST          1166
 #define IDC_STATIC_CUR_COUNT_TIME       1166
@@ -292,7 +296,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        178
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1162
+#define _APS_NEXT_CONTROL_VALUE         1165
 #define _APS_NEXT_SYMED_VALUE           114
 #endif
 #endif

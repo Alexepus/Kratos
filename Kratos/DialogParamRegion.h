@@ -79,6 +79,10 @@ public:
 	afx_msg void OnBnClickedButtonResetAll();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	CString m_BeginTime;
+	CString m_EndTime;
+	CString m_LastEditTime;
 };
 
 #endif // !defined(AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_)

@@ -13,3 +13,8 @@ doubleTime GetTimeDouble()
 	SystemTimeToFileTime(&localTime, &FileTime);
 	return ((((ULONGLONG)FileTime.dwHighDateTime) << 32) + FileTime.dwLowDateTime) * secondsInTick;
 }
+
+CString FormatTime(time_t time, char* format)
+{
+	return CTime(time).Format(format);
+}

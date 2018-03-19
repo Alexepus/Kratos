@@ -32,13 +32,15 @@ void CRegion::CreateNewRegion()
 	m_DataIn.N_h_nu = 0; 
 	m_DataIn.DeltaVolts = 0;
 	m_DataIn.Priority = 10;
+	m_DataIn.LastEditTime = 0;
 
 	m_NDataOut=0;
 	m_NDataOutCurr=0;
+	m_BeginTime = 0;
+	m_EndTime = 0;
 
 	UpdateStrValues();	
 
-	m_NDataOut = 0;
 	m_pDataOut = NULL;
 	m_pNext = NULL;
 	if(m_NReg==1)
