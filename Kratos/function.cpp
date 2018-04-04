@@ -413,8 +413,7 @@ else
 long GetRegisterHVCodeFromHV(double HV)
 {
 	double HVTable[HP_MAX_HV_CODE+1]={20., 200., 10., 100., 5., 50., 2.};
-	int i;
-	for(i=0; i<=HP_MAX_HV_CODE;i++)
+	for(int i = 0; i<=HP_MAX_HV_CODE;i++)
 		if(HV==HVTable[i])
 			return i;
 	return 14L; //=2.0 V

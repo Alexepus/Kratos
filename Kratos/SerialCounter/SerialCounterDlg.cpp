@@ -233,8 +233,8 @@ void CSerialCounterDlg::OnTimer(UINT_PTR nIDEvent)
 void CSerialCounterDlg::CheckUnitState()
 {
 	CounterUnitState cus = m_counterUnit->ReadState();
-	CheckCoolingOk.SetCheck(!cus.CoolingState);
-	CheckRunMode.SetCheck(cus.StartState);
+	CheckCoolingOk.SetCheck(cus.CoolingState == CoolingStates::CoolingOk);
+	CheckRunMode.SetCheck((int)cus.StartState);
 	CheckModuleConfigured.SetCheck(cus.ConfigLoaded? 1:0);
 }
 

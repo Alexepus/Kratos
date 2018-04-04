@@ -1,7 +1,7 @@
-//File FUNCTION.H
-//FARPROC EditNormalProc;
-#ifndef _FUNCTION_H_
-#define _FUNCTION_H_
+#pragma once
+#include "Region.h"
+#include "DxpsRegion.h"
+class CDialogParamRegion;
 
 #define THRI_LOCK() {\
 while(1){\
@@ -56,4 +56,3 @@ BOOL WriteDxpsRegionsParam(FILE *fp);
 BOOL WriteDxpsPoints(FILE *fp, DxpsOutList::iterator iter);
 BOOL WriteDxpsPoints(FILE *fp);
 long GetRegisterHVCodeFromHV(double HV);
-#endif

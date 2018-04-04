@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BigClientWnd.cpp" />
+    <ClCompile Include="CamacHardware.cpp" />
     <ClCompile Include="CamSetupDlg.cpp" />
     <ClCompile Include="CamSetupHPDlg.cpp" />
     <ClCompile Include="CommentsWnd.cpp" />
@@ -181,9 +182,12 @@
     <ClCompile Include="function.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="HardwareSetup.cpp" />
+    <ClCompile Include="HardwareSimulation.cpp" />
     <ClCompile Include="HideWnd.cpp" />
+    <ClCompile Include="HpHardware.cpp" />
     <ClCompile Include="IniValues.cpp" />
     <ClCompile Include="IPS6.cpp" />
+    <ClCompile Include="KratosHardware.cpp" />
     <ClCompile Include="ListRegionWnd.cpp" />
     <ClCompile Include="LogToFile.cpp" />
     <ClCompile Include="MainFrame.cpp" />
@@ -216,6 +220,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\AlexepusTFS\Spec\MfcHelper.h" />
     <ClInclude Include="BigClientWnd.h" />
+    <ClInclude Include="CamacHardware.h" />
     <ClInclude Include="CamSetupDlg.h" />
     <ClInclude Include="CamSetupHPDlg.h" />
     <ClInclude Include="CommentsWnd.h" />
@@ -238,9 +243,13 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Hardware.h" />
     <ClInclude Include="HardwareSetup.h" />
+    <ClInclude Include="HardwareSimulation.h" />
     <ClInclude Include="HideWnd.h" />
+    <ClInclude Include="HpHardware.h" />
+    <ClInclude Include="IHardware.h" />
     <ClInclude Include="IniValues.h" />
     <ClInclude Include="IPS6.h" />
+    <ClInclude Include="KratosHardware.h" />
     <ClInclude Include="ListRegionWnd.h" />
     <ClInclude Include="LogToFile.h" />
     <ClInclude Include="Main.h" />

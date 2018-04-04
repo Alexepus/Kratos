@@ -3,11 +3,9 @@
 #include "AdamMessage.h"
 #include "..\Exceptions.h"
 
-//warning C4482: nonstandard extension used: enum used in qualified name:
-#pragma warning (disable: 4482)
 
-enum CoolingStates : byte {CoolingOk = 0, Interlock};
-enum StartStates : byte {Stop = 0, Start = 1};
+enum class CoolingStates : byte {CoolingOk = 0, Interlock};
+enum class StartStates : byte {Stop = 0, Start = 1};
 
 template<class T>
 bool UintTryParseHex(CString str, T& i, int minLength = 1);

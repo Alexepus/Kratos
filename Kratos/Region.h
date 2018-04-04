@@ -8,7 +8,7 @@ int HV;
 int KE_Start;
 int KE_End;
 int Step;
-int Time;   // Время измерения на точку
+int Time;   // Время измерения на точку в мс
 int N_;     // Заданное число сканов
 int Curr_N; // Число пройденных сканов
 BOOL Off;
