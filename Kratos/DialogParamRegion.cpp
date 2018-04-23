@@ -2,6 +2,7 @@
 #include "Main.h"
 #include "hardware.h"
 #include "DialogParamRegion.h"
+#include "Time.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

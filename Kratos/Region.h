@@ -1,6 +1,8 @@
 #pragma once 
-#include "Time.h"
-#include <memory>
+#include "StdAfx.h"
+
+int D2I(double d);
+double I2D(int i);
 
 struct DATA_IN
 {

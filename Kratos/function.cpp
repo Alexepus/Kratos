@@ -369,26 +369,20 @@ TIME2Str(pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
 
 }
 
-//==========
-
-int D2I(double d) {return ( (int) (d*1000.0) );}
-double I2D(int i) {return ( ( (double) i)/1000.0 );}
-
 // –ассчитывает оставшеес€ врем€, необходимое дл€ прохода недосн€тых регионов XPS
 void SetNewTIME(int* TIME)
 {
-int Time=0, TimeReg, NumberOfUnstartedPassages=0,DeltaMeasurings;
-CRegion* pReg;
-for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
+int Time=0;
+	for(CRegion * pReg = CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 	{
 		if(!pReg->m_DataIn.Off)
 		{
-			NumberOfUnstartedPassages=pReg->m_DataIn.N_ - pReg->m_DataIn.Curr_N;
+			int NumberOfUnstartedPassages = pReg->m_DataIn.N_ - pReg->m_DataIn.Curr_N;
 			if(pReg->m_NDataOutCurr > 0) NumberOfUnstartedPassages--;
 			if(NumberOfUnstartedPassages<0) NumberOfUnstartedPassages=0;
-			DeltaMeasurings=pReg->m_NDataOut - pReg->m_NDataOutCurr;
+			int DeltaMeasurings = pReg->m_NDataOut - pReg->m_NDataOutCurr;
 			if(pReg->m_NDataOutCurr==0) DeltaMeasurings=0;
-			TimeReg=DeltaMeasurings*pReg->m_DataIn.Time+pReg->m_NDataOut*pReg->m_DataIn.Time*NumberOfUnstartedPassages+NumberOfUnstartedPassages*3000;
+			int TimeReg = DeltaMeasurings*pReg->m_DataIn.Time+pReg->m_NDataOut*pReg->m_DataIn.Time*NumberOfUnstartedPassages+NumberOfUnstartedPassages*3000;
 			if(pReg->m_DataIn.N_ == pReg->m_DataIn.Curr_N) TimeReg=0;
 			Time +=TimeReg;
 		}

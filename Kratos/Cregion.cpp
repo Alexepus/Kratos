@@ -1,5 +1,8 @@
 #include "stdafx.h"
-#include "Main.h"
+#include "Region.h"
+
+int D2I(double d) { return ((int)(d*1000.0)); }
+double I2D(int i) { return (((double)i) / 1000.0); }
 
 int CRegion::m_NReg = 0;
 CRegion* CRegion::m_pFirst = NULL;
