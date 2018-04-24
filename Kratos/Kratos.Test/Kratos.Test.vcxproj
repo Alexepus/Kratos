@@ -192,7 +192,7 @@
     <ClCompile Include="..\Cregion.cpp" />
     <ClCompile Include="Kratos.Test.cpp" />
     <ClCompile Include="Kratos.TestDlg.cpp" />
-    <ClCompile Include="CRegionTest.cpp" />
+    <ClCompile Include="CRegionTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

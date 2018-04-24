@@ -113,8 +113,8 @@ CRegion* m_pPrev;
 static CRegion* m_pFirst;
 static CRegion* m_pEnd;
 
-CRegion();
-CRegion(int n);
+explicit CRegion();
+explicit CRegion(int n);
 ~CRegion();
 void CreateNewRegion();
 
