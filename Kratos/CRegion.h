@@ -91,8 +91,14 @@ C_h_nu_Info();
 //==============
 enum class Directions
 {
-	Up,
-	Down
+	/**
+	 * \brief В сторону уменьшения индекса
+	 */
+	UpToBegin,
+	/**
+	* \brief В сторону увеличения индекса
+	*/
+	DownToEnd
 };
 
 class CRegion
@@ -123,11 +129,16 @@ explicit CRegion(int n);
 ~CRegion();
 
 /**
+ * \brief Удаляет все существующие регионы
+ */
+static void DeleteAllRegions();
+/**
  * \brief Обновить значения в структуре STR_PAR str из данных DATA_IN m_DataIn
  */
 void UpdateStrValues();
 static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
+
 static std::vector<CRegion*> GetAsVector();
 /**
 * \brief Находит следующий регион: среди незавершенных, с минимальным приоритетом, с минимальным количеством проходов, 
@@ -139,11 +150,17 @@ static CRegion* GetAtPosition(int position);
 /**
 * \brief Перемещает один или более регионов вверх или вниз, какие возможно. Ошибок не кидает.
 */
-//static bool IsPossibleToMoveAnyRegions(std::vector<CRegion*> regs, Directions dir);
+static bool CanMoveAnyRegion(std::vector<CRegion*> regs, Directions dir);
+
 /**
 * \brief Перемещает один или более регионов вверх или вниз, какие возможно. Ошибок не кидает.
 */
-//static void MoveRegionsIfPossible(std::vector<CRegion*> regs, Directions dir);
+static void MoveRegionsIfPossible(std::vector<CRegion*> regs, Directions dir);
+
+/**
+* \brief Поменять местами два региона, обновив также их ID
+*/
+static void Swap(CRegion* r1, CRegion* r2);
 
 private:
 	void InitNewRegion();

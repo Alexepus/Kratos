@@ -116,17 +116,27 @@ CRegion::~CRegion()
 	}
 }
 
-CRegion* CRegion::GetFirst(void)
+void CRegion::DeleteAllRegions()
+{
+	CRegion* reg = GetFirst();
+	while(reg)
+	{
+		delete reg;
+		reg = GetFirst();
+	}
+}
+
+CRegion* CRegion::GetFirst()
 {
 	if(m_pFirst) 
 		return m_pFirst;
-	return NULL;
+	return nullptr;
 }
 
 CRegion* CRegion::GetNext(CRegion* reg)
 {
 	if(!m_pFirst || !reg) 
-		return NULL;
+		return nullptr;
 	return reg->m_pNext;
 }
 
@@ -160,6 +170,48 @@ CRegion* CRegion::GetAtPosition(int position)
 	auto reg = GetFirst();
 	for (int i = 0; reg != nullptr && i < position; i++, reg = GetNext(reg));
 	return reg;
+}
+
+//void IterateMovableRegions
+bool CRegion::CanMoveAnyRegion(std::vector<CRegion*> regs, Directions dir)
+{
+	regs = dir == Directions::UpToBegin 
+		? Linq::from(regs).orderBy([](CRegion* r) {return r->ID; }).toVector()
+		: Linq::from(regs).orderByDesc([](CRegion* r) {return r->ID; }).toVector();
+	int borderIndex = dir == Directions::UpToBegin? -1 : regs.size();
+	bool canMoveAny = false;
+	for (CRegion* r : regs)
+	{
+		auto supposedNewIndex = r->ID + (dir == Directions::UpToBegin ? -1 : 1);
+		if ((dir == Directions::UpToBegin && supposedNewIndex > borderIndex) || (dir == Directions::DownToEnd && supposedNewIndex < borderIndex))
+		{
+			borderIndex = supposedNewIndex;
+			canMoveAny = true;
+		}
+		else
+			borderIndex = r->ID;
+	}
+	return canMoveAny;
+}
+
+void CRegion::MoveRegionsIfPossible(std::vector<CRegion*> regs, Directions dir)
+{
+
+}
+
+void CRegion::Swap(CRegion* r1, CRegion* r2)
+{
+	std::swap(r1->ID, r2->ID);
+	std::swap(r1->m_pPrev, r2->m_pPrev);
+	std::swap(r1->m_pNext, r2->m_pNext);
+	if (r1->ID == 0)
+		m_pFirst = r1;
+	else if (r2->ID == 0)
+		m_pFirst = r2;
+	if (r1->ID == m_NReg - 1)
+		m_pEnd = r1;
+	else if (r2->ID == m_NReg - 1)
+		m_pEnd = r2;
 }
 
 
