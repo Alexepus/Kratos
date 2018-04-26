@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Region.h"
+#include "CRegion.h"
 #include <list>
 struct DxpsOutData_v1
 {

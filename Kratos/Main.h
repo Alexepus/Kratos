@@ -5,7 +5,7 @@
 #include "HardwareSetup.h"
 #include "LogToFile.h"
 #include "IniValues.h"
-#include "Region.h"
+#include "CRegion.h"
 #include "DxpsRegion.h"
 #include "TitleXWnd.h"
 #include "DlgKEEnd.h"

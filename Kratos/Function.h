@@ -1,5 +1,5 @@
 #pragma once
-#include "Region.h"
+#include "CRegion.h"
 #include "DxpsRegion.h"
 class CDialogParamRegion;
 

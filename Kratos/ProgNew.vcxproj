@@ -165,7 +165,7 @@
     <ClCompile Include="CamSetupDlg.cpp" />
     <ClCompile Include="CamSetupHPDlg.cpp" />
     <ClCompile Include="CommentsWnd.cpp" />
-    <ClCompile Include="Cregion.cpp" />
+    <ClCompile Include="CRegion.cpp" />
     <ClCompile Include="DialogParamRegion.cpp" />
     <ClCompile Include="DlgAbout.cpp" />
     <ClCompile Include="DlgCommentsEdit.cpp" />
@@ -224,6 +224,7 @@
     <ClInclude Include="CamSetupDlg.h" />
     <ClInclude Include="CamSetupHPDlg.h" />
     <ClInclude Include="CommentsWnd.h" />
+    <ClInclude Include="CppLinq.h" />
     <ClInclude Include="DialogParamRegion.h" />
     <ClInclude Include="DlgAbout.h" />
     <ClInclude Include="DlgCommentsEdit.h" />
@@ -260,7 +261,7 @@
     <ClInclude Include="OleFont.H" />
     <ClInclude Include="OpenSaveFun.h" />
     <ClInclude Include="ProgNew.h" />
-    <ClInclude Include="Region.h" />
+    <ClInclude Include="CRegion.h" />
     <ClInclude Include="RegionWnd.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SerialCounter\AdamComThread.h" />

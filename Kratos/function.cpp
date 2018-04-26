@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ProgNew.h"
-#include "Region.h"
+#include "CRegion.h"
 #include "DialogParamRegion.h"
 #include "ListRegionWnd.h"
 #include "function.h"

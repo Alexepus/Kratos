@@ -1,24 +1,28 @@
 #include "stdafx.h"
-#include "Region.h"
+#include "CRegion.h"
+#include "CppLinq.h"
 
-int D2I(double d) { return ((int)(d*1000.0)); }
-double I2D(int i) { return (((double)i) / 1000.0); }
+int D2I(double d) { return (int)(d*1000.0); }
+double I2D(int i) { return ((double)i) / 1000.0; }
 
 int CRegion::m_NReg = 0;
-CRegion* CRegion::m_pFirst = NULL;
-CRegion* CRegion::m_pEnd = NULL;
+CRegion* CRegion::m_pFirst = nullptr;
+CRegion* CRegion::m_pEnd = nullptr;
 
-CRegion::CRegion() { CreateNewRegion(); }
-
-CRegion::CRegion(int n) : m_NDataOut(n)
+CRegion::CRegion()
 {
-	CreateNewRegion();
-	int N = m_NDataOut*sizeof(DATA_OUT);
-	m_pDataOut = (DATA_OUT*) malloc(N);
-	if(m_pDataOut) memset(m_pDataOut, 0, N);
+	InitNewRegion();
 }
 
-void CRegion::CreateNewRegion()
+CRegion::CRegion(int dataOutCount) : m_NDataOut(dataOutCount)
+{
+	InitNewRegion();
+	int bytesCount = m_NDataOut*sizeof(DATA_OUT);
+	m_pDataOut = (DATA_OUT*) malloc(bytesCount);
+	if(m_pDataOut) memset(m_pDataOut, 0, bytesCount);
+}
+
+void CRegion::InitNewRegion()
 {
 	ID=CRegion::m_NReg;
 	++m_NReg;
@@ -55,7 +59,6 @@ void CRegion::CreateNewRegion()
 	{
 		m_pPrev = m_pEnd; m_pPrev->m_pNext = this; m_pEnd = this;
 	}
-	// Initial KE, HV, and over data of region
 }
 
 /**
@@ -125,6 +128,31 @@ CRegion* CRegion::GetNext(CRegion* reg)
 	if(!m_pFirst || !reg) 
 		return NULL;
 	return reg->m_pNext;
+}
+
+std::vector<CRegion*> CRegion::GetAsVector()
+{
+	std::vector<CRegion*> res;
+	auto region = GetFirst();
+	while(region != nullptr)
+	{
+		res.push_back(region);
+		region = GetNext(region);
+	}
+	return res;
+}
+
+CRegion* CRegion::GetNextByPriority()
+{
+	auto regions = GetAsVector();
+	auto next = Linq::from(regions)
+		.where([](CRegion *r) {return r->m_DataIn.Curr_N < r->m_DataIn.N_; })
+		.orderBy([](CRegion *r) {return r->m_DataIn.Priority; })
+		.thenBy([](CRegion *r) {return r->m_DataIn.Curr_N; })
+		.thenBy([](CRegion *r) {return r->ID; })
+		.firstOrDefault();
+
+	return next;
 }
 
 CRegion* CRegion::GetAtPosition(int position)

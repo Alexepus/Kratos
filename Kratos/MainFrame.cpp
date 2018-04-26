@@ -6,7 +6,7 @@
 #include "ProgNew.h"
 #include "BigClientWnd.h"
 #include "HideWnd.h"
-#include "Region.h"
+#include "CRegion.h"
 #include "DialogParamRegion.h"
 #include "ListRegionWnd.h"
 #include "RegionWnd.h"

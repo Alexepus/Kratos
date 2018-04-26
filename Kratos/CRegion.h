@@ -89,6 +89,11 @@ C_h_nu_Info();
 };
 
 //==============
+enum class Directions
+{
+	Up,
+	Down
+};
 
 class CRegion
 {
@@ -113,10 +118,9 @@ CRegion* m_pPrev;
 static CRegion* m_pFirst;
 static CRegion* m_pEnd;
 
-explicit CRegion();
+CRegion();
 explicit CRegion(int n);
 ~CRegion();
-void CreateNewRegion();
 
 /**
  * \brief ќбновить значени€ в структуре STR_PAR str из данных DATA_IN m_DataIn
@@ -124,5 +128,23 @@ void CreateNewRegion();
 void UpdateStrValues();
 static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
+static std::vector<CRegion*> GetAsVector();
+/**
+* \brief Ќаходит следующий регион: среди незавершенных, с минимальным приоритетом, с минимальным количеством проходов, 
+* с минимальным ID.
+*/
+static CRegion* GetNextByPriority();
 static CRegion* GetAtPosition(int position);
+
+/**
+* \brief ѕеремещает один или более регионов вверх или вниз, какие возможно. ќшибок не кидает.
+*/
+//static bool IsPossibleToMoveAnyRegions(std::vector<CRegion*> regs, Directions dir);
+/**
+* \brief ѕеремещает один или более регионов вверх или вниз, какие возможно. ќшибок не кидает.
+*/
+//static void MoveRegionsIfPossible(std::vector<CRegion*> regs, Directions dir);
+
+private:
+	void InitNewRegion();
 };

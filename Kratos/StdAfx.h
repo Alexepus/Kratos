@@ -13,6 +13,7 @@
 #include <math.h>
 #include <algorithm>
 #include <memory>
+#include <vector>
 #include <afxmt.h>
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

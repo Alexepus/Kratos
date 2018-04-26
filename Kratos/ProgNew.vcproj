@@ -317,7 +317,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Cregion.cpp"
+				RelativePath="CRegion.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

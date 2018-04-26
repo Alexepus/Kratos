@@ -5,7 +5,7 @@
 #include <string.h>
 #include "ProgNew.h"
 #include "TitleXWnd.h"
-#include "Region.h"
+#include "CRegion.h"
 #include "DialogParamRegion.h"
 #include "function.h"
 */

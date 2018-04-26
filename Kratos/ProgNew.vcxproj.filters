@@ -36,7 +36,7 @@
     <ClCompile Include="CommentsWnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cregion.cpp">
+    <ClCompile Include="CRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DialogParamRegion.cpp">
@@ -298,9 +298,6 @@
     <ClInclude Include="ProgNew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Region.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RegionWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -359,6 +356,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HardwareSimulation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRegion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CppLinq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
