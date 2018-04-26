@@ -172,13 +172,12 @@ CRegion* CRegion::GetAtPosition(int position)
 	return reg;
 }
 
-//void IterateMovableRegions
 bool CRegion::CanMoveAnyRegion(std::vector<CRegion*> regs, Directions dir)
 {
 	regs = dir == Directions::UpToBegin 
 		? Linq::from(regs).orderBy([](CRegion* r) {return r->ID; }).toVector()
 		: Linq::from(regs).orderByDesc([](CRegion* r) {return r->ID; }).toVector();
-	int borderIndex = dir == Directions::UpToBegin? -1 : regs.size();
+	int borderIndex = dir == Directions::UpToBegin? -1 : m_NReg;
 	bool canMoveAny = false;
 	for (CRegion* r : regs)
 	{
@@ -196,22 +195,70 @@ bool CRegion::CanMoveAnyRegion(std::vector<CRegion*> regs, Directions dir)
 
 void CRegion::MoveRegionsIfPossible(std::vector<CRegion*> regs, Directions dir)
 {
-
+	regs = dir == Directions::UpToBegin
+		? Linq::from(regs).orderBy([](CRegion* r) {return r->ID; }).toVector()
+		: Linq::from(regs).orderByDesc([](CRegion* r) {return r->ID; }).toVector();
+	int borderIndex = dir == Directions::UpToBegin ? -1 : m_NReg;
+	for (CRegion* r : regs)
+	{
+		auto supposedNewIndex = r->ID + (dir == Directions::UpToBegin ? -1 : 1);
+		if ((dir == Directions::UpToBegin && supposedNewIndex > borderIndex) || (dir == Directions::DownToEnd && supposedNewIndex < borderIndex))
+		{
+			Swap(r, GetAtPosition(supposedNewIndex));
+			borderIndex = supposedNewIndex;			
+		}
+		else
+			borderIndex = r->ID;
+	}
 }
 
-void CRegion::Swap(CRegion* r1, CRegion* r2)
+void CRegion::Swap(CRegion* i, CRegion* j)
 {
-	std::swap(r1->ID, r2->ID);
-	std::swap(r1->m_pPrev, r2->m_pPrev);
-	std::swap(r1->m_pNext, r2->m_pNext);
-	if (r1->ID == 0)
-		m_pFirst = r1;
-	else if (r2->ID == 0)
-		m_pFirst = r2;
-	if (r1->ID == m_NReg - 1)
-		m_pEnd = r1;
-	else if (r2->ID == m_NReg - 1)
-		m_pEnd = r2;
+	if (i == j)
+		return;
+	if (j->m_pNext == i)
+		std::swap(i, j);
+	
+	CRegion* swapperVector[4];
+	swapperVector[0] = i->m_pPrev;
+	swapperVector[1] = j->m_pPrev;
+	swapperVector[2] = i->m_pNext;
+	swapperVector[3] = j->m_pNext;
+
+	if (i->m_pNext == j)
+	{
+		i->m_pPrev = swapperVector[2];
+		j->m_pPrev = swapperVector[0];
+		i->m_pNext = swapperVector[3];
+		j->m_pNext = swapperVector[1];
+	}
+	 else 
+	 {
+		 i->m_pPrev = swapperVector[1];
+		 j->m_pPrev = swapperVector[0];
+		 i->m_pNext = swapperVector[3];
+		 j->m_pNext = swapperVector[2];
+	 }
+
+	if (i->m_pPrev)
+		i->m_pPrev->m_pNext = i;
+	if (j->m_pPrev)
+		j->m_pPrev->m_pNext = j;
+	if (i->m_pNext)
+		i->m_pNext->m_pPrev = i;
+	if (j->m_pNext)
+		j->m_pNext->m_pPrev = j;
+
+	if (i->m_pPrev == nullptr)
+		m_pFirst = i;
+	if (j->m_pPrev == nullptr)
+		m_pFirst = j;
+	if (i->m_pNext == nullptr)
+		m_pEnd = i;
+	if (j->m_pNext == nullptr)
+		m_pEnd = j;
+
+	std::swap(i->ID, j->ID);
 }
 
 

@@ -189,7 +189,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Cregion.cpp" />
+    <ClCompile Include="..\CRegion.cpp" />
     <ClCompile Include="Kratos.Test.cpp" />
     <ClCompile Include="Kratos.TestDlg.cpp" />
     <ClCompile Include="CRegionTests.cpp" />

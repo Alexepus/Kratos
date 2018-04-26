@@ -44,11 +44,11 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Cregion.cpp">
-      <Filter>UnderTest</Filter>
-    </ClCompile>
     <ClCompile Include="CRegionTests.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CRegion.cpp">
+      <Filter>UnderTest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

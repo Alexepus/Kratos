@@ -152,7 +152,7 @@ TEST_F(CRegionTest, CanMoveAnyRegion_MoveDown_ShouldReturnFalse)
 	ASSERT_FALSE(result);
 }
 
-TEST_F(CRegionTest, Swap)
+TEST_F(CRegionTest, Swap2)
 {
 	// Given
 	auto r0 = new CRegion();
@@ -167,4 +167,100 @@ TEST_F(CRegionTest, Swap)
 	auto vec = CRegion::GetAsVector();
 	ASSERT_EQ(vec[0]->m_DataIn.N_, 2);
 	ASSERT_EQ(vec[1]->m_DataIn.N_, 1);
+	ASSERT_EQ(vec[0]->ID, 0);
+	ASSERT_EQ(vec[1]->ID, 1);
+}
+
+TEST_F(CRegionTest, Swap3_0_2)
+{
+	// Given
+	auto r0 = new CRegion();
+	r0->m_DataIn.N_ = 1;
+	auto r1 = new CRegion();
+	r1->m_DataIn.N_ = 2;
+	auto r2 = new CRegion();
+	r2->m_DataIn.N_ = 3;
+
+	// When
+	CRegion::Swap(r0, r2);
+
+	// Then
+	auto vec = CRegion::GetAsVector();
+	ASSERT_EQ(vec[0]->m_DataIn.N_, 3);
+	ASSERT_EQ(vec[1]->m_DataIn.N_, 2);
+	ASSERT_EQ(vec[2]->m_DataIn.N_, 1);
+	ASSERT_EQ(vec[0]->ID, 0);
+	ASSERT_EQ(vec[1]->ID, 1);
+	ASSERT_EQ(vec[2]->ID, 2);
+}
+
+TEST_F(CRegionTest, Swap3_1_0)
+{
+	// Given
+	auto r0 = new CRegion();
+	r0->m_DataIn.N_ = 1;
+	auto r1 = new CRegion();
+	r1->m_DataIn.N_ = 2;
+	auto r2 = new CRegion();
+	r2->m_DataIn.N_ = 3;
+
+	// When
+	CRegion::Swap(r1, r0);
+
+	// Then
+	auto vec = CRegion::GetAsVector();
+	ASSERT_EQ(vec[0]->m_DataIn.N_, 2);
+	ASSERT_EQ(vec[1]->m_DataIn.N_, 1);
+	ASSERT_EQ(vec[2]->m_DataIn.N_, 3);
+	ASSERT_EQ(vec[0]->ID, 0);
+	ASSERT_EQ(vec[1]->ID, 1);
+	ASSERT_EQ(vec[2]->ID, 2);
+}
+
+TEST_F(CRegionTest, MoveRegionsIfPossible_1_2_Down)
+{
+	// Given
+	auto r0 = new CRegion();
+	r0->m_DataIn.N_ = 1;
+	auto r1 = new CRegion();
+	r1->m_DataIn.N_ = 2;
+	auto r2 = new CRegion();
+	r2->m_DataIn.N_ = 3;
+	auto r3 = new CRegion();
+	r3->m_DataIn.N_ = 4;
+
+	// When
+	CRegion::MoveRegionsIfPossible(std::vector<CRegion*>({r1, r2}), Directions::DownToEnd);
+
+	// Then
+	auto vec = CRegion::GetAsVector();
+	ASSERT_EQ(vec.size(), 4);
+	EXPECT_EQ(vec[0]->m_DataIn.N_, 1);
+	EXPECT_EQ(vec[1]->m_DataIn.N_, 4);
+	EXPECT_EQ(vec[2]->m_DataIn.N_, 2);
+	EXPECT_EQ(vec[3]->m_DataIn.N_, 3);
+}
+
+TEST_F(CRegionTest, MoveRegionsIfPossible_0_2_Up)
+{
+	// Given
+	auto r0 = new CRegion();
+	r0->m_DataIn.N_ = 1;
+	auto r1 = new CRegion();
+	r1->m_DataIn.N_ = 2;
+	auto r2 = new CRegion();
+	r2->m_DataIn.N_ = 3;
+	auto r3 = new CRegion();
+	r3->m_DataIn.N_ = 4;
+
+	// When
+	CRegion::MoveRegionsIfPossible(std::vector<CRegion*>({ r0, r2 }), Directions::UpToBegin);
+
+	// Then
+	auto vec = CRegion::GetAsVector();
+	ASSERT_EQ(vec.size(), 4);
+	EXPECT_EQ(vec[0]->m_DataIn.N_, 1);
+	EXPECT_EQ(vec[1]->m_DataIn.N_, 3);
+	EXPECT_EQ(vec[2]->m_DataIn.N_, 2);
+	EXPECT_EQ(vec[3]->m_DataIn.N_, 4);
 }
