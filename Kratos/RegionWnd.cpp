@@ -587,7 +587,7 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	RECT rl;
 	rl.left = rl.top = 0;
-	rl.right = r.right - 2*5 - m_Buttons.cx;
+	rl.right = r.right - m_Buttons.PanelWidth;
 	rl.bottom = r.bottom;
 	
 	m_pListRegionWnd->m_pMainFrame = this->m_pMainFrame;
@@ -608,18 +608,11 @@ void CRegionWnd::OnSize(UINT nType, int cx, int cy)
 	CWnd::OnSize(nType, cx, cy);
 	RECT r;
 	::GetClientRect(this->m_hWnd, &r);
-	::MoveWindow(m_Buttons.AddNew.hWnd, r.right - m_Buttons.cx - 5, 5,
-	             m_Buttons.cx, m_Buttons.cy, TRUE);
-	::MoveWindow(m_Buttons.Edit.hWnd, r.right - m_Buttons.cx - 5, 5*2+m_Buttons.cy,
-	             m_Buttons.cx, m_Buttons.cy, TRUE);
-	::MoveWindow(m_Buttons.Delete.hWnd, r.right - m_Buttons.cx - 5, 5*3+2*m_Buttons.cy,
-	             m_Buttons.cx, m_Buttons.cy, TRUE);
-	::MoveWindow(m_Buttons.View.hWnd, r.right - m_Buttons.cx - 5, 5*4+3*m_Buttons.cy,
-	             m_Buttons.cx, m_Buttons.cy, TRUE);
-	::MoveWindow(m_Buttons.OnOff.hWnd, r.right - m_Buttons.cx - 5, 5*5+4*m_Buttons.cy,
-	             m_Buttons.cx, m_Buttons.cy, TRUE);
+	
+	m_Buttons.Resize(r);
+
 	::MoveWindow(m_pListRegionWnd->m_hWnd, 0, 0,
-	             r.right - 2*5 - m_Buttons.cx, r.bottom, TRUE);
+	             r.right - m_Buttons.PanelWidth, r.bottom, TRUE);
 
 	if(!theApp.m_pMainFrame->m_bSynchronousResize)
 	{

@@ -30,7 +30,6 @@ m_ProjectFile.NeedSave = Need;
 
 int CDoc::CheckDocType()
 {
-HMENU hMenu=::GetMenu(theApp.m_pMainFrame->m_hWnd);
 if(CRegion::m_NReg>0)
 	m_DocType=XPS;
 else 
