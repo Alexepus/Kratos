@@ -1,26 +1,5 @@
-#if !defined(AFX_REGIONWND_H__C7EC35A2_81A9_11D5_9A4B_008048FD9845__INCLUDED_)
-#define AFX_REGIONWND_H__C7EC35A2_81A9_11D5_9A4B_008048FD9845__INCLUDED_
 #pragma once
-
-typedef struct _BUTTON
-{
-char* Name;
-HWND hWnd;
-} BUTTON;
-
-typedef struct _ALL_BUTTONS
-{
-int cx;
-int cy;
-BUTTON AddNew;
-BUTTON Edit;
-BUTTON Delete;
-BUTTON OnOff;
-BUTTON View;
-} ALL_BUTTONS;
-
-
-/////////////////////////////////////////////////////////////////////////////
+#include "RegionWndButtons.h"
 
 class CMainFrame;
 
@@ -36,7 +15,7 @@ class CRegionWnd : public CWnd
 
 	// Operations
 	void Show();
-	RECT GetWindowRect();
+	RECT GetWindowRect() const;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -49,7 +28,7 @@ public:
 private:
 	CMainFrame* m_pMainFrame;
 	CDialogParamRegion* m_pDlgParamReg;
-	ALL_BUTTONS m_Buttons;
+	CRegionWndButtons m_Buttons;
 	RECT m_rectWnd;
 	BOOL RegisterRegionWndClass();
 	WNDCLASS m_WC;	
@@ -77,5 +56,3 @@ protected:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_REGIONWND_H__C7EC35A2_81A9_11D5_9A4B_008048FD9845__INCLUDED_)

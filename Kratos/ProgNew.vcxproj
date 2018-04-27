@@ -197,6 +197,7 @@
     <ClCompile Include="OpenSaveFun.cpp" />
     <ClCompile Include="ProgNew.cpp" />
     <ClCompile Include="RegionWnd.cpp" />
+    <ClCompile Include="RegionWndButtons.cpp" />
     <ClCompile Include="SerialCounter\AdamComThread.cpp" />
     <ClCompile Include="SerialCounter\AdamComTransport.cpp" />
     <ClCompile Include="SerialCounter\ComFunctions.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="ProgNew.h" />
     <ClInclude Include="CRegion.h" />
     <ClInclude Include="RegionWnd.h" />
+    <ClInclude Include="RegionWndButtons.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SerialCounter\AdamComThread.h" />
     <ClInclude Include="SerialCounter\AdamComTransport.h" />

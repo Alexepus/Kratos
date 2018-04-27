@@ -35,14 +35,6 @@ CRegionWnd::CRegionWnd(CMainFrame* pMainFrame)
 	if(m_rectWnd.bottom-m_rectWnd.top>ScreenSizeY) m_rectWnd.top=m_rectWnd.bottom-ScreenSizeY;
 	if(m_rectWnd.top<5-GetSystemMetrics(SM_CYCAPTION)) m_rectWnd.top=5-GetSystemMetrics(SM_CYCAPTION);
 
-	m_Buttons.cx = 80;
-	m_Buttons.cy = 25;
-	m_Buttons.AddNew.Name = "Add New";
-	m_Buttons.Edit.Name = "Edit";
-	m_Buttons.Delete.Name = "Delete";
-	m_Buttons.OnOff.Name = "On/Off";
-	m_Buttons.View.Name = "View";
-
 	RegisterRegionWndClass();
 }
 
@@ -69,7 +61,7 @@ void CRegionWnd::Show()
 	}
 }
 
-RECT CRegionWnd::GetWindowRect()
+RECT CRegionWnd::GetWindowRect() const
 {
 	return m_rectWnd;
 }
@@ -87,8 +79,7 @@ BEGIN_MESSAGE_MAP(CRegionWnd, CWnd)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT, OnButtonEdit)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, OnButtonDelete)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW, OnButtonView)
-	ON_BN_CLICKED(IDC_BUTTON_ONOFF, OnButtonOnOff)
-	
+	ON_BN_CLICKED(IDC_BUTTON_ONOFF, OnButtonOnOff)	
 
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -589,35 +580,11 @@ int CRegionWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	CWnd::SetIcon(m_hIcon, TRUE);			// Set big icon
+	m_Buttons.CreateButtonWindows(m_hWnd);
+	
 	RECT r;
 	::GetClientRect(this->m_hWnd, &r);
-	m_Buttons.AddNew.hWnd = ::CreateWindow("button", m_Buttons.AddNew.Name,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS,
-		r.right - m_Buttons.cx - 5, 5,
-		m_Buttons.cx, m_Buttons.cy,
-		this->m_hWnd, (HMENU) IDC_BUTTON_ADDNEW, AfxGetInstanceHandle(), NULL);
-	
-	m_Buttons.Edit.hWnd = ::CreateWindow("button", m_Buttons.Edit.Name,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS,
-		r.right - m_Buttons.cx - 5, 5*2+m_Buttons.cy,
-		m_Buttons.cx, m_Buttons.cy,
-		this->m_hWnd, (HMENU) IDC_BUTTON_EDIT, AfxGetInstanceHandle(), NULL);
-	m_Buttons.Delete.hWnd = ::CreateWindow("button", m_Buttons.Delete.Name,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS,
-		r.right - m_Buttons.cx - 5, 5*3+2*m_Buttons.cy,
-		m_Buttons.cx, m_Buttons.cy,
-		this->m_hWnd, (HMENU) IDC_BUTTON_DELETE, AfxGetInstanceHandle(), NULL);
-	m_Buttons.View.hWnd = ::CreateWindow("button", m_Buttons.View.Name,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS,
-		r.right - m_Buttons.cx - 5, 5*4+3*m_Buttons.cy,
-		m_Buttons.cx, m_Buttons.cy,
-		this->m_hWnd, (HMENU) IDC_BUTTON_VIEW, AfxGetInstanceHandle(), NULL);
-	m_Buttons.OnOff.hWnd = ::CreateWindow("button", m_Buttons.OnOff.Name,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS,
-		r.right - m_Buttons.cx - 5, 5*5+3*m_Buttons.cy,
-		m_Buttons.cx, m_Buttons.cy,
-		this->m_hWnd, (HMENU) IDC_BUTTON_ONOFF, AfxGetInstanceHandle(), NULL);
-	
+
 	RECT rl;
 	rl.left = rl.top = 0;
 	rl.right = r.right - 2*5 - m_Buttons.cx;
