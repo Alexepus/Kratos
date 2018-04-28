@@ -17,7 +17,7 @@
 #undef min
 #endif
 
-int RangeCount = 0;
+static int RangeCount = 0;
 
 namespace Linq {
 	class InvalidOperationException {};

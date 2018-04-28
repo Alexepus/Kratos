@@ -2,6 +2,7 @@
 //
 #include "stdafx.h"
 #include "Main.h"
+#include "CppLinq.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,7 +38,7 @@ void CListRegionWnd::SaveColumnsWidthsToIni()
 
 void CListRegionWnd::Create(CWnd* parentCWnd, RECT controlPosition)
 {
-	CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT,
+	CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | LVS_REPORT | LVS_SHOWSELALWAYS,
 		controlPosition, parentCWnd, IDC_REPORT_REGION);
 
 	DWORD ExStyle = (LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -400,16 +401,44 @@ void CListRegionWnd::UpdateItem(CRegion* pReg)
 	SetOnOffIcon(pReg);
 }
 
+
+
 int CListRegionWnd::FindSelectedItem()
 {
-	UINT N_Item = (UINT) ::SendMessage(m_hWnd, LVM_GETITEMCOUNT, 0, 0);
+	UINT N_Item = GetItemCount();
 	UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
 	for (UINT i = 0; i<N_Item; ++i)
 	{
 		UINT state = (UINT) ::SendMessage(m_hWnd, LVM_GETITEMSTATE, (LPARAM)(int)i, (WPARAM)mask);
-		if ((state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int)i);
+		if ((state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) 
+			return (int)i;
 	}
 	return -1;
+}
+
+std::vector<CRegion*> CListRegionWnd::GetSelectedRegions()
+{
+	std::vector<CRegion*> result;
+	auto posPointer = GetFirstSelectedItemPosition();
+	while(posPointer)
+	{
+		int index = GetNextSelectedItem(posPointer);
+		CRegion* reg;
+		if (reg = CRegion::GetAtPosition(index))
+			result.push_back(reg);
+	}
+	return result;
+}
+
+void CListRegionWnd::SelectItems(std::vector<CRegion*> regions)
+{
+	auto prevSelected = GetSelectedRegions();
+	for(auto r: regions)
+		SetItemState(r->ID, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+
+	auto toDeselect = Linq::from(prevSelected).except(Linq::from(regions)).toVector();
+	for (auto r : toDeselect)
+		SetItemState(r->ID, ~LVIS_SELECTED, LVIS_SELECTED);
 }
 
 void CListRegionWnd::SetIconForReg(CRegion* pReg, int Image)

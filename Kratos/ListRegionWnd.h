@@ -31,6 +31,8 @@ public:
 	void SetNewRegionItem(CRegion* pReg);
 	void UpdateItem(CRegion* pReg);
 	int FindSelectedItem();
+	std::vector<CRegion*> GetSelectedRegions();
+	void SelectItems(std::vector<CRegion*> regions);
 	void SetIconForReg(CRegion* pReg, int Image);
 	void SetOnOffIcon(CRegion* pReg);
 	void SaveColumnsWidthsToIni();

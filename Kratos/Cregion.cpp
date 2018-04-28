@@ -259,6 +259,8 @@ void CRegion::Swap(CRegion* i, CRegion* j)
 		m_pEnd = j;
 
 	std::swap(i->ID, j->ID);
+	i->UpdateStrValues();
+	j->UpdateStrValues();
 }
 
 

@@ -79,7 +79,9 @@ BEGIN_MESSAGE_MAP(CRegionWnd, CWnd)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT, OnButtonEdit)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, OnButtonDelete)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW, OnButtonView)
-	ON_BN_CLICKED(IDC_BUTTON_ONOFF, OnButtonOnOff)	
+	ON_BN_CLICKED(IDC_BUTTON_ONOFF, OnButtonOnOff)
+	ON_BN_CLICKED(IDC_BUTTON_UP, OnButtonUp)
+	ON_BN_CLICKED(IDC_BUTTON_DOWN, OnButtonDown)
 
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -542,6 +544,30 @@ void CRegionWnd::OnButtonOnOff()
 		}// end else if(SelectedItem != -1)
 	}// end else if(N_Item != 0)
 	::SetFocus(m_pListRegionWnd->m_hWnd);
+}
+
+void CRegionWnd::OnButtonUp()
+{
+	MoveSelectedRegions(Directions::UpToBegin);
+}
+
+void CRegionWnd::OnButtonDown()
+{
+	MoveSelectedRegions(Directions::DownToEnd);
+}
+
+
+void CRegionWnd::MoveSelectedRegions(Directions dir)
+{
+	CSingleLock sLock(&MutexThread);
+	auto regsToMove = m_pListRegionWnd->GetSelectedRegions();
+	CRegion::MoveRegionsIfPossible(regsToMove, dir);
+	
+	for (auto r : CRegion::GetAsVector())
+		m_pListRegionWnd->UpdateItem(r);
+	m_pListRegionWnd->SelectItems(regsToMove);
+
+	m_pListRegionWnd->SetFocus();
 }
 
 BOOL CRegionWnd::RegisterRegionWndClass()

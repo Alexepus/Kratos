@@ -1,5 +1,6 @@
 #pragma once
 #include "RegionWndButtons.h"
+#include "CRegion.h"
 
 class CMainFrame;
 
@@ -32,6 +33,7 @@ private:
 	RECT m_rectWnd;
 	BOOL RegisterRegionWndClass();
 	WNDCLASS m_WC;	
+	void MoveSelectedRegions(Directions dir);
 
 	// Generated message map functions
 protected:
@@ -48,6 +50,8 @@ protected:
 	afx_msg void OnButtonDelete();
 	afx_msg void OnButtonView();
 	afx_msg void OnButtonOnOff();
+	afx_msg void OnButtonUp();
+	afx_msg void OnButtonDown();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

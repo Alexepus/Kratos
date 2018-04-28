@@ -52,10 +52,24 @@ CRegionWndButtons::CRegionWndButtons()
 	{
 		"/\\",
 		(HMENU)IDC_BUTTON_UP,
-		CRect(POINT{ buttonsLeft, BtnOnOff.Rect.bottom + ButtonOffset }, SIZE { ButtonWidth - ButtonOffset,  ButtonHeight };),
+		CRect(POINT{ buttonsLeft, BtnOnOff.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset)/2,  ButtonHeight }),
 		nullptr
 	};
 
+	BtnDown =
+	{
+		"\\/",
+		(HMENU)IDC_BUTTON_DOWN,
+		CRect(POINT{ BtnUp.Rect.right + ButtonOffset, BtnOnOff.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset) / 2,  ButtonHeight }),
+		nullptr
+	};
+	Buttons = { &BtnAddNew, &BtnEdit, &BtnView, &BtnDelete, &BtnOnOff, &BtnUp, &BtnDown };
+}
+
+CRegionWndButtons::~CRegionWndButtons()
+{
+	for (auto b : Buttons)
+		::DestroyWindow(b->hWnd);
 }
 
 void CRegionWndButtons::CreateButtonWindows(HWND hWndParent)
@@ -63,20 +77,14 @@ void CRegionWndButtons::CreateButtonWindows(HWND hWndParent)
 	RECT r;
 	::GetClientRect(hWndParent, &r);
 
-	CreateButton(BtnAddNew, hWndParent, r);
-	CreateButton(BtnEdit, hWndParent, r);
-	CreateButton(BtnDelete, hWndParent, r);
-	CreateButton(BtnView, hWndParent, r);
-	CreateButton(BtnOnOff, hWndParent, r);
+	for (auto b : Buttons)
+		CreateButton(*b,hWndParent, r);	
 }
 
 void CRegionWndButtons::Resize(const RECT& parentRect)
 {
-	MoveButton(BtnAddNew, parentRect);
-	MoveButton(BtnEdit, parentRect);
-	MoveButton(BtnDelete, parentRect);
-	MoveButton(BtnView, parentRect);
-	MoveButton(BtnOnOff, parentRect);
+	for (auto b : Buttons)
+		MoveButton(*b, parentRect);
 }
 
 void CRegionWndButtons::CreateButton(BUTTON& button, HWND hWndParent, RECT parentRect)

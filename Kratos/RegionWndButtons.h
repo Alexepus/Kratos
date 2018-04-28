@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+
 struct BUTTON
 {
 	CString Name;
@@ -15,6 +17,7 @@ class CRegionWndButtons
 
 public:
 	CRegionWndButtons();
+	~CRegionWndButtons();
 	void CreateButtonWindows(HWND hWndParent);
 	void Resize(const RECT& parentRect);
 
@@ -26,7 +29,8 @@ public:
 	BUTTON BtnOnOff;
 	BUTTON BtnView;
 	BUTTON BtnUp;
-	BUTTON ButtonDown;
+	BUTTON BtnDown;
+	std::array<BUTTON*, 7> Buttons;
 
 private:
 	void CreateButton(BUTTON& button, HWND hWndParent, RECT parentRect);
