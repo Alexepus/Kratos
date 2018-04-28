@@ -21,6 +21,7 @@ CRegion* CreateRegion(int priority, int maxPassages, int passagesDone)
 	r->m_DataIn.Priority = priority;
 	r->m_DataIn.N_ = maxPassages;
 	r->m_DataIn.Curr_N = passagesDone;
+	r->m_DataIn.Off = false;
 	return r;
 }
 
@@ -65,6 +66,38 @@ TEST_F(CRegionTest, ShouldGetNextByPriority_SamePriority)
 	// Then
 	ASSERT_NE(found, nullptr);
 	ASSERT_EQ(found->ID, 2);
+}
+
+TEST_F(CRegionTest, ShouldGetNextByPriority_SkipOff)
+{
+	// Given
+	CreateRegion(2, 5, 0)->m_DataIn.Off = true;
+	CreateRegion(2, 5, 0)->m_DataIn.Off = true;
+	CreateRegion(2, 5, 0);
+	CreateRegion(2, 5, 0);
+
+	// When
+	auto found = CRegion::GetNextByPriority();
+
+	// Then
+	ASSERT_NE(found, nullptr);
+	ASSERT_EQ(found->ID, 2);
+}
+
+TEST_F(CRegionTest, ShouldGetNextByPriority_SkipOffAndEdited)
+{
+	// Given
+	CreateRegion(2, 5, 0)->m_DataIn.Off = true;
+	CreateRegion(2, 5, 0)->m_DataIn.Off = true;
+	auto edited = CreateRegion(2, 5, 0);
+	CreateRegion(2, 5, 0);
+
+	// When
+	auto found = CRegion::GetNextByPriority(edited);
+
+	// Then
+	ASSERT_NE(found, nullptr);
+	ASSERT_EQ(found->ID, 3);
 }
 
 TEST_F(CRegionTest, ShouldGetNextByPriority_DifferentPriorities)

@@ -46,15 +46,13 @@ try
 
 	pReg = ThComm->pRegNow;
 
-	if (!pReg)
-	{
-		pReg = CRegion::GetFirst();
+
+		pReg = CRegion::GetNextByPriority(ThComm->pRegEdit);
 		if (!pReg)
 		{
 			THR_UNLOCK();
 			goto Met_EndBigCircle;
 		}
-	}
 
 Met_BeginRegion:
 	if (pReg->m_DataIn.Curr_N >= pReg->m_DataIn.N_)
@@ -339,17 +337,10 @@ Met_EndRegion:
 		}
 	}
 	THR_LOCK();
-	pReg = CRegion::GetNext(pReg);
-	if (pReg) goto Met_BeginRegion;
-	for (pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
-	{
-		if (pReg->m_DataIn.Curr_N < pReg->m_DataIn.N_)
-		{
-			if ((pReg != ThComm->pRegEdit) && (pReg->m_DataIn.Off != TRUE))
-				goto Met_BeginRegion;
-			else continue;
-		}
-	}
+	pReg = CRegion::GetNextByPriority(ThComm->pRegEdit);
+	if (pReg)
+		goto Met_BeginRegion;
+
 	THR_UNLOCK();
 }
 catch(std::exception ex)

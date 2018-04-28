@@ -152,11 +152,11 @@ std::vector<CRegion*> CRegion::GetAsVector()
 	return res;
 }
 
-CRegion* CRegion::GetNextByPriority()
+CRegion* CRegion::GetNextByPriority(CRegion* skipRegion)
 {
 	auto regions = GetAsVector();
 	auto next = Linq::from(regions)
-		.where([](CRegion *r) {return r->m_DataIn.Curr_N < r->m_DataIn.N_; })
+		.where([skipRegion](CRegion *r) {return !r->m_DataIn.Off && r->m_DataIn.Curr_N < r->m_DataIn.N_ && r != skipRegion; })
 		.orderBy([](CRegion *r) {return r->m_DataIn.Priority; })
 		.thenBy([](CRegion *r) {return r->m_DataIn.Curr_N; })
 		.thenBy([](CRegion *r) {return r->ID; })
