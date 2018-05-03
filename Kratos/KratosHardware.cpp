@@ -22,7 +22,7 @@ void KratosHardware::Initialize()
 void KratosHardware::SetKeRetard(long retard)
 {
 	//Writing KE; younger KE bit = 25 mV 
-	Camac_WriteLong(_crateN, _registerN, REGISTER_KE_A, REGISTER_POT_WRITE_F, (long)(retard / _retardCalibration / 25));
+	Camac_WriteLong(_crateN, _registerN, REGISTER_KE_A, REGISTER_POT_WRITE_F, (long)(retard / (*_retardCalibration) / 25));
 }
 
 void KratosHardware::SetHv(long voltage)

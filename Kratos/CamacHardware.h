@@ -5,7 +5,7 @@ class CamacHardware : public IHardware
 {
 protected:
 	int _crateN;
-	int _retardCalibration;
+	double* _retardCalibration;
 
 public:
 	CamacHardware();
@@ -13,7 +13,7 @@ public:
 	// Инициализировать модуль
 	void Initialize() override;
 
-	~CamacHardware();
+	~CamacHardware() override;
 
 protected:
 	virtual void CheckSettings() = 0;

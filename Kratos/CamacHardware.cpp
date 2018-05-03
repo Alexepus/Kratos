@@ -8,7 +8,7 @@ extern CProgNewApp theApp;
 CamacHardware::CamacHardware()
 {
 	_crateN = theApp.Ini.CrateNumber.Value;
-	_retardCalibration = theApp.Ini.RetardCalibration.Value;
+	_retardCalibration = &theApp.Ini.RetardCalibration.Value;
 }
 
 void CamacHardware::Initialize()

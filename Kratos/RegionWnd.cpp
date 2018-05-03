@@ -496,53 +496,40 @@ void CRegionWnd::OnButtonOnOff()
 {
 	CSingleLock sLock(&MutexThread);
 
-	int N_Item = (int) ::SendMessage(m_pListRegionWnd->m_hWnd, LVM_GETITEMCOUNT, 0, 0);
-	if (N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "No any region", "Attention", MB_OK);
-	else
+	auto selected = m_pListRegionWnd->GetSelectedRegions();
+	for(CRegion* pReg: selected)
 	{
-		int SelectedItem = m_pListRegionWnd->FindSelectedItem();
-		if (SelectedItem == -1)
-			::MessageBox(m_pListRegionWnd->m_hWnd, "Please select a region", "Attention", MB_OK);
+		if (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop == m_pMainFrame->Stop)
+			::MessageBox(m_pListRegionWnd->m_hWnd,
+				            "You can't OFF this region now.\n", "Attention", MB_OK);
 		else
 		{
-
-			CRegion* pReg;
-			for (pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
+			CWaitCursor WCur;
+			::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
+			THRI_LOCK();
+			if (pReg->m_DataIn.Off == FALSE)
 			{
-				if (pReg->ID == SelectedItem) break;
+				pReg->m_DataIn.Off = TRUE;
+				m_pListRegionWnd->SetOnOffIcon(pReg);
 			}
-			if (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop == m_pMainFrame->Stop)
-				::MessageBox(m_pListRegionWnd->m_hWnd,
-				             "You can't OFF this region now.\n", "Attention", MB_OK);
 			else
 			{
-				CWaitCursor WCur;
-				::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
-				THRI_LOCK();
-				if (pReg->m_DataIn.Off == FALSE)
-				{
-					pReg->m_DataIn.Off = TRUE;
-					m_pListRegionWnd->SetOnOffIcon(pReg);
-				}
-				else
-				{
-					pReg->m_DataIn.Off = FALSE;
-					m_pListRegionWnd->SetOnOffIcon(pReg);
-				}
-				if (m_pMainFrame->m_Doc.fpPrj) SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
-				THRI_UNLOCK();
-
-				char TimeStr[64];
-				SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-				TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-				::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
-				              2, (LPARAM)(LPSTR)TimeStr);
-
-				::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
+				pReg->m_DataIn.Off = FALSE;
+				m_pListRegionWnd->SetOnOffIcon(pReg);
 			}
+			if (m_pMainFrame->m_Doc.fpPrj) SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+			THRI_UNLOCK();
 
-		}// end else if(SelectedItem != -1)
-	}// end else if(N_Item != 0)
+			char TimeStr[64];
+			SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+			TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
+			::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
+				            2, (LPARAM)(LPSTR)TimeStr);
+
+			::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
+		}
+
+	}// end else if(SelectedItem != -1)
 	::SetFocus(m_pListRegionWnd->m_hWnd);
 }
 

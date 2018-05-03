@@ -19,7 +19,7 @@ HpHardware::HpHardware()
 void HpHardware::SetKeRetard(long retard)
 {
 	//Writing KE; younger Retard bit = 50 mV (49.8 mV - точнее)
-	Camac_WriteLong(_crateN, _registerRetardN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, (long)(retard / _retardCalibration / HP_RETARD_GUAGE));
+	Camac_WriteLong(_crateN, _registerRetardN, REGISTER_5P850_A, REGISTER_5P850_WRITE_F, (long)(retard / (*_retardCalibration) / HP_RETARD_GUAGE));
 }
 
 void HpHardware::SetHv(long voltage)

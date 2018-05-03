@@ -152,16 +152,30 @@ std::vector<CRegion*> CRegion::GetAsVector()
 	return res;
 }
 
-CRegion* CRegion::GetNextByPriority(CRegion* skipRegion)
+CRegion* CRegion::GetNextByPriority(int prevIndex, CRegion* skipRegion)
 {
 	auto regions = GetAsVector();
-	auto next = Linq::from(regions)
+	auto regWithLeastPriority = Linq::from(regions)
 		.where([skipRegion](CRegion *r) {return !r->m_DataIn.Off && r->m_DataIn.Curr_N < r->m_DataIn.N_ && r != skipRegion; })
 		.orderBy([](CRegion *r) {return r->m_DataIn.Priority; })
-		.thenBy([](CRegion *r) {return r->m_DataIn.Curr_N; })
-		.thenBy([](CRegion *r) {return r->ID; })
 		.firstOrDefault();
-
+	if (!regWithLeastPriority)
+		return nullptr;
+	auto selectedPriority = regWithLeastPriority->m_DataIn.Priority;
+	auto regsWithSelectedPriority = Linq::from(regions)
+		.where([skipRegion, selectedPriority](CRegion *r)
+			{
+				return !r->m_DataIn.Off
+					&& r->m_DataIn.Curr_N < r->m_DataIn.N_
+					&& r != skipRegion && r->m_DataIn.Priority == selectedPriority;
+		})
+		.orderBy([](CRegion *r) {return r->ID; })
+		.toVector();
+	auto next = Linq::from(regsWithSelectedPriority)
+		.where([prevIndex](CRegion *r) {return r->ID > prevIndex; })
+		.firstOrDefault();
+	if (!next)
+		next = regsWithSelectedPriority[0];
 	return next;
 }
 

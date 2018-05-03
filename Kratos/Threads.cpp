@@ -47,7 +47,7 @@ try
 	pReg = ThComm->pRegNow;
 
 
-		pReg = CRegion::GetNextByPriority(ThComm->pRegEdit);
+		pReg = CRegion::GetNextByPriority(-1, ThComm->pRegEdit);
 		if (!pReg)
 		{
 			THR_UNLOCK();
@@ -337,7 +337,7 @@ Met_EndRegion:
 		}
 	}
 	THR_LOCK();
-	pReg = CRegion::GetNextByPriority(ThComm->pRegEdit);
+	pReg = CRegion::GetNextByPriority(pReg->ID, ThComm->pRegEdit);
 	if (pReg)
 		goto Met_BeginRegion;
 

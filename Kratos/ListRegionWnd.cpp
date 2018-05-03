@@ -209,7 +209,7 @@ void CListRegionWnd::OnCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 		// Store the color back in the NMLVCUSTOMDRAW struct.
 		auto itemIndex = pLVCD->nmcd.dwItemSpec;
 		if (IsItemDisabledAtIndex(itemIndex))
-			pLVCD->clrText = RGB(127, 127, 127);
+			pLVCD->clrText = RGB(255, 0, 0);
 
 		// Tell Windows to paint the control itself.
 		*pResult = CDRF_DODEFAULT;	
