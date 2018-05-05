@@ -117,7 +117,7 @@ BOOL CProgNewApp::InitInstance()
 	EditNumberProc = (FARPROC) WC.lpfnWndProc;
 
 	CString errMessage;
-	if(Ini.UseUsbCounter.Value)
+	if(Ini.UseUsbCounter.Value && !Ini.UsbCounterSimulation.Value)
 	{
 		if(!m_AdamCom.ReconnectCom(Ini.CounterComPort.Value, &errMessage))
 			Msg("Ошибка открытия порта %s.\n%s", Ini.CounterComPort.Value.GetString(),errMessage.GetString());

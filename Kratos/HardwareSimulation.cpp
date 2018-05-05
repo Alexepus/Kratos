@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include "HardwareSimulation.h"
+#include <random>
+
+HardwareSimulation::HardwareSimulation() : _retard(0), _dis(0., 0.2)
+{
+}
 
 void HardwareSimulation::Initialize()
 {
@@ -7,16 +12,16 @@ void HardwareSimulation::Initialize()
 
 void HardwareSimulation::SetKeRetard(long retard)
 {
+	_retard = retard;
 }
 
-void HardwareSimulation::SetHv(long retard)
+void HardwareSimulation::SetHv(long hv)
 {
 }
 
 long HardwareSimulation::ReadCounter()
 {
-	static int count = 0;
-	return (int)((pow(sin(count*0.1), 2) + 0.5) * 10);
+	return (int)((sin(_retard*0.0002) + 1.01 + _dis(_gen)) * 1000);
 }
 
 void HardwareSimulation::SetAndStartTimer(int time_ms)
