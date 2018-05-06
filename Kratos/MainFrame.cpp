@@ -294,17 +294,19 @@ void CMainFrame::SetStatusTemperature(double Temp, bool Defined)
 }
 
 ///<summary>Показывает оставшееся время в статус-баре<summary>
-///<param name="Seconds">Время в милисекундах<param>
-///<param name="Defined">Определена (известна) ли температура; если false, то не отображается<param> 
-void CMainFrame::SetStatusTime(int Seconds, bool Defined)
+///<param name="milliSeconds">Время в милисекундах<param>
+///<param name="isDefined">Определено (известно) ли оставшееся время; если false, то не отображается<param> 
+void CMainFrame::SetStatusTime(int milliSeconds, bool isDefined)
 {
-	char str[255];
-	if(Defined)
-		TIME2Str(Seconds, str);
-
+	static char str[255];
+	if(isDefined)
+		TIME2Str(milliSeconds, str);
 	else
 		sprintf(str, "\n");
-	::SendMessage(this->m_hStatusBar, SB_SETTEXT, StatusBarPartTime, (LPARAM)str);
+	if (GetCurrentThreadId() == AfxGetApp()->m_nThreadID)
+		::SendMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTime, (LPARAM)str);
+	else
+		::PostMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTime, (LPARAM)str);
 }
 
 TBBUTTON* CMainFrame::CreateStructTBBUTTON()
@@ -530,7 +532,7 @@ if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
 								0, (LPARAM) str);
 	}
 
-SetNewTIME(&m_Doc.m_ThrComm.TIME);
+GetXpsTimeRemainedToEnd(&m_Doc.m_ThrComm.TIME);
 SetStatusTime(m_Doc.m_ThrComm.TIME);
 
 THRI_UNLOCK();
@@ -674,8 +676,7 @@ void CMainFrame::OnFileOpenProject()
 			}
 		OnRegions();
 
-		SetNewTIME(&m_Doc.m_ThrComm.TIME);
-
+		GetXpsTimeRemainedToEnd(&m_Doc.m_ThrComm.TIME);
 		SetStatusTime(m_Doc.m_ThrComm.TIME);
 		}
 	else if(m_Doc.m_DocType==m_Doc.DXPS)
@@ -1412,8 +1413,7 @@ if(m_Doc.m_DocType==m_Doc.XPS)
 
 	OnRegions();
 
-	SetNewTIME(&m_Doc.m_ThrComm.TIME);
-
+	GetXpsTimeRemainedToEnd(&m_Doc.m_ThrComm.TIME);
 	SetStatusTime(m_Doc.m_ThrComm.TIME);
 	}
 else if(m_Doc.m_DocType==m_Doc.DXPS)

@@ -147,11 +147,9 @@ void CRegionWnd::OnButtonAddNew()
 					              0, (LPARAM)pReg->m_DataIn.Comments);
 				}
 
-				char TimeStr[64];
-				SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-				TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-				::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
-				              2, (LPARAM)(LPSTR)TimeStr);
+				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
+
 
 				theApp.m_pMainFrame->m_Doc.CheckDocType();
 			} // end if(m_pDlgParamReg->DoModal()==IDOK)
@@ -273,11 +271,8 @@ void CRegionWnd::OnButtonEdit()
 						              0, (LPARAM)pReg->m_DataIn.Comments);
 					}
 
-					char TimeStr[64];
-					SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-					TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-					::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
-					              2, (LPARAM)(LPSTR)TimeStr);
+					GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+					m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 
 					m_pListRegionWnd->UpdateItem(pReg);
 				}
@@ -408,12 +403,8 @@ void CRegionWnd::OnButtonDelete()
 						              0, (LPARAM)str);
 					}
 
-					char TimeStr[64];
-					SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-					TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-					::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
-					              2, (LPARAM)(LPSTR)TimeStr);
-
+					GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+					m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				} // end if(::MessageBox(m_pListRegionWnd->m_hWnd, str, "Attention",MB_YESNO) == IDYES)
 
 				m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
@@ -520,11 +511,8 @@ void CRegionWnd::OnButtonOnOff()
 			if (m_pMainFrame->m_Doc.fpPrj) SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
 			THRI_UNLOCK();
 
-			char TimeStr[64];
-			SetNewTIME(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-			TIME2Str(m_pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-			::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT,
-				            2, (LPARAM)(LPSTR)TimeStr);
+			GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+			m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 
 			::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
 		}

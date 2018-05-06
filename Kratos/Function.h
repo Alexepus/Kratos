@@ -47,7 +47,7 @@ void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CS
 void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSingleLock &tsLock, BOOL UserStop=FALSE);
 void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData);
 
-void SetNewTIME(int* TIME);
+void GetXpsTimeRemainedToEnd(int* TIME);
 void TIME2Str(int TIME, char* str);
 BOOL WriteDxpsRegionsParam(FILE *fp);
 BOOL WriteDxpsPoints(FILE *fp, DxpsOutList::iterator iter);

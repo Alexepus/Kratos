@@ -341,6 +341,8 @@ void CListRegionWnd::SetNewRegionItem(CRegion* pReg)
 
 void CListRegionWnd::UpdateItem(CRegion* pReg)
 {
+	if (!IsWindow(m_hWnd))
+		return;
 	LV_ITEM item;
 	memset(&item, 0, sizeof(LV_ITEM));
 	item.iItem = pReg->ID;

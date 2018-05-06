@@ -20,7 +20,6 @@ extern CCriticalSection CrSecGraph;
 
 CGraphics::CGraphics()
 {
-	//AfxMessageBox("CGraphics::CGraphics()");
 	sprintf(m_strCaption, "%s", "Region");
 	m_Grid = TRUE;
 	m_Font = NULL;
@@ -33,7 +32,6 @@ CGraphics::CGraphics()
 	m_DataAllColor = (COLORREF) App->GetProfileInt("COLOR","1",0xff0000);
 	m_DataShortColor = (COLORREF) App->GetProfileInt("COLOR","2",0xff0000);
 	m_GridColor = (COLORREF) App->GetProfileInt("COLOR","3",0xff0000);
-	//m_DataShortColor = (COLORREF) RGB(0,0,0);
 
 	m_Grid = (BOOL) App->GetProfileInt("SettingsGraph","Grid", 1);
 	m_GuideLines = (BOOL) App->GetProfileInt("SettingsGraph","GuideLines", 1);
@@ -54,38 +52,23 @@ CGraphics::CGraphics()
 		{	
 		sprintf(m_cl_name_for_curve,"%s","WndCurve");
 		memset(&m_WC, 0, sizeof(WNDCLASS));
-		//m_WC.lpszClassName = "RegionWindow";
 		m_WC.lpszClassName = m_cl_name_for_curve;
 		m_WC.lpfnWndProc = (WNDPROC) ::DefWindowProc;
-		//m_WC.lpfnWndProc = (WNDPROC) NULL;
 		m_WC.style = CS_HREDRAW | CS_VREDRAW;
 		m_WC.hInstance = AfxGetInstanceHandle();
 		m_WC.hIcon = NULL;//::LoadIcon(NULL, IDI_APPLICATION);
 		m_WC.hCursor = ::LoadCursor(NULL, IDC_CROSS);
 		m_WC.hbrBackground = (HBRUSH) ::GetStockObject(BLACK_BRUSH);
-		//m_WC.hbrBackground = (HBRUSH) ::GetStockObject(WHITE_BRUSH);
 		m_WC.lpszMenuName = NULL;
 		::RegisterClass(&m_WC);
 		}
-	else ;//AfxMessageBox("ERROR ! \n\n( CGraphics::CGraphics() )");	
 	m_Viewer = FALSE;
-		
-	/*
-	m_cl_name_for_curve = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW,
-		//NULL,
-		//::LoadCursor(NULL, IDC_CROSS),
-		//::LoadCursor(NULL, IDC_ARROW),
-		AfxGetApp()->LoadStandardCursor(IDC_ARROW),
-		(HBRUSH) GetStockObject(BLACK_BRUSH), 0);
-	*/
-
 }
 
 CGraphics::~CGraphics()
 {
 delete m_pLogFont;
 }
-
 
 BEGIN_MESSAGE_MAP(CGraphics, CWnd)
 	//{{AFX_MSG_MAP(CGraphics)
@@ -97,34 +80,16 @@ BEGIN_MESSAGE_MAP(CGraphics, CWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CGraphics message handlers
 
 void CGraphics::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
-/*
-	NMHDR hdr;
-	hdr.hwndFrom = this->m_hWnd;
-	hdr.idFrom = ID_GRAPHICS_WND;
-	hdr.code = WM_MOUSEMOVE;
-	HWND hWnd = ::GetParent(this->m_hWnd);
-	::SendMessage(hWnd, WM_NOTIFY, (WPARAM) WM_MOUSEMOVE, (LPARAM) &hdr);
-*/
-	/*
-	RECT r;
-	::GetClientRect(this->m_hWnd, &r);
-	char str[80];
-	sprintf(str,"Right = %i\n\nBottom = %i",r.right,r.bottom);
-	AfxMessageBox(str);
-	*/
 	CWnd::OnLButtonDown(nFlags, point);
 }
 
 void CGraphics::CalcLXaxisAndX0Pixels()
 {
-	//???????????????
 	RECT r;
 	SIZE size;
 	m_hDC = ::GetDC(this->m_hWnd);
@@ -137,7 +102,6 @@ void CGraphics::CalcLXaxisAndX0Pixels()
 	m_LXaxis =  (int) (r.right - (m_X0_pixels + size.cx/2. + 5) );
 	::SelectObject(m_hDC, OldFont);
 	::ReleaseDC(this->m_hWnd, m_hDC);
-
 }
 
 void CGraphics::CalcLYaxisAndY0Pixels()
@@ -151,9 +115,6 @@ void CGraphics::CalcLYaxisAndY0Pixels()
 	sprintf(str,"%c", '5');
 	::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
 
-	//m_Y0_pixels = 8 + (int) m_pLogFont->lfHeight;
-	//m_Y0_pixels = 8 + size.cy;
-	//m_LYaxis = r.bottom - (m_Y0_pixels + (int) m_pLogFont->lfHeight);
 	m_Y0_pixels = r.bottom - (13 + size.cy);
 	m_LYaxis = (m_Y0_pixels - 2*size.cy);
 	::SelectObject(m_hDC, OldFont);
@@ -167,25 +128,15 @@ m_hDC = ::GetDC(this->m_hWnd);
 HFONT OldFont = (HFONT) ::SelectObject(m_hDC, m_Font);
 SIZE size;
 m_LMaxTextY=0;
-//int lText;
 double TextCoef = 0.5;
-int LStep=0;
-int i,j,k;
+	int i,j,k;
 int Circle=TRUE;
 char str[256];
 char strFormat[16];
 int n=0;
 int ves[] = {1,2,4,5};
-double Delta;
-int intY1;//intY2;
-//double y1=0,y2=0;
 
-//HFONT OldFont = (HFONT) ::SelectObject(m_hDC, m_Font);
-
-//this->m_Viewer;
-
-
-if(m_Viewer==TRUE)
+	if(m_Viewer==TRUE)
 	{
 	if(m_pReg->m_pDataOut == m_pDataAll && m_pReg->m_NDataOut == m_NDataAll)
 		{	
@@ -227,37 +178,19 @@ if(m_pDataShort)
 	}
 
 if(!m_pDataAll && !m_pDataShort) return FALSE;
-/*
-if(!m_pDataShort)
-	{ y1 = m_pDataAll[0].y;
-		y2 = m_pDataAll[m_NDataAll-1].y;
-	}
-else if(!m_pDataAll)
-	{ y1 = m_pDataShort[0].y;
-		y2 = m_pDataShort[m_NDataShort-1].y;
-	}
-else if(m_pDataAll && m_pDataShort)
-	{
-	if(m_pDataAll[0].y < m_pDataShort[0].y) y1 = m_pDataAll[0].y;
-	else y1 = m_pDataShort[0].y;
-	if(m_pDataAll[m_NDataAll-1].y > m_pDataShort[m_NDataShort-1].y) y2 = m_pDataAll[m_NDataAll-1].y;
-	else y2 = m_pDataShort[m_NDataShort-1].y;
-	}
-else return FALSE;
-*/
 
-Delta = y2-y1;
+double Delta = y2-y1;
 if(Delta == 0) {m_nStepY=1; goto Met_End;}
 
 n=0;
-intY1 = (int) y1;
+int intY1 = (int) y1;
 if(y1 < intY1) --intY1;
 m_Y1 = intY1;
 m_Y2 = m_Y1 + 1;
 m_nStepY = (int) (m_Y2 - m_Y1);
 while(m_Y2 < y2) { m_Y2 += 1; ++m_nStepY;}
 
-LStep=m_LYaxis/m_nStepY;
+int LStep = m_LYaxis/m_nStepY;
 size.cx=0;
 sprintf(strFormat,"%c%c%i%c%c",'%','.',n,'l','f');
 for(i=0,j=0; i<=10 && j<=m_nStepY; ++i,++j)
@@ -270,32 +203,22 @@ for(i=0,j=0; i<=10 && j<=m_nStepY; ++i,++j)
 	if(size.cx > m_LMaxTextY) m_LMaxTextY=size.cx;
 	}
 
-
 m_Y1=m_Y2=0;
 m_LMaxTextY=0;
-//if(m_pLogFont->lfHeight > (TextCoef*LStep))
 if(size.cy > (TextCoef*LStep))
 	{
 	n=-1;
 	while(Circle)
 		{
-		//AfxMessageBox("Circle1");
-		//Circle = FALSE; 
-		//break;
-		
-		
 		++n;
 		for(k=0; k<4; ++k)
 			{
 			m_nStepY = (int) ( Delta/(ves[k]*pow(10.,n)) );
 			if(m_nStepY <= 1) {m_nStepY = 1; Circle = FALSE; break;}
-			//NewDelta = nStep*ves[k]*pow(10,n);
-			//LStep=Lx/(nStep+1);
 			intY1 = (int) ( y1/pow(10.,n) );
 			if(y1 < intY1) --intY1;
 			if(ves[k]==5) { while(intY1%5) {intY1 -= 1;} }
 			else if( (ves[k]==2 || ves[k]==4) && (intY1%2) ) intY1 -= 1;
-			//if(intX1<0) intX1=0;
 			m_Y1 = intY1*pow(10.,n);
 			m_Y2 = m_Y1 + ves[k]*pow(10.,n)*m_nStepY;
 			while(m_Y2 < y2) { m_Y2 += ves[k]*pow(10.,n); ++m_nStepY;}
@@ -323,17 +246,10 @@ else //if(m_pLogFont->lfHeight < TextCoef*LStep)
 	Circle = TRUE;
 	while(Circle)
 		{
-		//AfxMessageBox("Circle2");
-		//Circle = FALSE; 
-		//break;
-		
-		
-		
 		--n;
 		for(k=3; k>=0; --k)
 			{
 			m_nStepY = (int) (Delta/(ves[k]*pow(10.,n)));
-			//if(m_nStepY == 1) {Circle = FALSE; break;}
 			if(m_nStepY == 0) ++m_nStepY;
 			intY1 = (int) (y1/pow(10.,n));
 			if(y1 < intY1) --intY1;
@@ -374,10 +290,7 @@ else //if(m_pLogFont->lfHeight < TextCoef*LStep)
 				}//end if(LText < TextCoef*LStep)
 			} // end for(k=3; k>=0; --k)
 		} // end 	while(Circle)2
-//	outtextxy(10, 10, "Else");
-//	goto met_END;
 	} // else if(LText < (LStep))
-
 
 Met_End:
 if(m_nStepY <= 1)
@@ -388,40 +301,10 @@ if(m_nStepY <= 1)
 	}
 else { m_VesY = ves[k]; m_nY = n;}
 
-/*		
-char str1[64];
-sprintf(str1,"Y1 = %lf\n\nY2 = %lf\n\nnStep = %i", m_Y1,m_Y2,m_nStepY);		
-AfxMessageBox(str1);
-*/
-/*
-double xc1, yc1;
-int nFormat;
-xc1=0;
-if(n >= 0) sprintf(strFormat,"%c%c%c%c%c",'%','.','0','l','f');
-else { nFormat = abs(n);
-			 sprintf(strFormat,"%c%c%i%c%c", '%', '.', nFormat, 'l', 'f');
-		 }
-if(nStep > 1)
-	{
-	for(i=0; i<=nStep; ++i)
-		{
-		xc1=((double) i)*(((double) Lx)/((double) nStep));
-		yc1=getmaxy()/2.;
-		line(xc1, yc1, xc1, yc1+10);
-		sprintf(str,strFormat, X1+i*ves[k]*pow(10,n));
-		outtextxy(xc1, yc1+12, str);
-		}
-	}  // end if(nStep > 1)
-else // if(nStep <= 1)
-	{m_Y1 = y1; m_Y2 = y2; m_nStepY=1;}
-*/
-
-//met_END:
 ::SelectObject(m_hDC, OldFont);
 ::ReleaseDC(this->m_hWnd, m_hDC);
 return TRUE;
 }
-
 
 void CGraphics::DrawAxis()
 {
@@ -430,49 +313,25 @@ void CGraphics::DrawAxis()
 	char str[32];
 	char FormatStr[32];
 	SIZE size;
-	//?????????????????
 	CalcLYaxisAndY0Pixels();
 	if(!LimitsY()) { AfxMessageBox("LimitsY == FALSE"); return;}
 	CalcLXaxisAndX0Pixels();
 	if(!LimitsX()) { AfxMessageBox("LimitsX == FALSE"); return;}
 	
-	
-	//?????????????????
 	m_hDC = ::GetDC(this->m_hWnd);
 	HFONT OldFont = (HFONT) ::SelectObject(m_hDC, m_Font);
 	sprintf(str,"%c", '5');
 	::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
 
-	/*
-	LOGBRUSH LogBrush = {BS_SOLID, m_GridColor,0};
-	HPEN NewPen = ::ExtCreatePen(	PS_GEOMETRIC | PS_DASH, 1, &LogBrush,0,0);
-	//HPEN Pen = (HPEN) ::GetStockObject(WHITE_PEN);
-	HPEN OldPen = (HPEN) ::SelectObject(m_hDC, NewPen);
-	
-	::MoveToEx(m_hDC,0,0,NULL);
-	::LineTo(m_hDC,200,200);
-
-	::SelectObject(m_hDC, OldPen);
-	::DeleteObject(NewPen);
-	*/
-	
 	LOGBRUSH LogBrush = {BS_SOLID, m_TextColor,0};
-	//LogBrush.lbColor = m_TextColor;
 	HPEN NewPen = ::ExtCreatePen(	PS_COSMETIC | PS_SOLID, 1, &LogBrush,0,0);
-	//HPEN Pen = (HPEN) ::GetStockObject(WHITE_PEN);
 	HPEN OldPen = (HPEN) ::SelectObject(m_hDC, NewPen);
 	::SetTextColor(m_hDC, m_TextColor);
 	::SetTextAlign(m_hDC, TA_RIGHT);
-	::SetBkColor(m_hDC, (COLORREF) RGB(0,0,0));
-	
+	::SetBkColor(m_hDC, (COLORREF) RGB(0,0,0));	
 	
 	::MoveWindow(m_WndForCurve.m_hWnd, m_X0_pixels+1, m_Y0_pixels-m_LYaxis+1,
 								m_LXaxis-2, m_LYaxis-2, NULL);
-	
-	
-	//::MoveWindow(m_WndForCurve.m_hWnd, m_X0_pixels+1, m_Y0_pixels-m_LYaxis+1,
-	//							m_LXaxis-2, m_LYaxis-2, NULL);
-	
 	// Bar - Ограничивающий прямоугольник
 	::MoveToEx(m_hDC, m_X0_pixels, m_Y0_pixels, NULL);
 	::LineTo(m_hDC, m_X0_pixels, m_Y0_pixels-m_LYaxis);
@@ -480,11 +339,6 @@ void CGraphics::DrawAxis()
 	::LineTo(m_hDC, m_X0_pixels+m_LXaxis, m_Y0_pixels);
 	::LineTo(m_hDC, m_X0_pixels, m_Y0_pixels);
 	
-//	::MoveWindow(m_WndForCurve.m_hWnd, m_X0_pixels+1, m_Y0_pixels-m_LYaxis+1,
-//								m_LXaxis-2, m_LYaxis-2, NULL);
-//	::MoveWindow(m_WndForCurve.m_hWnd, m_X0_pixels, m_Y0_pixels-m_LYaxis,
-//								m_LXaxis, m_LYaxis, NULL);
-
 	// Y axis
 	LStep = ((double) m_LYaxis)/m_nStepY;
 	if(m_nY >= 0) sprintf(FormatStr, "%c%c%c%c%c", '%', '.', '0', 'l', 'f');
@@ -535,214 +389,22 @@ void CGraphics::DrawAxis()
 	::DeleteObject(NewPen);
 	::ReleaseDC(this->m_hWnd, m_hDC);
 
-	if(m_Grid == TRUE) DrawGrid();
-	
-	
+	if(m_Grid == TRUE) 
+		DrawGrid();	
 }
-
-//BOOL CGraphics::LimitsX()
-//{
-//m_hDC = ::GetDC(this->m_hWnd);
-//HFONT OldFont = (HFONT) ::SelectObject(m_hDC, m_Font);
-//SIZE size;
-//int maxTextWidth;
-//const double TextCoef = 0.7;
-//int LStep=0;
-//int Circle=TRUE;
-//char str[256];
-//char strFormat[16];
-//const int ves[] = {1,2,4,5};
-//int vesIndex; // Индекс текущего проверяемого веса ves
-//double Delta;     // Длина оси х в логических коондинатах (эВ)
-//int intXLogicStart;
-//int gridIntervals; //Количество интервалов сетки
-//double xLogicStart=0,xLogicEnd=0; // Начальная и конечная точки по оси х в логических коондинатах (эВ)
-//
-//if(m_pDataAll && m_pDataShort) 
-//	{ xLogicStart = I2D(m_pDataAll[0].x); 
-//		xLogicEnd = I2D(m_pDataAll[m_NDataAll-1].x);
-//	  if( I2D(m_pDataShort[0].x) < xLogicStart) xLogicStart = I2D(m_pDataShort[0].x); 
-//		if( I2D(m_pDataShort[m_NDataShort-1].x) > xLogicEnd) xLogicEnd = I2D(m_pDataShort[m_NDataShort-1].x);
-//	}
-//else if(m_pDataAll && !m_pDataShort) 
-//	{ xLogicStart = I2D(m_pDataAll[0].x); 
-//		xLogicEnd = I2D(m_pDataAll[m_NDataAll-1].x);
-//	}
-//else if(!m_pDataAll && m_pDataShort) 
-//	{ xLogicStart = I2D(m_pDataShort[0].x); 
-//		xLogicEnd = I2D(m_pDataShort[m_NDataShort-1].x);
-//	}
-//
-//if(!m_pDataAll && !m_pDataShort) return FALSE;
-//
-//Delta = xLogicEnd-xLogicStart; 
-//if(Delta <0)
-//{
-//	MsgLog("Регион содержит некорректные данные по оси Х. Рекомендуется сбросить данные региона.");
-//	return FALSE;
-//}
-//
-//intXLogicStart = (int) xLogicStart;
-//if(xLogicStart < intXLogicStart) --intXLogicStart;
-//int intXLogicEnd = intXLogicStart + 1;
-//gridIntervals = ceil(xLogicEnd - intXLogicStart);
-//
-//LStep=m_LXaxis/(gridIntervals); // Длина деления в пикселах
-//maxTextWidth=0;
-//int precision = 0;
-//sprintf(strFormat,"%%.%ilf", precision);
-//for(int i=0; i<=10 && i<gridIntervals; ++i)
-//{
-//	sprintf(str,strFormat, (m_X1+i*gridIntervals) );
-//	::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//	if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//	if(maxTextWidth > (TextCoef*LStep)) break;
-//
-//	sprintf(str,strFormat, (m_X2 - i*gridIntervals ) );
-//	::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//	if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//	if(maxTextWidth > (TextCoef*LStep)) break;
-//}
-//
-//m_X1=m_X2=0;
-//if(maxTextWidth > (TextCoef*LStep))
-//	{
-//	precision=-1;
-//	while(Circle)
-//		{
-//		++precision;
-//		for(vesIndex=0; vesIndex<4; ++vesIndex)
-//			{
-////			nStep = (int) (Delta/(ves[k]*pow10(n)) +1);// +1 No need
-//			gridIntervals = (int) ( Delta/(ves[vesIndex]*pow(10.,precision)) );
-//			if(gridIntervals == 1) {Circle = FALSE; break;}
-//			//NewDelta = nStep*ves[k]*pow10(n);
-//			//LStep=Lx/(nStep+1);
-//			intXLogicStart = (int) ( xLogicStart/pow(10.,precision) );
-//			if(xLogicStart < intXLogicStart) --intXLogicStart;
-//			if(ves[vesIndex]==5) { while(intXLogicStart%5) {intXLogicStart -= 1;} }
-//			else if( (ves[vesIndex]==2 || ves[vesIndex]==4) && (intXLogicStart%2) ) intXLogicStart -= 1;
-//			//if(intX1<0) intX1=0;
-//			m_X1 = intXLogicStart*pow(10.,precision);
-//			m_X2 = m_X1 + ves[vesIndex]*pow(10.,precision)*gridIntervals;
-//			while(m_X2 < xLogicEnd) { m_X2 += ves[vesIndex]*pow(10.,precision); ++gridIntervals;}
-//
-//			//LStep=m_LXaxis/(gridIntervals+1);
-//			LStep=m_LXaxis/(gridIntervals);
-//			sprintf(strFormat,"%c%c%c%c%c",'%','.','0','l','f');
-//			maxTextWidth=0;
-//			for(int i=0; i<=10 && i<gridIntervals; ++i)
-//				{
-//				sprintf(str,strFormat, (m_X1 + i*ves[vesIndex]*pow(10.,precision)) );
-//				::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//				if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//				if(maxTextWidth > (TextCoef*LStep)) break;
-//				sprintf(str,strFormat, (m_X2 - i*ves[vesIndex]*pow(10.,precision)) );
-//				::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//				if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//				if(maxTextWidth > (TextCoef*LStep)) break;
-//				} // end for(i=0,j=0; i<=10 && j<=nStep; ++i,++j)
-//			if(maxTextWidth < TextCoef*LStep) { Circle = FALSE; break; }
-//			} // end for(k=0; k<4; ++k)
-//
-//		} // end while(Circle)
-//	} // end if(LText > (LStep))
-//else //if(LText < (TextCoef*LStep))
-//	{
-//	precision=0;
-//	Circle = TRUE;
-//	while(Circle)
-//		{
-//		--precision;
-//
-//		for(vesIndex=3; vesIndex>=0; --vesIndex)
-//			{
-//			double p10n = pow(10.,precision);
-//			gridIntervals = (int) (Delta/(ves[vesIndex]*p10n));
-//			if(gridIntervals == 0) ++gridIntervals;
-//			intXLogicStart = (int) (xLogicStart/p10n);
-//			if(xLogicStart < intXLogicStart) --intXLogicStart;
-//			if(ves[vesIndex]==5) { while(intXLogicStart%5) {--intXLogicStart;} }
-//			else if( (ves[vesIndex]==2 || ves[vesIndex]==4) && (intXLogicStart%2) ) intXLogicStart -= 1;
-//			//if(intX1 < 0) intX1=0;
-//			m_X1 = intXLogicStart*p10n;
-//			m_X2 = m_X1 + ves[vesIndex]*p10n*gridIntervals;
-//			while(m_X2 < xLogicEnd) { m_X2 += (ves[vesIndex]*p10n); ++gridIntervals;}
-//			sprintf(strFormat,"%%.ilf", abs(precision));
-//			maxTextWidth=0;
-//			LStep=m_LXaxis/(gridIntervals+1);
-//			for(int i=0; i<=10 && i<gridIntervals; ++i)
-//				{
-//				sprintf(str,strFormat, (m_X1 + i*ves[vesIndex]*p10n) );
-//				::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//				if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//				if(maxTextWidth > (TextCoef*LStep)) break;
-//				sprintf(str,strFormat, (m_X2 - i*ves[vesIndex]*p10n) );
-//				::GetTextExtentPoint32(m_hDC, str, strlen(str), &size);
-//				if(size.cx > maxTextWidth) maxTextWidth=size.cx;
-//				if(maxTextWidth > (TextCoef*LStep)) break;
-//				} // end for(i=0,j=0; i<=10 && j<=nStep; ++i,++j)
-//			if(maxTextWidth > TextCoef*LStep)
-//				{
-//				Circle = FALSE;
-//				if(ves[vesIndex]==5) 
-//				{
-//					++precision; vesIndex=0;
-//					p10n = pow(10.,precision);
-//				}
-//				else ++vesIndex;
-//				gridIntervals = (int) (Delta/(ves[vesIndex]*p10n));
-//				intXLogicStart = (int) (xLogicStart/p10n);
-//				if(xLogicStart < intXLogicStart) --intXLogicStart;
-//				if(ves[vesIndex]==5) { while(intXLogicStart%5) {--intXLogicStart;} }
-//				else if( (ves[vesIndex]==2 || ves[vesIndex]==4) && (intXLogicStart%2) ) intXLogicStart -= 1;
-//				//if(intX1 < 0) intX1=0;
-//				m_X1 = intXLogicStart*p10n;
-//				m_X2 = m_X1 + ves[vesIndex]*p10n*gridIntervals;
-//				while(m_X2 < xLogicEnd) { m_X2 += (ves[vesIndex]*p10n); ++gridIntervals;}
-//				break;
-//				}//end if(LText < TextCoef*LStep)
-//			} // end for(k=3; k>=0; --k)
-//		} // end 	while(Circle)2
-//	} // else if(LText < (LStep))
-//
-//
-//if(gridIntervals <= 1)
-//{
-//	m_X1 = xLogicStart; 
-//	m_X2 = xLogicEnd; 
-//	m_nStepX=1;
-//}
-//else 
-//{ 
-//	m_VesX = ves[vesIndex]; 
-//	m_nX = precision;
-//	m_nStepX = gridIntervals;
-//}
-//
-//
-//::SelectObject(m_hDC, OldFont);
-//::ReleaseDC(this->m_hWnd, m_hDC);
-//return TRUE;
-//}
 
 BOOL CGraphics::LimitsX()
 {
 	m_hDC = ::GetDC(this->m_hWnd);
 	HFONT OldFont = (HFONT) ::SelectObject(m_hDC, m_Font);
 	SIZE size;
-	int m_LMaxTextX=0;
-	//int lText;
 	double TextCoef = 0.7;
-	int LStep=0;
 	int i,j,k;
 	int Circle=TRUE;
 	char str[256];
 	char strFormat[16];
-	int n=0;
 	int ves[] = {1,2,4,5};
 	double Delta;     // Длина оси х в логических коондинатах (эВ)
-	int intX1;//intY2;
 	double x1=0,x2=0; // Начальная и конечная точки по оси х в логических коондинатах (эВ)
 
 	if(m_pDataAll && m_pDataShort) 
@@ -768,17 +430,17 @@ BOOL CGraphics::LimitsX()
 		MsgLog("Регион содержит некорректные данные по оси Х. Рекомендуется сбросить данные региона.");
 		return FALSE;
 	}
-	n=0;
+	int n = 0;
 
-	intX1 = (int) x1;
+	int intX1 = (int) x1;
 	if(x1 < intX1) --intX1;
 	m_X1 = intX1;
 	m_X2 = m_X1 + 1;
 	m_nStepX = (int) (m_X2 - m_X1);
 	while(m_X2 < x2) { m_X2 += 1; ++m_nStepX;}
 
-	LStep=m_LXaxis/(m_nStepX); // Длина деления в пикселах
-	m_LMaxTextX=0;
+	int LStep = m_LXaxis/(m_nStepX); // Длина деления в пикселах
+	int m_LMaxTextX = 0;
 	sprintf(strFormat,"%c%c%i%c%c",'%','.',n,'l','f');
 	for(i=0,j=0; i<=10 && j<m_nStepX; ++i,++j)
 	{
@@ -792,7 +454,6 @@ BOOL CGraphics::LimitsX()
 		if(m_LMaxTextX > (TextCoef*LStep)) break;
 	}
 
-
 	m_X1=m_X2=0;
 	if(m_LMaxTextX > (TextCoef*LStep))
 	{
@@ -802,21 +463,16 @@ BOOL CGraphics::LimitsX()
 			++n;
 			for(k=0; k<4; ++k)
 			{
-				//			nStep = (int) (Delta/(ves[k]*pow10(n)) +1);// +1 No need
 				m_nStepX = (int) ( Delta/(ves[k]*pow(10.,n)) );
 				if(m_nStepX == 1) {Circle = FALSE; break;}
-				//NewDelta = nStep*ves[k]*pow10(n);
-				//LStep=Lx/(nStep+1);
 				intX1 = (int) ( x1/pow(10.,n) );
 				if(x1 < intX1) --intX1;
 				if(ves[k]==5) { while(intX1%5) {intX1 -= 1;} }
 				else if( (ves[k]==2 || ves[k]==4) && (intX1%2) ) intX1 -= 1;
-				//if(intX1<0) intX1=0;
 				m_X1 = intX1*pow(10.,n);
 				m_X2 = m_X1 + ves[k]*pow(10.,n)*m_nStepX;
 				while(m_X2 < x2) { m_X2 += ves[k]*pow(10.,n); ++m_nStepX;}
 
-				//LStep=m_LXaxis/(m_nStepX+1);
 				LStep=m_LXaxis/(m_nStepX);
 				sprintf(strFormat,"%c%c%c%c%c",'%','.','0','l','f');
 				m_LMaxTextX=0;
@@ -894,7 +550,6 @@ BOOL CGraphics::LimitsX()
 		} // end 	while(Circle)2
 	} // else if(LText < (LStep))
 
-
 	if(m_nStepX <= 1)
 	{ m_X1 = x1; m_X2 = x2; m_nStepX=1;
 
@@ -914,16 +569,9 @@ void CGraphics::OnPaint()
 	GetUpdateRect(&m_LastUpdateRect);
 	CString str;
 	str.Format("(%i,%i)-(%i,%i)", m_LastUpdateRect.left, m_LastUpdateRect.top,m_LastUpdateRect.right,m_LastUpdateRect.bottom);
-/*	if(m_GuideLines)
-	{
-		RECT r;
-		::GetClientRect(m_WndForCurve.m_hWnd, &r);
-		::InvalidateRect(m_WndForCurve.m_hWnd, &r, TRUE);
-	}*/
 	CPaintDC dc(this); // device context for painting
 	m_WasOnPaint=TRUE;
-	// TODO: Add your message handler code here
-	//AfxMessageBox("OnPaint()");
+
 	if(theApp.m_pMainFrame->m_Doc.CheckDocType()==CDoc::XPS || TRUE)
 	{
 		if(m_pDataAll || m_pDataShort) 
@@ -946,9 +594,6 @@ void CGraphics::OnPaint()
 	{
 	}
 	else DrawKRATOS();
-
-
-	// Do not call CWnd::OnPaint() for painting messages
 }
 
 
@@ -956,16 +601,11 @@ void CGraphics::OnPaint()
 int CGraphics::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	SetWindowText("CGraphics");
-	//if (CWnd::OnCreate(lpCreateStruct) == -1)
-	//	return -1;
-	
-	// TODO: Add your specialized creation code here
-	
-	///*
+
 	RECT r;
 	::GetWindowRect(this->m_hWnd, &r);
 	m_WndForCurve.CreateEx(0, m_cl_name_for_curve, NULL,
-		WS_CHILD|WS_CLIPCHILDREN|WS_VISIBLE,//|WS_HSCROLL|WS_VSCROLL, 
+		WS_CHILD|WS_CLIPCHILDREN|WS_VISIBLE,
 		0, 0, r.right, r.bottom, this->m_hWnd, NULL, 0);
 	if(m_WndForCurve.m_hWnd == NULL) {AfxMessageBox("m_WndForCurve.m_hWnd == NULL"); return -1;}
 	m_WndForCurve.m_pGraph = this;
@@ -982,31 +622,22 @@ int CGraphics::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_NotifyCoord.n_digitsX = 0;
 	m_NotifyCoord.n_digitsY = 0;
 	
-
-
-	//*/
-	
-	//else AfxMessageBox("m_WndForCurve.m_hWnd != NULL");
-	//m_WndForCurve.ShowWindow(SW_SHOWNORMAL);
-
 	return 0;
 }
 
 void CGraphics::DrawGraphics()
 {
 	int i;
-	int X2_scr, Y1_scr;
 	double x_scr,y_scr;
 
 	RECT r;
 	::GetClientRect(m_WndForCurve.m_hWnd, &r);
-	X2_scr = m_LXaxis-1;
-	Y1_scr=r.bottom-1;
+	int X2_scr = m_LXaxis-1;
+	int Y1_scr = r.bottom-1;
 
 	m_hDC = ::GetDC(m_WndForCurve.m_hWnd);
 	LOGBRUSH LogBrush = {BS_SOLID, m_DataAllColor,0};
 	HPEN NewPen = ::ExtCreatePen(	PS_GEOMETRIC | PS_SOLID, 1, &LogBrush,0,0);
-		//HPEN Pen = (HPEN) ::GetStockObject(WHITE_PEN);
 	HPEN OldPen = (HPEN) ::SelectObject(m_hDC, NewPen);
 
 	HBRUSH NewBrush = ::CreateBrushIndirect(&LogBrush);
@@ -1017,7 +648,6 @@ void CGraphics::DrawGraphics()
 		x_scr = ((double) X2_scr)*( ( I2D(m_pDataAll[0].x) - m_X1) / (m_X2-m_X1) );
 		y_scr = ScaleYToScreen(Y1_scr, m_Y1, m_Y2, m_pDataAll[0].y);
 
-		//y_scr =  - Y1_scr*( ( m_pDataAll[0].y - m_Y1) / (m_Y2-m_Y1) );
 		::MoveToEx(m_hDC, (int) x_scr, (int) y_scr, NULL);
 		for(i=1; i<m_NDataAll; ++i) 
 			{
@@ -1160,7 +790,6 @@ RECT r;
 
 void CGraphics::DrawGrid()
 {
-	
 	double LStep,x,y;
 	int i;
 	RECT r;
@@ -1169,7 +798,6 @@ void CGraphics::DrawGrid()
 	m_hDC = ::GetDC(this->m_WndForCurve.m_hWnd);
 	LOGBRUSH LogBrush = {BS_SOLID, m_GridColor,0};
 	HPEN NewPen = ::ExtCreatePen(	PS_GEOMETRIC | PS_DOT, 1, &LogBrush,0,0);
-	//HPEN Pen = (HPEN) ::GetStockObject(WHITE_PEN);
 	HPEN OldPen = (HPEN) ::SelectObject(m_hDC, NewPen);
 	::SetBkColor(m_hDC, (COLORREF) RGB(0,0,0));
 
@@ -1187,8 +815,7 @@ void CGraphics::DrawGrid()
 		x = i*LStep - 1;
 		::MoveToEx(m_hDC, (int) x, 0, NULL);
 		::LineTo(m_hDC, (int) x, r.bottom);
-		}
-	
+		}	
 
 	::SelectObject(m_hDC, OldPen);
 	::DeleteObject(NewPen);
@@ -1197,15 +824,6 @@ void CGraphics::DrawGrid()
 
 void CGraphics::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
-	/*
-	NMHDR hdr;
-	hdr.hwndFrom = this->m_hWnd;
-	hdr.idFrom = ID_GRAPHICS_WND;
-	hdr.code = WM_MOUSEMOVE;
-	HWND hWnd = ::GetParent(this->m_hWnd);
-	::SendMessage(hWnd, WM_NOTIFY, (WPARAM) WM_MOUSEMOVE, (LPARAM) &hdr);
-	*/
 	CWnd::OnMouseMove(nFlags, point);
 }
 
@@ -1217,7 +835,6 @@ double X2_scr = m_LXaxis-1;
 double Y1_scr=r.bottom-1;
 
 // X axis
-//double LogUnitInPixel= ((double) (m_VesX))*pow(10,m_nX)*m_nStepX/m_LXaxis ;
 double LogUnitInPixel= (m_X2-m_X1)/((double) m_LXaxis) ;
 int n=0;
 m_NotifyCoord.n_digitsX = 0;
@@ -1228,8 +845,6 @@ else if(LogUnitInPixel != 0.0)
 	}
 else m_NotifyCoord.n_digitsX = 2;
 m_WndForCurve.m_Coord_X = (m_X2 - m_X1)/((double) (X2_scr));
-
-
 
 // Y axis
 LogUnitInPixel= ((double) (m_VesY))*pow(10.,m_nY)*m_nStepY/m_LYaxis ;
@@ -1252,29 +867,21 @@ if(!theApp.Ini.HighPressureMode.Value)
 else
 	strcpy(strK,"High Pressure");
 HWND hWnd = this->m_WndForCurve.m_hWnd;
-HDC DC;
 LOGFONT LogFont;
-HFONT Font;
-HFONT OldFont;
 COLORREF Color = RGB(255,0,100);
-//LOGBRUSH LogBrush = {BS_SOLID, Color, 0};
-//HPEN Pen;
-//HPEN OldPen;
 RECT r;
 SIZE size;
-int x,y;//,i,k,n;
-//unsigned char Red, Green, Blue;
 
 ::GetClientRect(hWnd, &r);
 memmove((void*) &LogFont, (void*) m_pLogFont, sizeof(LOGFONT));
 LogFont.lfHeight = -r.bottom/2;
 LogFont.lfWidth = r.right/(strlen(strK)+7);
-Font = ::CreateFontIndirect(&LogFont);
-DC = ::GetDC(hWnd);
-OldFont = (HFONT) ::SelectObject(DC, (HGDIOBJ) Font);
+HFONT Font = ::CreateFontIndirect(&LogFont);
+HDC DC = ::GetDC(hWnd);
+HFONT OldFont = (HFONT) ::SelectObject(DC, (HGDIOBJ) Font);
 ::GetTextExtentPoint32(DC, strK, strlen(strK), &size);
-x = (r.right - size.cx)/2;
-y = (r.bottom - size.cy)/2;
+int x = (r.right - size.cx)/2;
+int y = (r.bottom - size.cy)/2;
 
 ::SetTextColor(DC, Color);
 ::SetBkColor(DC, (COLORREF) RGB(0,0,0));
@@ -1287,7 +894,5 @@ y = (r.bottom - size.cy)/2;
 
 BOOL CGraphics::OnEraseBkgnd(CDC* pDC) 
 {
-	// TODO: Add your message handler code here and/or call default
-	
 	return CWnd::OnEraseBkgnd(pDC);
 }

@@ -331,48 +331,40 @@ AfxEndThread(0);
 void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
 { //NewData - массив точек в недоснятом скане, NNewData - число точек
 
-	int YesNo;
-	int i;
 	if(::IsWindow(pMainFrame->m_pRegionWnd->m_hWnd) ) 
 		::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, FALSE);
-	YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data ?", 
-												"Attention", MB_YESNO);
+	int YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data ?", 
+	                         "Attention", MB_YESNO);
 	if(YesNo == IDYES)
-		{// Записать в pReg измеренные данные
+	{// Записать в pReg измеренные данные
 		// 
 		--pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr;
 		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
-		for(i=0; i<NNewData; ++i)
-			{
+		for(int i=0; i<NNewData; ++i)
+		{
 			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
-			}
 		}
+	}
 	else //if(YesNo == IDNO)
-		{// Записать в файл старые данные
+	{// Записать в файл старые данные
 		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;
 		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
-		for(i=0; i<=NNewData; ++i)
-			{
+		for(int i=0; i<=NNewData; ++i)
+		{
 			SaveDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow, 
 				i, &pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i]);
-			}
-
 		}
+	}
 	::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, TRUE);
 
-char TimeStr[64];
-SetNewTIME(&pMainFrame->m_Doc.m_ThrComm.TIME);
-TIME2Str(pMainFrame->m_Doc.m_ThrComm.TIME, TimeStr);
-
-::PostMessage(pMainFrame->m_hStatusBar, SB_SETTEXT, 
-							2, (LPARAM) (LPSTR) TimeStr);
-
+	GetXpsTimeRemainedToEnd(&pMainFrame->m_Doc.m_ThrComm.TIME);
+	pMainFrame->SetStatusTime(pMainFrame->m_Doc.m_ThrComm.TIME);
 }
 
-// Рассчитывает оставшееся время, необходимое для прохода недоснятых регионов XPS
-void SetNewTIME(int* TIME)
+// Рассчитывает оставшееся время в мс, необходимое для прохода недоснятых регионов XPS
+void GetXpsTimeRemainedToEnd(int* TIME)
 {
-int Time=0;
+	int Time=0;
 	for(CRegion * pReg = CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 	{
 		if(!pReg->m_DataIn.Off)
@@ -387,21 +379,22 @@ int Time=0;
 			Time +=TimeReg;
 		}
 	}
-*TIME = Time;
+	*TIME = Time;
 }
+
 void TIME2Str(int TIME, char* str) //TIME - в мсек
 {
-int hh,mm,ss,Time, tmp;
-Time = abs(TIME)/1000;
-hh = Time/3600;
-tmp = (Time - hh*3600);
-mm = tmp/60;
-ss = tmp - mm*60;
+	int hh,mm,ss,Time, tmp;
+	Time = abs(TIME)/1000;
+	hh = Time/3600;
+	tmp = (Time - hh*3600);
+	mm = tmp/60;
+	ss = tmp - mm*60;
 
-if(TIME>=0)
-	sprintf(str, "%.2i:%.2i:%.2i",hh,mm,ss);
-else
-	sprintf(str, "-%.2i:%.2i:%.2i",hh,mm,ss);
+	if(TIME>=0)
+		sprintf(str, "%.2i:%.2i:%.2i",hh,mm,ss);
+	else
+		sprintf(str, "-%.2i:%.2i:%.2i",hh,mm,ss);
 }
 
 long GetRegisterHVCodeFromHV(double HV)

@@ -21,14 +21,10 @@ CSingleLock ThreadLock(&MutexThread);
 CRegion* pReg = nullptr;
 DATA_OUT DataOut;
 int Retard; //Тормозящее напряжение (в мВ)
-DATA_OUT* NewData = nullptr;
 int CurrAttempt=1;
-int RealSubmeasuring, CurrentSubmeasuring;
-int SumN;
 int RealTime;
 CString strMessage;
 CString fatalErrorMessage;
-int remeasureCountOnTimerError; // Количество попыток перемерить текущую точку при ошибке таймера
 int errorTotalCount = 0; // Количество ошибок за все время с момента запуска изменения
 
 std::unique_ptr<IHardware> hardware;
@@ -44,302 +40,282 @@ try
 
 	THR_LOCK();
 
-	pReg = ThComm->pRegNow;
+	pReg = CRegion::GetNextByPriority(-1, ThComm->pRegEdit);
+	if (!pReg)
+	{
+		THR_UNLOCK();
+		goto Met_EndBigCircle;
+	}
 
+	do
+	{
+		THR_UNLOCK();
+		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
+		THR_LOCK();
+		ThComm->pRegNow = pReg;
+		int k = pReg->m_NDataOutCurr;  //current measuring in the region
+		DATA_IN DataIn = pReg->m_DataIn;
+		//Запись t=pReg->m_InData.Time, HV
 
-		pReg = CRegion::GetNextByPriority(-1, ThComm->pRegEdit);
-		if (!pReg)
+		if (!theApp.Ini.HighPressureMode.Value) //KRATOS
 		{
-			THR_UNLOCK();
-			goto Met_EndBigCircle;
-		}
-
-Met_BeginRegion:
-	if (pReg->m_DataIn.Curr_N >= pReg->m_DataIn.N_)
-		goto Met_EndRegion;
-	if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
-		goto Met_EndRegion;
-
-	THR_UNLOCK();
-	ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
-	THR_LOCK();
-	ThComm->pRegNow = pReg;
-	int k = pReg->m_NDataOutCurr;  //current measuring in the region
-	//Time = pReg->m_DataIn.Time;
-	DATA_IN DataIn = pReg->m_DataIn;
-	//Запись t=pReg->m_InData.Time, HV
-
-	if (!theApp.Ini.HighPressureMode.Value) //KRATOS
-	{
-		if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
-		{
-			pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
-				+ D2I(100.0);
-			Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
-		}
-		else	//BE
-		{
-			pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
-				+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
-				+ D2I(100.0);
-			Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
-		}
-	}
-	else //High Pressure
-	{
-		if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
-		{
-			pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV))) - pReg->m_DataIn.HV;
-			Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
-			if (Retard < 0) Retard = 0;
-		}
-		else	//BE
-		{
-			pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
-				+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) - pReg->m_DataIn.HV;
-			Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
-			if (Retard < 0) Retard = 0;
-		}
-
-	}
-
-	hardware->SetKeRetard(Retard);
-	hardware->SetHv((long)I2D(DataIn.HV));
-
-	THR_UNLOCK();
-	SetNewTIME(&ThComm->TIME);
-	ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
-	Sleep(1000);
-	ThComm->TIME -= 1000;
-	ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
-	Sleep(1000);
-	ThComm->TIME -= 1000;
-	ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
-	Sleep(1000);
-	ThComm->TIME -= 1000;
-	ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
-	THR_LOCK();
-
-	int i;
-	if (!NewData)
-		delete[] NewData;
-	NewData = new DATA_OUT[pReg->m_NDataOut];
-	if (!NewData)
-	{
-		AfxMessageBox("Error.\n\n Thread break");
-		LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
-	}
-	memmove((void*)NewData, (void*)pReg->m_pDataOut, pReg->m_NDataOut * sizeof(DATA_OUT));
-	for (i = pReg->m_NDataOutCurr; i < pReg->m_NDataOut; ++i) NewData[i].y = 0;
-	ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort = NewData;
-	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShort = pReg->m_NDataOut;
-	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr = pReg->m_NDataOutCurr;
-
-	if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
-		sprintf(ThComm->pMainFrame->m_Doc.m_Graph.m_strCaption,
-			"Region %i ( %s, Anode: %s )", pReg->ID + 1, (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE) ? "KE" : "BE", pReg->str.Name_h_nu);
-
-	if (pReg->m_DataIn.Curr_N == 0)
-	{
-		ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
-		ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = 0;
-	}
-	else
-	{
-		ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
-		ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
-	}
-	THR_UNLOCK();
-	ThComm->pMainFrame->m_Doc.m_Graph.ReDrawAll();
-	THR_LOCK();
-
-Met_BeginData:
-	RealSubmeasuring = ThComm->SubMeasurings;
-	CurrentSubmeasuring = 1;
-	SumN = 0;
-	remeasureCountOnTimerError = 0;
-Met_NextSubmeasuring:
-	if (ThComm->StopContinue == ThComm->Stop)
-	{
-		SaveMeasuringData(ThComm->pMainFrame, NewData, k - 1);
-		LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock, USER_STOP);
-	}
-	if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
-	{
-		goto Met_EndRegion;
-	}
-	DataOut.x = pReg->m_pDataOut[k].x;
-	if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
-		Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
-	else
-		Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
-	if (Retard < 0) Retard = 0;
-
-	hardware->SetKeRetard(Retard);
-	hardware->SetHv((long)I2D(DataIn.HV));
-
-	if (pReg->m_DataIn.Curr_N <= 1) // 1st or 2nd scan
-	{
-		if (CurrentSubmeasuring < RealSubmeasuring) //realizing submeasuring technology
-			RealTime = DataIn.Time / RealSubmeasuring;
-		else //final submeasuring
-			RealTime = DataIn.Time - (DataIn.Time / RealSubmeasuring)*(RealSubmeasuring - 1);
-	}
-	else
-		RealTime = DataIn.Time;
-
-	THR_UNLOCK();
-
-	int tickStart = GetTickCount();
-
-	hardware->SetAndStartTimer(RealTime);
-
-	int startOperationLength = GetTickCount() - tickStart;
-	int sleepTime = (int)(RealTime - startOperationLength * 0.4);
-	if (sleepTime > 0)
-		::Sleep(sleepTime);			//Wait for time interval
-
-	int NewN = hardware->ReadCounter();
-
-	THR_LOCK();
-
-	if (ThComm->StopContinue == ThComm->Stop)
-	{
-		SaveMeasuringData(ThComm->pMainFrame, NewData, k - 1);
-		LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock, USER_STOP);
-	}
-	if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
-	{
-		goto Met_EndRegion;
-	}
-
-	if (DataIn.Time == 0)
-		throw EXCEPTION("Division by 0. Breaking measuring. ");
-
-	float NewY;
-	if (pReg->m_DataIn.Curr_N <= 1) // 1st or 2nd scan
-	{
-		if (CurrentSubmeasuring < RealSubmeasuring) //realizing submeasuring technology
-		{
-			CurrentSubmeasuring++;
-			SumN += NewN;
-			goto Met_NextSubmeasuring;
-		}
-		else
-		{
-			SumN += NewN;
-			NewY = (float)((double)SumN / (double)(DataIn.Time*0.001));
-		}
-	}
-	else
-		NewY = (float)((double)NewN / (double)(DataIn.Time*0.001));
-
-	if (ThComm->EnableRemeasure)
-	{
-		switch (pReg->m_DataIn.Curr_N)
-		{
-		case 0:	//First scan, do nothing
-			DataOut.y = NewY;
-			break;
-		case 1:	//Second scan, need write the least value of two last scans
-			if (NewY <= pReg->m_pDataOut[k].y)
-				DataOut.y = NewY;
-			else
-				DataOut.y = pReg->m_pDataOut[k].y;
-			break;
-		default: //Scans greater then second. If delta Y < NSigma*sigma, calculating new average
-			if (fabs(NewY - pReg->m_pDataOut[k].y) < sqrt(fabs(pReg->m_pDataOut[k].y))*ThComm->NSigma)
-				DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
-			else //If delta Y > NSigma*sigma
+			if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
 			{
-				if (CurrAttempt < ThComm->Attempts)
-				{
-					CurrAttempt++;
-					goto Met_NextSubmeasuring;
-				}
-				else
-					DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
+				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
+					+ D2I(100.0);
+				Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
+			}
+			else	//BE
+			{
+				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
+					+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
+					+ D2I(100.0);
+				Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
 			}
 		}
-	}
-	else //Do not use remeasure technology, always averaging
-	{
-		switch (pReg->m_DataIn.Curr_N)
+		else //High Pressure
 		{
-		case 0:	//First scan, do nothing
-			DataOut.y = NewY;
-			break;
-		default://Other scans, averaging
-			DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
-
+			if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
+			{
+				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV))) - pReg->m_DataIn.HV;
+				Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
+				if (Retard < 0) Retard = 0;
+			}
+			else	//BE
+			{
+				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
+					+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) - pReg->m_DataIn.HV;
+				Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
+				if (Retard < 0) Retard = 0;
+			}
 		}
-	}
-	CurrAttempt = 1;
 
-	THR_UNLOCK();
-	strMessage.Format(" Volts = %.3lf  F = %i  dF = %i", I2D(pReg->m_pDataOut[k].x), int(floor(NewY + 0.5)), int(floor(NewY - DataOut.y + 0.5)));
-	::SendMessage(ThComm->pMainFrame->m_hStatusBar, SB_SETTEXT,
-		1, (LPARAM)(LPCSTR)strMessage);
+		hardware->SetKeRetard(Retard);
+		hardware->SetHv((long)I2D(DataIn.HV));
 
-	THR_LOCK();
+		THR_UNLOCK();
+		GetXpsTimeRemainedToEnd(&ThComm->TIME);
+		ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
+		for (int i = 0; i < 3; i++)
+		{
+			Sleep(1000);
+			ThComm->TIME -= 1000;
+			ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
+		}
+		THR_LOCK();
 
-	NewData[k].y = DataOut.y;
-	++ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr;
+		DATA_OUT* NewData = new DATA_OUT[pReg->m_NDataOut];
 
-	ThComm->pMainFrame->m_Doc.m_Graph.DrawLineDataShort(k - 1, k);
+		memmove((void*)NewData, (void*)pReg->m_pDataOut, pReg->m_NDataOut * sizeof(DATA_OUT));
+		for (int i = pReg->m_NDataOutCurr; i < pReg->m_NDataOut; ++i)
+			NewData[i].y = 0;
+		if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort)
+			delete[] ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort;
+		ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort = NewData;
+		ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShort = pReg->m_NDataOut;
+		ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr = pReg->m_NDataOutCurr;
 
-	++pReg->m_NDataOutCurr;
+		if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
+			sprintf(ThComm->pMainFrame->m_Doc.m_Graph.m_strCaption,
+				"Region %i ( %s, Anode: %s )", pReg->ID + 1, (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE) ? "KE" : "BE", pReg->str.Name_h_nu);
 
-	THR_UNLOCK();
-	SetNewTIME(&ThComm->TIME);
-	ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
-	THR_LOCK();
-
-	++k;
-	//Запись в файл и тд
-	if ((!SaveDataToFile(ThComm->fp, pReg, (k - 1), &DataOut)) || (!SaveDataInToFile(ThComm->fp, pReg)))
-		LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
-
-	if (k < pReg->m_NDataOut) goto Met_BeginData;
-	/*Met_EndData:        ****************/
-	++pReg->m_DataIn.Curr_N;
-	sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
-	THR_UNLOCK();
-	if (::IsWindow(ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->m_hWnd))
-	{
-		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
-	}
-	THR_LOCK();
-	pReg->m_NDataOutCurr = 0;
-
-	// Запись в файл этих параметров
-	if (!SaveDataInToFile(ThComm->fp, pReg))
-		LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
-
-	memmove((void*)pReg->m_pDataOut, (void*)NewData, pReg->m_NDataOut * sizeof(DATA_OUT));
-	if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort)
-	{
-		delete[] ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort;
-		ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort = NULL;
-		NewData = NULL;
-	}
-
-Met_EndRegion:
-
-	THR_UNLOCK()
-		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetOnOffIcon(pReg);
-	if (!pReg->m_DataIn.Off)
-	{
-		if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
+		if (pReg->m_DataIn.Curr_N == 0)
+		{
+			ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
+			ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = 0;
+		}
+		else
 		{
 			ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
 			ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
 		}
-	}
-	THR_LOCK();
-	pReg = CRegion::GetNextByPriority(pReg->ID, ThComm->pRegEdit);
-	if (pReg)
-		goto Met_BeginRegion;
+		THR_UNLOCK();
+		ThComm->pMainFrame->m_Doc.m_Graph.ReDrawAll();
+		THR_LOCK();
+
+	Met_BeginData:
+		int RealSubmeasuring = ThComm->SubMeasurings;
+		int CurrentSubmeasuring = 1;
+		int SumN = 0;
+	Met_NextSubmeasuring:
+		if (ThComm->StopContinue == ThComm->Stop)
+		{
+			SaveMeasuringData(ThComm->pMainFrame, NewData, k - 1);
+			LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock, USER_STOP);
+		}
+		if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
+		{
+			goto Met_EndRegion;
+		}
+		DataOut.x = pReg->m_pDataOut[k].x;
+		if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
+			Retard = pReg->m_pDataOut[k].x + pReg->m_DataIn.DeltaVolts;
+		else
+			Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[k].x;
+		if (Retard < 0) Retard = 0;
+
+		hardware->SetKeRetard(Retard);
+		hardware->SetHv((long)I2D(DataIn.HV));
+
+		if (pReg->m_DataIn.Curr_N <= 1) // 1st or 2nd scan
+		{
+			if (CurrentSubmeasuring < RealSubmeasuring) //realizing submeasuring technology
+				RealTime = DataIn.Time / RealSubmeasuring;
+			else //final submeasuring
+				RealTime = DataIn.Time - (DataIn.Time / RealSubmeasuring)*(RealSubmeasuring - 1);
+		}
+		else
+			RealTime = DataIn.Time;
+
+		THR_UNLOCK();
+
+		int tickStart = GetTickCount();
+
+		hardware->SetAndStartTimer(RealTime);
+
+		int startOperationLength = GetTickCount() - tickStart;
+		int sleepTime = (int)(RealTime - startOperationLength * 0.4);
+		if (sleepTime > 0)
+			::Sleep(sleepTime);			//Wait for time interval
+
+		int NewN = hardware->ReadCounter();
+
+		THR_LOCK();
+
+		if (ThComm->StopContinue == ThComm->Stop)
+		{
+			SaveMeasuringData(ThComm->pMainFrame, NewData, k - 1);
+			LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock, USER_STOP);
+		}
+		if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
+		{
+			goto Met_EndRegion;
+		}
+
+		if (DataIn.Time == 0)
+			throw EXCEPTION("Division by 0. Breaking measuring. ");
+
+		float NewY;
+		if (pReg->m_DataIn.Curr_N <= 1) // 1st or 2nd scan
+		{
+			if (CurrentSubmeasuring < RealSubmeasuring) //realizing submeasuring technology
+			{
+				CurrentSubmeasuring++;
+				SumN += NewN;
+				goto Met_NextSubmeasuring;
+			}
+			else
+			{
+				SumN += NewN;
+				NewY = (float)((double)SumN / (double)(DataIn.Time*0.001));
+			}
+		}
+		else
+			NewY = (float)((double)NewN / (double)(DataIn.Time*0.001));
+
+		if (ThComm->EnableRemeasure)
+		{
+			switch (pReg->m_DataIn.Curr_N)
+			{
+			case 0:	//First scan, do nothing
+				DataOut.y = NewY;
+				break;
+			case 1:	//Second scan, need write the least value of two last scans
+				if (NewY <= pReg->m_pDataOut[k].y)
+					DataOut.y = NewY;
+				else
+					DataOut.y = pReg->m_pDataOut[k].y;
+				break;
+			default: //Scans greater then second. If delta Y < NSigma*sigma, calculating new average
+				if (fabs(NewY - pReg->m_pDataOut[k].y) < sqrt(fabs(pReg->m_pDataOut[k].y))*ThComm->NSigma)
+					DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
+				else //If delta Y > NSigma*sigma
+				{
+					if (CurrAttempt < ThComm->Attempts)
+					{
+						CurrAttempt++;
+						goto Met_NextSubmeasuring;
+					}
+					else
+						DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
+				}
+			}
+		}
+		else //Do not use remeasure technology, always averaging
+		{
+			switch (pReg->m_DataIn.Curr_N)
+			{
+			case 0:	//First scan, do nothing
+				DataOut.y = NewY;
+				break;
+			default://Other scans, averaging
+				DataOut.y = (float)(((double)(pReg->m_DataIn.Curr_N - 1.)*(double)(pReg->m_pDataOut[k].y) + (double)NewY) / ((double)pReg->m_DataIn.Curr_N));
+
+			}
+		}
+		CurrAttempt = 1;
+
+		THR_UNLOCK();
+		strMessage.Format(" Volts = %.3lf  F = %i  dF = %i", I2D(pReg->m_pDataOut[k].x), int(floor(NewY + 0.5)), int(floor(NewY - DataOut.y + 0.5)));
+		::SendMessage(ThComm->pMainFrame->m_hStatusBar, SB_SETTEXT,
+			1, (LPARAM)(LPCSTR)strMessage);
+
+		THR_LOCK();
+
+		NewData[k].y = DataOut.y;
+		++ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr;
+
+		ThComm->pMainFrame->m_Doc.m_Graph.DrawLineDataShort(k - 1, k);
+
+		++pReg->m_NDataOutCurr;
+
+		THR_UNLOCK();
+		GetXpsTimeRemainedToEnd(&ThComm->TIME);
+		ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
+		THR_LOCK();
+
+		++k;
+		//Запись в файл и тд
+		if ((!SaveDataToFile(ThComm->fp, pReg, (k - 1), &DataOut)) || (!SaveDataInToFile(ThComm->fp, pReg)))
+			LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
+
+		if (k < pReg->m_NDataOut) goto Met_BeginData;
+		/*Met_EndData:        ****************/
+		++pReg->m_DataIn.Curr_N;
+		sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
+		THR_UNLOCK();
+
+		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
+
+		THR_LOCK();
+		pReg->m_NDataOutCurr = 0;
+
+		// Запись в файл этих параметров
+		if (!SaveDataInToFile(ThComm->fp, pReg))
+			LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
+
+		memmove((void*)pReg->m_pDataOut, (void*)NewData, pReg->m_NDataOut * sizeof(DATA_OUT));
+		if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort)
+		{
+			delete[] ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort;
+			ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort = NULL;
+		}
+
+	Met_EndRegion:
+
+		THR_UNLOCK()
+			ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetOnOffIcon(pReg);
+		if (!pReg->m_DataIn.Off)
+		{
+			if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll == NULL)
+			{
+				ThComm->pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
+				ThComm->pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
+			}
+		}
+		THR_LOCK();
+		pReg = CRegion::GetNextByPriority(pReg->ID, ThComm->pRegEdit);
+	} while(pReg);
 
 	THR_UNLOCK();
 }
