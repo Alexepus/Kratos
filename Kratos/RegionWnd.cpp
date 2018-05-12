@@ -92,76 +92,64 @@ void CRegionWnd::OnButtonAddNew()
 
 	m_pDlgParamReg = new CDialogParamRegion((CWnd*)this);
 	m_pDlgParamReg->m_pMainFrame = this->m_pMainFrame;
-	if (!m_pDlgParamReg) { AfxMessageBox("Can't create dialog window"); return; }
-	else
-	{
-		THRI_LOCK();
+	THRI_LOCK();
 
-		CRegion* pReg = new CRegion;
-		if (pReg == NULL)
+	CRegion* pReg = new CRegion;
+	m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = pReg;
+	THRI_UNLOCK();
+
+	pReg->m_NewOrEdit = pReg->New;
+	m_pDlgParamReg->m_pReg = pReg;
+	::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
+	if (m_pDlgParamReg->DoModal() == IDOK)
+	{
+		SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
+		pReg->m_DataIn.LastEditTime = time(nullptr);
+
+		m_pListRegionWnd->SetNewRegionItem(pReg);
+		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
+		if (m_pMainFrame->m_Doc.fpPrj)
 		{
-			AfxMessageBox("ERROR new Region");
+			CWaitCursor WCur;
+
+			THRI_LOCK();
+			fclose(m_pMainFrame->m_Doc.fpPrj);
+			m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
+			if (!m_pMainFrame->m_Doc.fpPrj)
+				m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
+			else
+			{
+				SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
+				m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
+				m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
+			}
 			THRI_UNLOCK();
-			return;
+		} // end if(m_pMainFrame->m_Doc.fpPrj)			
+
+		if (::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd))
+		{
+			char str[32];
+			sprintf(str, "Region %i", pReg->ID + 1);
+			::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT,
+					        0, (LPARAM)str);
+			::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT,
+					        0, (LPARAM)pReg->m_DataIn.Comments);
 		}
 
-		if (pReg != NULL) m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = pReg;
-		THRI_UNLOCK();
-		if (pReg != NULL)
-		{
-			pReg->m_NewOrEdit = pReg->New;
-			m_pDlgParamReg->m_pReg = pReg;
-			::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
-			if (m_pDlgParamReg->DoModal() == IDOK)
-			{
-				SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
-				pReg->m_DataIn.LastEditTime = time(nullptr);
-
-				m_pListRegionWnd->SetNewRegionItem(pReg);
-				m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
-				if (m_pMainFrame->m_Doc.fpPrj)
-				{
-					CWaitCursor WCur;
-
-					THRI_LOCK();
-					fclose(m_pMainFrame->m_Doc.fpPrj);
-					m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
-					if (!m_pMainFrame->m_Doc.fpPrj)
-						m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-					else
-					{
-						SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
-						m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
-						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-					}
-					THRI_UNLOCK();
-				} // end if(m_pMainFrame->m_Doc.fpPrj)			
-
-				if (::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd))
-				{
-					char str[32];
-					sprintf(str, "Region %i", pReg->ID + 1);
-					::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT,
-					              0, (LPARAM)str);
-					::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT,
-					              0, (LPARAM)pReg->m_DataIn.Comments);
-				}
-
-				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
+		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 
 
-				theApp.m_pMainFrame->m_Doc.CheckDocType();
-			} // end if(m_pDlgParamReg->DoModal()==IDOK)
-			else { delete pReg; } // OK!
+		theApp.m_pMainFrame->m_Doc.CheckDocType();
+	} // end if(m_pDlgParamReg->DoModal()==IDOK)
+	else { delete pReg; } // OK!
 
-			m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
-			::SetFocus(m_pListRegionWnd->m_hWnd);
-			::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
-		} // end if(pReg!=NULL)
-		delete m_pDlgParamReg;
-		m_pDlgParamReg = NULL;
-	} //end else if(m_pDlgParamReg != NULL)	
+	m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
+	::SetFocus(m_pListRegionWnd->m_hWnd);
+	::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
+
+	delete m_pDlgParamReg;
+	m_pDlgParamReg = NULL;
 }
 
 void CRegionWnd::OnButtonEdit()
@@ -172,14 +160,14 @@ void CRegionWnd::OnButtonEdit()
 	BOOL ReWriteFile = FALSE;
 	BOOL ReDrawReg = TRUE;
 	BOOL ViewReg = FALSE;
-	int N_Item = (int) ::SendMessage(m_pListRegionWnd->m_hWnd, LVM_GETITEMCOUNT, 0, 0);
-	if (N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "No any region", "Attention", MB_OK);
+	int itemCount = m_pListRegionWnd->GetItemCount();
+	if (itemCount == 0) 
+		::MessageBox(m_pListRegionWnd->m_hWnd, "No any region", "Attention", MB_OK);
 	else
 	{
 		int SelectedItem = m_pListRegionWnd->FindSelectedItem();
 		if (SelectedItem == -1)
 			::MessageBox(m_pListRegionWnd->m_hWnd, "Please select a region", "Attention", MB_OK);
-
 		else
 		{
 			CRegion* pReg;
@@ -531,6 +519,24 @@ void CRegionWnd::OnButtonDown()
 	MoveSelectedRegions(Directions::DownToEnd);
 }
 
+void CRegionWnd::OnListDoubleClick()
+{
+	if(m_pListRegionWnd->GetItemCount() == 0)
+	{
+		OnButtonAddNew();
+		return;
+	}
+	int SelectedItem = m_pListRegionWnd->FindSelectedItem();
+	if (SelectedItem == -1)
+	{
+		auto okCancel = ::MessageBox(m_pListRegionWnd->m_hWnd, "No region selected. Do you want to create new one?", "Attention", MB_OKCANCEL);
+		if (okCancel == IDOK)
+			OnButtonAddNew();
+		return;
+	}
+	OnButtonEdit();
+}
+
 
 void CRegionWnd::MoveSelectedRegions(Directions dir)
 {
@@ -543,6 +549,7 @@ void CRegionWnd::MoveSelectedRegions(Directions dir)
 	m_pListRegionWnd->SelectItems(regsToMove);
 
 	m_pListRegionWnd->SetFocus();
+	SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
 }
 
 BOOL CRegionWnd::RegisterRegionWndClass()

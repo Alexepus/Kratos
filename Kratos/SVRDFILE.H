@@ -1,8 +1,9 @@
 //
 BOOL SaveBinaryFile(FILE* fp);
 BOOL ReadBinaryFile(FILE* fp);
-BOOL SaveDataToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data);
+BOOL SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data);
 BOOL SaveDataInToFile(FILE* fp, CRegion* pReg);
+bool SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg);
 void SaveEasyPlotFile(FILE* fp, char* FileName);
 int  SaveEasyPlotTable(FILE* fp, CRegion* pReg);
 void SaveEasyPlotMC(FILE* fp, char* FileName, int DocType);

@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include <limits>
 #include "Main.h"
+#include "Time.h"
 
 extern CMutex MutexThread;
 extern CProgNewApp theApp;
@@ -221,7 +222,7 @@ if(DocType==CDoc::XPS)
 		fprintf(fp, ";Number of regions: %i\n", CRegion::m_NReg);
 	else 
 		fprintf(fp, ";Number of regions: %i (%i of them %s off)\n", CRegion::m_NReg, RegionsOff,(RegionsOff==1)?"is":"are");
-	fprintf(fp, ";|Reg |KE/BE|Anode| HV |  Start  |  Finish | Step |  N |  n | Time |\n");
+	fprintf(fp, ";|Reg |KE/BE|Anode| HV |  Start  |  Finish | Step |  N |  n | Time |    Start Time   |     End Time    |\n");
 	for (pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 	{
 		if(pReg->m_DataIn.Off)
@@ -255,6 +256,8 @@ if(DocType==CDoc::XPS)
 		fprintf(fp,"%4s|",Value);
 		sprintf(Value,"%.3lf", I2D(pReg->m_DataIn.Time));
 		fprintf(fp,"%6s|",Value);
+		fprintf(fp, "%17s|", FormatTime(pReg->m_BeginTime, "%d.%m.%Y %H:%M").GetString());
+		fprintf(fp, "%17s|", FormatTime(pReg->m_EndTime, "%d.%m.%Y %H:%M").GetString());
 		fprintf(fp,"\n"); 
 		fprintf(fp,";%s\n",pReg->m_DataIn.Comments); 
 

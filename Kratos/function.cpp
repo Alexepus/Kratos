@@ -326,14 +326,13 @@ pMainFrame->m_StartStop = pMainFrame->Start;
 AfxEndThread(0);
 }
 
-
-//========
-void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
+// Спросить пользователя о необходимости сохранить незаконченный скан и сохранить в файл, если надо
+void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
 { //NewData - массив точек в недоснятом скане, NNewData - число точек
 
 	if(::IsWindow(pMainFrame->m_pRegionWnd->m_hWnd) ) 
 		::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, FALSE);
-	int YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data ?", 
+	int YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data in unfinished passage?", 
 	                         "Attention", MB_YESNO);
 	if(YesNo == IDYES)
 	{// Записать в pReg измеренные данные
@@ -345,16 +344,16 @@ void SaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
 			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
 		}
 	}
-	else //if(YesNo == IDNO)
-	{// Записать в файл старые данные
-		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;
-		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
-		for(int i=0; i<=NNewData; ++i)
-		{
-			SaveDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow, 
-				i, &pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i]);
-		}
-	}
+	//else //if(YesNo == IDNO)
+	//{// Записать в файл старые данные
+	//	pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;
+	//	SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+	//	for(int i=0; i<=NNewData; ++i)
+	//	{
+	//		SaveDataOutPointToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow, 
+	//			i, &pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i]);
+	//	}
+	//}
 	::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, TRUE);
 
 	GetXpsTimeRemainedToEnd(&pMainFrame->m_Doc.m_ThrComm.TIME);

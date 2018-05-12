@@ -1,6 +1,7 @@
 #include"stdafx.h"
 #include"Main.h"
 #include <limits>
+#include "Time.h"
 
 extern CProgNewApp theApp;
 extern CString FileSaveOpenErrorDescription;
@@ -573,18 +574,19 @@ return FALSE;
 
 //===========
 //Записывает N-ую точку data региона pReg
-BOOL SaveDataToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data)
+BOOL SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data)
 {
 if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
 if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
 fseek(fp,
-	(pReg->m_ptrInFile + sizeof(DATA_IN) + +2*sizeof(time_t) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
+	(pReg->m_ptrInFile + sizeof(DATA_IN) + 2*sizeof(time_t) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
 	 SEEK_SET);
 fwrite(data, sizeof(DATA_OUT), 1, fp);
 return TRUE;
 }
+
 //=================
-//Записывает входные параметры региона pReg, число снятых в нем точек и общее число точек
+//Записывает входные параметры региона pReg, время начала и конца, число снятых в нем точек и общее число точек
 BOOL SaveDataInToFile(FILE* fp, CRegion* pReg)
 {
 if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
@@ -602,12 +604,28 @@ fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 return TRUE;
 }
 
+//Записывает в файл все данные о регионе pReg
+bool SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg)
+{
+	auto isSuccessfulSavedDataIn = SaveDataInToFile(fp, pReg);
+	if (!isSuccessfulSavedDataIn)
+		return false;
+	fwrite(pReg->m_pDataOut,
+		sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+	int currentPos = ftell(fp);
+	auto nextReg = CRegion::GetNext(pReg);
+	if(!nextReg || nextReg->m_ptrInFile == currentPos + sizeof(int))
+		return true;
+	AfxMessageBox("Ошибка при сохранении региона. Файл поврежден: неверная запись о смещении следующего региона.");
+	return false;
+}
+
 //=============
 
 void SaveEasyPlotFile(FILE* fp, char* FileName)
 {
 CRegion* pReg;    //є 186
-char* Caption[]={"|Reg |","KE/BE|","Anode|"," HV |","  Start  |","  Finish |"," Step |","  N |","  n |"," Time |"};
+char* Caption[]={"|Reg |","KE/BE|","Anode|"," HV |","  Start  |","  Finish |"," Step |","  N |","  n |"," Time |","  Start Time  |", "   End Time   |", };
 int i;
 int NCaption = sizeof(Caption)/sizeof(char*);
 int NLine=0;
@@ -690,6 +708,8 @@ char Value[16];
 	fprintf(fp,"%4s|",Value);
 	sprintf(Value,"%.3lf", I2D(pReg->m_DataIn.Time));
 	fprintf(fp,"%6s|",Value);
+	fprintf(fp, "%14s|", FormatTime(pReg->m_BeginTime, "%d.%m.%Y %H:%M").GetString());
+	fprintf(fp, "%14s|", FormatTime(pReg->m_EndTime, "%d.%m.%Y %H:%M").GetString());
 	fprintf(fp,"\n"); ++NLine;
 	fprintf(fp,";%s\n",pReg->m_DataIn.Comments); ++NLine;
 return NLine;

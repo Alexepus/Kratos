@@ -25,6 +25,7 @@ class CRegionWnd : public CWnd
 
 public:
 	CListRegionWnd* m_pListRegionWnd;
+	void OnListDoubleClick();
 
 private:
 	CMainFrame* m_pMainFrame;
@@ -54,6 +55,7 @@ protected:
 	afx_msg void OnButtonDown();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -427,8 +427,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 			break;
 		}
 	}
-	if( !dataExists )
-		::EnableWindow(*GetDlgItem(IDC_BUTTON_RESET_ALL), FALSE);
+	::EnableWindow(*GetDlgItem(IDC_BUTTON_RESET_ALL), dataExists);
 
 	if(m_pReg->m_NewOrEdit==m_pReg->New)
 	{
@@ -436,42 +435,25 @@ BOOL CDialogParamRegion::OnInitDialog()
 		::SendMessage(hWndChild, BM_CLICK, 0, 0);
 	}
 	
-	if(m_pReg->m_DataIn.Curr_N > 0 || m_pReg->m_NDataOutCurr > 0)
-		{
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_HV);
-		::EnableWindow(hWndChild, FALSE);
-		::EnableWindow(m_ComboHV, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_HV1);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_HV_TABLE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_STEP);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_TIME);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_KE_BE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_KE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-		::EnableWindow(hWndChild, FALSE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
-		::EnableWindow(hWndChild, FALSE);
+	auto isRegionEmpty = m_pReg->m_DataIn.Curr_N == 0 && m_pReg->m_NDataOutCurr == 0;
+	GetDlgItem(IDC_EDIT_HV)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_STATIC_PARAM_HV1)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_BUTTON_HV_TABLE)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_EDIT_STEP)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_STATIC_PARAM_STEP)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_EDIT_TIME)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_STATIC_PARAM_TIME)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_STATIC_KE_BE)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_RADIO_KE)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_RADIO_BE)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_COMBO_ANODE)->EnableWindow(isRegionEmpty);
+	GetDlgItem(IDC_STATIC_ANODE_TXT)->EnableWindow(isRegionEmpty);
 
-		}
-	
 	if(m_pReg->m_NewOrEdit==m_pReg->New) sprintf(str," %s", "New Region");
 	else sprintf(str," %s %i", "Region", m_pReg->ID+1);
 	::SetWindowText(this->m_hWnd, str);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE 
 }
 
 void CDialogParamRegion::OnRadioOn() 
@@ -607,7 +589,7 @@ void CDialogParamRegion::OnButtonReset()
 		for(int i = 0; i<m_pReg->m_NDataOut; ++i) 
 		{
 			m_pReg->m_pDataOut[i].y = 0;
-			SaveDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg, i, &m_pReg->m_pDataOut[i]);
+			SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg, i, &m_pReg->m_pDataOut[i]);
 		}
 		m_pReg->m_NDataOutCurr = 0;
 		m_pReg->m_DataIn.Curr_N = 0;
@@ -617,36 +599,38 @@ void CDialogParamRegion::OnButtonReset()
 		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
 		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
 		
-		HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
-		LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
-		style = style | WS_DISABLED;
-		::SetWindowLong(hWndChild, GWL_STYLE, style);
-		
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_HV);
-		::EnableWindow(hWndChild, TRUE);
-		::EnableWindow(m_ComboHV, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_HV1);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_HV_TABLE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_STEP);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_TIME);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_KE_BE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_KE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-		::EnableWindow(hWndChild, TRUE);
-		hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
-		::EnableWindow(hWndChild, TRUE);
+		OnInitDialog();
+		//HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
+		////LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
+		////style = style | WS_DISABLED;
+		////::SetWindowLong(hWndChild, GWL_STYLE, style);
+		//::EnableWindow(hWndChild, FALSE);
+
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_HV);
+		//::EnableWindow(hWndChild, TRUE);
+		//::EnableWindow(m_ComboHV, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_HV1);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_HV_TABLE);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_STEP);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_TIME);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_KE_BE);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_KE);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
+		//::EnableWindow(hWndChild, TRUE);
+		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
+		//::EnableWindow(hWndChild, TRUE);
 	}		
 }
 
@@ -712,7 +696,7 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 			for(int i=0; i<pReg->m_NDataOut; ++i) 
 			{
 				pReg->m_pDataOut[i].y = 0;
-				SaveDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
+				SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
 			}
 			pReg->m_NDataOutCurr = 0;
 			pReg->m_DataIn.Curr_N = 0;
@@ -723,20 +707,21 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
 		}
 		
-		::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET), FALSE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET_ALL), FALSE);
-		::EnableWindow(m_ComboHV, TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_HV), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_HV1), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_HV_TABLE), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_STEP), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_STEP), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_TIME), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_TIME), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_KE_BE), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_KE), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_BE), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_COMBO_ANODE), TRUE);
-		::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_ANODE_TXT), TRUE);
+		OnInitDialog();
+		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET), FALSE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET_ALL), FALSE);
+		//::EnableWindow(m_ComboHV, TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_HV), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_HV1), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_HV_TABLE), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_STEP), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_STEP), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_TIME), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_TIME), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_KE_BE), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_KE), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_BE), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_COMBO_ANODE), TRUE);
+		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_ANODE_TXT), TRUE);
 	}
 }

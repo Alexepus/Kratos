@@ -143,7 +143,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 					{
 					pReg->m_pDataOut[i].x = pReg->m_DataIn.KE_Start + i*pReg->m_DataIn.Step;
 					pReg->m_pDataOut[i].y = 0;
-					SaveDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
+					SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
 					}
 				pReg->m_NDataOutCurr = 0;
 				pReg->m_DataIn.Curr_N = 0;
@@ -321,7 +321,7 @@ void CListRegionWnd::OnLButtonDown(UINT nFlags, CPoint point)
 void CListRegionWnd::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	if(m_pMainFrame->m_pRegionWnd!=NULL)
-		m_pMainFrame->m_pRegionWnd->SendMessage(WM_COMMAND,(BN_CLICKED<<16)|IDC_BUTTON_EDIT,0);
+		m_pMainFrame->m_pRegionWnd->OnListDoubleClick();
 	
 	CListCtrl::OnLButtonDblClk(nFlags, point);
 }
