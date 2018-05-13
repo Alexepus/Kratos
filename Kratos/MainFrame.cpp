@@ -879,6 +879,8 @@ if(ChooseNewFont(this->m_hWnd, &NewLogFont, &m_Doc.m_Graph.m_TextColor))
 void CMainFrame::OnFileSaveProject() 
 {
 	CSingleLock sLock(&MutexThread);
+	THRI_LOCK();
+
 	if(!m_Doc.fpPrj) 
 		return;
 	

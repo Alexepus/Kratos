@@ -264,10 +264,8 @@ void CRegionWnd::OnButtonEdit()
 
 					m_pListRegionWnd->UpdateItem(pReg);
 				}
-				//::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
 				if (ReDrawReg)
 				{
-					//m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
 					m_pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
 					m_pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
 					m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
@@ -541,6 +539,7 @@ void CRegionWnd::OnListDoubleClick()
 void CRegionWnd::MoveSelectedRegions(Directions dir)
 {
 	CSingleLock sLock(&MutexThread);
+	THRI_LOCK();
 	auto regsToMove = m_pListRegionWnd->GetSelectedRegions();
 	CRegion::MoveRegionsIfPossible(regsToMove, dir);
 	

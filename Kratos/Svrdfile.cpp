@@ -135,8 +135,8 @@ ____________________________________________________________________
 		ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
 		WriteDxpsRegionsParam(fp);
 		WriteDxpsPoints(fp);
-
 	}
+	fflush(fp);
 return TRUE;
 }
 
@@ -576,32 +576,34 @@ return FALSE;
 //Записывает N-ую точку data региона pReg
 BOOL SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data)
 {
-if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
-if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
-fseek(fp,
-	(pReg->m_ptrInFile + sizeof(DATA_IN) + 2*sizeof(time_t) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
-	 SEEK_SET);
-fwrite(data, sizeof(DATA_OUT), 1, fp);
-return TRUE;
+	if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
+	if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
+	fseek(fp, (pReg->m_ptrInFile + sizeof(DATA_IN) + 2*sizeof(time_t) + 2*sizeof(int) + (N*sizeof(DATA_OUT))),
+		 SEEK_SET);
+	fwrite(data, sizeof(DATA_OUT), 1, fp);
+	fflush(fp);
+	return TRUE;
 }
 
 //=================
 //Записывает входные параметры региона pReg, время начала и конца, число снятых в нем точек и общее число точек
 BOOL SaveDataInToFile(FILE* fp, CRegion* pReg)
 {
-if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
-if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
-fseek(fp,	pReg->m_ptrInFile - sizeof(int), SEEK_SET);
-int currentPos;
-fread(&currentPos, sizeof(UINT), 1, fp);
-if (currentPos != pReg->m_ptrInFile)
-	AfxMessageBox("Файл поврежден: неверная запись о смещении хранения настроек региона");
-fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
-fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
-fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
-fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
-fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
-return TRUE;
+	if(!fp) {AfxMessageBox("Pointer to file is NULL"); return FALSE;}
+	if(!pReg) {AfxMessageBox("Pointer to region is NULL"); return FALSE;}
+	fseek(fp, pReg->m_ptrInFile - sizeof(UINT), SEEK_SET);
+	int currentPos;
+	fread(&currentPos, sizeof(UINT), 1, fp);
+	if (currentPos != pReg->m_ptrInFile)
+		AfxMessageBox("Файл поврежден: неверная запись о смещении хранения настроек региона");
+	fseek(fp, pReg->m_ptrInFile, SEEK_SET);
+	fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
+	fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
+	fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
+	fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
+	fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
+	fflush(fp);
+	return TRUE;
 }
 
 //Записывает в файл все данные о регионе pReg
@@ -610,8 +612,8 @@ bool SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg)
 	auto isSuccessfulSavedDataIn = SaveDataInToFile(fp, pReg);
 	if (!isSuccessfulSavedDataIn)
 		return false;
-	fwrite(pReg->m_pDataOut,
-		sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+	fwrite(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+	fflush(fp);
 	int currentPos = ftell(fp);
 	auto nextReg = CRegion::GetNext(pReg);
 	if(!nextReg || nextReg->m_ptrInFile == currentPos + sizeof(int))
