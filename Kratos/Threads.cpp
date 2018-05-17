@@ -51,6 +51,7 @@ int RealTime;
 CString strMessage;
 CString fatalErrorMessage;
 int errorTotalCount = 0; // Количество ошибок за все время с момента запуска изменения
+const int maxErrorPassageCount = 100; // Максимальное количество ошибок за проход, когда измерение будето становлено
 
 std::unique_ptr<IHardware> hardware;
 if(theApp.Ini.CamacSimulation.Value || theApp.Ini.UsbCounterSimulation.Value)
@@ -74,6 +75,7 @@ try
 
 	do
 	{
+		int errorPassageCount = 0; // Количество ошибок за проход
 		THR_UNLOCK();
 		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
 		THR_LOCK();
@@ -186,8 +188,23 @@ try
 			if (sleepTime > 0)
 				::Sleep(sleepTime);			//Wait for time interval
 
-			int NewN = hardware->ReadCounter();
-
+			int NewN;
+			bool isSucsessful = false;
+			do{
+				try
+				{
+					NewN = hardware->ReadCounter();
+					isSucsessful = true;
+				}
+				catch (std::exception& e)
+				{
+					errorPassageCount++;
+					errorTotalCount++;
+					LogFileFormat("Ошибка №%i из %i: %s", errorPassageCount++, maxErrorPassageCount, DetailedException::TryGetDetailedWhat(e).c_str());
+					if (errorPassageCount > maxErrorPassageCount)
+						throw EXCEPTION_WITH_INNER("Превышено допустимое количество ошибок чтения счетчика. Измерение будет остановлено.", e);
+				}
+			} while (!isSucsessful);
 			THR_LOCK();
 
 			if (DataIn.Time == 0)
@@ -310,7 +327,7 @@ try
 
 	THR_UNLOCK();
 }
-catch(std::exception ex)
+catch(std::exception& ex)
 {
 	fatalErrorMessage += DetailedException::TryGetDetailedWhat(ex).c_str();
 }
@@ -328,7 +345,7 @@ try
 	if (theApp.Ini.HighPressureMode.Value)
 		hardware->SetHv(2); //Минимально возможное значение
 }
-catch (std::exception ex)
+catch (std::exception& ex)
 {
 	fatalErrorMessage += DetailedException::TryGetDetailedWhat(ex).c_str();
 }
@@ -357,7 +374,7 @@ CString endMessage = fatalErrorMessage.GetLength()> 0
 				? CString("Завершено измерение всех регионов. ") 
 				: Format("Завершено измерение всех регионов. Произошло %i ошибок измерения.", errorTotalCount));
 LogFileFormat(endMessage);
-AfxMessageBox(endMessage, MB_ICONINFORMATION|MB_OK);
+AfxMessageBox(endMessage, fatalErrorMessage.GetLength()> 0? (MB_ICONERROR | MB_OK) :(MB_ICONINFORMATION|MB_OK));
 return 0;
 }
 
@@ -400,7 +417,7 @@ if(!theApp.Ini.UsbCounterSimulation.Value && useUsbCounter)
 	{
 		counterUnit.SetUnitConfig(&theApp.Ini);
 	}
-	catch(DetailedException e)
+	catch(std::exception& e)
 	{
 		LogFileFormat(CString("Ошибка USB-счетчика: ") + e.what());
 		MessageBox(NULL, e.what(), "Kratos" , MB_ICONSTOP|MB_OK);
@@ -517,10 +534,11 @@ while((CDxpsRegion::ScanTime-CDxpsRegion::PassedCommonTime>0 && ThComm->StopCont
 				LeaveCrSecAndEndDxpsThread(ThComm->pMainFrame, pReg, ThreadLock);
 			}
 		}
-		catch(DetailedException e)
+		catch(std::exception& e)
 		{
-			LogFileFormat((CString("Ошибка: ") + e.what() + "\nПродолжить измерение?").GetString());
-			if(IDNO == MessageBox(NULL, (CString("Ошибка: ") + e.what() + "\nПродолжить измерение?").GetString(), "Error" , MB_ICONSTOP|MB_YESNO))
+			auto msg = "Ошибка: " + DetailedException::TryGetDetailedWhat(e) + "\nПродолжить измерение?";
+			LogFile(msg);
+			if(IDNO == MessageBox(NULL, msg.c_str(), "Error" , MB_ICONSTOP|MB_YESNO))
 				LeaveCrSecAndEndDxpsThread(ThComm->pMainFrame, pReg, ThreadLock);
 		}	
 	}
@@ -561,10 +579,11 @@ while((CDxpsRegion::ScanTime-CDxpsRegion::PassedCommonTime>0 && ThComm->StopCont
 
 			}while(counterState.StartState == StartStates::Start);
 		}
-		catch(DetailedException e)
+		catch(std::exception& e)
 		{
-			LogFileFormat((CString(" Ошибка: ") + e.what() + "\n Продолжить измерение?").GetString());
-			if(IDNO == MessageBox(NULL, (CString(" Ошибка: ") + e.what() + "\n Продолжить измерение?").GetString(), "Error" , MB_ICONSTOP|MB_YESNO))
+			auto msg = "Ошибка: " + DetailedException::TryGetDetailedWhat(e) + "\nПродолжить измерение?";
+			LogFile(msg);
+			if(IDNO == MessageBox(NULL, msg.c_str(), "Error" , MB_ICONSTOP|MB_YESNO))
 				LeaveCrSecAndEndDxpsThread(ThComm->pMainFrame, pReg, ThreadLock);
 		}
 		NewN = counterState.Count;
@@ -745,8 +764,8 @@ void CheckIfUsbCounterConfiguredAndConfigure(SerialCounterUnit counterUnit)
 			counterUnit.SetUnitConfig(&theApp.Ini);
 		}
 	}
-	catch (DetailedException e)
+	catch (std::exception& e)
 	{
-		LogFileFormat((CString(" Ошибка: ") + e.what()).GetString());
+		LogFile("Ошибка: " + DetailedException::TryGetDetailedWhat(e));
 	}	
 }

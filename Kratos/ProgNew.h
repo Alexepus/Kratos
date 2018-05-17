@@ -59,6 +59,8 @@ protected:
 CString Format(LPCTSTR lpszFormat, ...);
 void Msg(LPCTSTR lpszFormat, ...);
 void MsgLog(LPCTSTR lpszFormat, ...);
+void Msg(const std::string message);
+void Msg(const CString message);
 
 
 /////////////////////////////////////////////////////////////////////////////

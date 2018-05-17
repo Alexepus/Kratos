@@ -137,6 +137,15 @@ CString Format(LPCTSTR lpszFormat, ...)
 	return str;
 }
 
+void Msg(const std::string message)
+{
+	::AfxMessageBox(message.c_str(), MB_OK | MB_ICONINFORMATION);
+}
+
+void Msg(const CString message)
+{
+	::AfxMessageBox(message.GetString(), MB_OK | MB_ICONINFORMATION);
+}
 
 void Msg(LPCTSTR lpszFormat, ...)
 {

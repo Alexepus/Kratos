@@ -565,7 +565,7 @@ catch(int Place)
 	}
 	CDxpsRegion::PassedNumberOfPoints=CDxpsRegion::OutData.size();	
 }
-catch (std::exception ex)
+catch (std::exception& ex)
 {
 	FileSaveOpenErrorDescription += ex.what();
 }

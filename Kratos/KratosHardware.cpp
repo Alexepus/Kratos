@@ -35,30 +35,19 @@ long KratosHardware::ReadCounter()
 {
 	int ExtraWaitTime = 10; //Extra wait time ~ 100 ms
 	CounterState counterState;
-	try
-	{
-		do {
-			counterState = _counterUnit.ReadLastCounter();
-			if (ExtraWaitTime<10)
-			{
-				LogFileFormat("ExtraWaitTime: %i ", ExtraWaitTime);
-				Sleep(10);
-			}
-			if (--ExtraWaitTime <= 0)
-				throw EXCEPTION("Ошибка в блоке USB-счетчика: счетчик во время не закончил счет.");
+	do {
+		counterState = _counterUnit.ReadLastCounter();
+		if (ExtraWaitTime<10)
+		{
+			LogFileFormat("ExtraWaitTime: %i ", ExtraWaitTime);
+			Sleep(10);
+		}
+		if (--ExtraWaitTime <= 0)
+			throw EXCEPTION("Ошибка в блоке USB-счетчика: счетчик во время не закончил счет.");
 				
-		} while (counterState.StartState == StartStates::Start);
-	}
-	catch (DetailedException e)
-	{
-		auto message = CString(" Ошибка: ") + e.what() + "\nв " + e.Place.c_str() + "\n Продолжить измерение?";
-		LogFileFormat(message.GetString());
-		if (IDNO == MessageBox(NULL, message.GetString(), "Error", MB_ICONSTOP | MB_YESNO))
-			throw;
-	}
-	// ReSharper disable CppDeclaratorMightNotBeInitialized
+	} while (counterState.StartState == StartStates::Start);
+	
 	return counterState.Count; 
-	// ReSharper restore CppDeclaratorMightNotBeInitialized
 }
 
 void KratosHardware::SetAndStartTimer(int time_ms)

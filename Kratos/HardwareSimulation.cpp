@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "HardwareSimulation.h"
 #include <random>
+#include "Exceptions.h"
 
 HardwareSimulation::HardwareSimulation() : _retard(0), _dis(0., 0.2)
 {

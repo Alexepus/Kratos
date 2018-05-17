@@ -124,6 +124,20 @@ CloseHandle(hFile);
 
 //Добавляет строку сообщения об ошибке в log файл программы "Kratos.log",
 //сопровождая сообщение датой и временем
+void LogFile(const std::string msg)
+{
+	LogFile(msg.c_str());
+}
+
+//Добавляет строку сообщения об ошибке в log файл программы "Kratos.log",
+//сопровождая сообщение датой и временем
+void LogFile(const CString msg)
+{
+	LogFile(msg.GetString());
+}
+
+//Добавляет строку сообщения об ошибке в log файл программы "Kratos.log",
+//сопровождая сообщение датой и временем
 void LogFile(const char* StrMsg)
 {
 char LogFileName[_MAX_PATH];
@@ -139,30 +153,6 @@ GetLocalTime(&t);
 str.Format("%i.%.2i.%.2i %.2i:%.2i:%.2i.%.3i ", t.wYear, t.wMonth, t.wDay,
 		   t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
 str+=StrMsg;
-WriteSpecifiedFile(LogFileName, str, 4*1024*1024);
-}
-
-//Добавляет строку сообщения о текущем файле и строке в log файл программы "Kratos.log",
-//сопровождая сообщение датой и временем
-void LogFile(const char* SrcFile, int Line)
-{
-char LogFileName[_MAX_PATH];
-::GetModuleFileName(NULL, (char *)LogFileName, _MAX_PATH);
-CString str=LogFileName;
-int EndPath=str.ReverseFind('\\');
-str.Delete(EndPath+1,str.GetLength()-EndPath-1);
-str+="Kratos.log";
-strcpy((char *)LogFileName,(char*)(LPCTSTR)str);
-
-CString str2;
-CTime t = CTime::GetCurrentTime();
-str.Format("%i.%.2i.%.2i %.2i:%.2i:%.2i ", t.GetYear(), t.GetMonth(), t.GetDay(),
-		   t.GetHour(), t.GetMinute(), t.GetSecond());
-str2.Format(" Line: %i", Line);
-CString SrcF(SrcFile);
-SrcF.Delete(0, SrcF.ReverseFind('\\')+1);
-str+=SrcF;
-str+=str2;
 WriteSpecifiedFile(LogFileName, str, 4*1024*1024);
 }
 

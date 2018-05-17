@@ -93,11 +93,12 @@ LRESULT CSerialCounterDlg::OnPostCreateWindow(WPARAM WParam, LPARAM LParam)
 		CheckDetectThreshold();
 		CheckModuleAvailable.SetCheck(true);
 	}
-	catch (DetailedException e)
+	catch (std::exception& e)
 	{
 		m_disableMsgBox = true;
-		LogFileFormat("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
-		Msg("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
+		auto msg = "Ошибка: " + DetailedException::TryGetDetailedWhat(e);
+		LogFile(msg);
+		Msg(msg);
 		moduleName = e.what();
 		CheckModuleAvailable.SetCheck(false);
 	}
@@ -184,13 +185,14 @@ void CSerialCounterDlg::OnButtonApplyClicked()
 			m_counterUnit->SetUnitConfig(&theApp.Ini);
 			CheckDetectThreshold();
 		}
-		catch (DetailedException e)
+		catch (std::exception& e)
 		{
-			LogFileFormat("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
+			auto msg = "Ошибка: " + DetailedException::TryGetDetailedWhat(e);
+			LogFile(msg);
 			if(!m_disableMsgBox)
 			{
 				m_disableMsgBox = true;
-				Msg("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
+				Msg(msg);
 			}
 		}		
 	}
@@ -215,13 +217,14 @@ void CSerialCounterDlg::OnTimer(UINT_PTR nIDEvent)
 				CheckCoolingParams();
 			CheckModuleAvailable.SetCheck(true);
 		}
-		catch (DetailedException e)
+		catch (std::exception& e)
 		{
-			LogFileFormat("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
+			auto msg = "Ошибка: " + DetailedException::TryGetDetailedWhat(e);
+			LogFile(msg);
 			if(!m_disableMsgBox)
 			{
 				m_disableMsgBox = true;
-				Msg("Ошибка: %s \nв %s", e.what(), e.Place.c_str());
+				Msg(msg);
 			}
 			CheckModuleAvailable.SetCheck(false);
 		}
