@@ -41,9 +41,20 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-	BOOL GetFileVersion(CString &fileVersion, CString &fileCreateDateTime);
+	BOOL GetFileVersion(CString &fileVersion, CString &fileCreateDateTime, CString &peTimestamp);
 	CStatic m_StaticVer;
 	CString m_StaticFileCreateDate;
+	CString GetPeTimeStamp(HANDLE fp);
+	
+	struct _IMAGE_FILE_HEADER {
+		WORD  Machine;
+		WORD  NumberOfSections;
+		DWORD TimeDateStamp;
+		DWORD PointerToSymbolTable;
+		DWORD NumberOfSymbols;
+		WORD  SizeOfOptionalHeader;
+		WORD  Characteristics;
+	};
 };
 
 //{{AFX_INSERT_LOCATION}}

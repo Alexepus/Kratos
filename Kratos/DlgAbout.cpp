@@ -56,8 +56,8 @@ BOOL CDlgAbout::OnInitDialog()
 		m_StaticMode="(KRATOS Mode)";
 	else
 		m_StaticMode="(High Pressure Mode)";
-	CString fileVersion, fileModifyDateTime;
-	if(GetFileVersion(fileVersion, fileModifyDateTime))
+	CString fileVersion, fileModifyDateTime, peTimestamp;
+	if(GetFileVersion(fileVersion, fileModifyDateTime, peTimestamp))
 	{
 		CString verStr;
 		m_StaticVer.GetWindowTextA(verStr);
@@ -65,7 +65,7 @@ BOOL CDlgAbout::OnInitDialog()
 		m_StaticVer.SetWindowTextA(verStr);
 		m_StaticFileCreateDate = fileModifyDateTime;
 	}
-	m_StaticBuildDate.Format("%s %s (full rebuild)", Date, Time);
+	m_StaticBuildDate = peTimestamp;
 	
 	UpdateData(FALSE);
 	
@@ -73,7 +73,7 @@ BOOL CDlgAbout::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-BOOL CDlgAbout::GetFileVersion(CString &fileVersion, CString &fileCreateDateTime)
+BOOL CDlgAbout::GetFileVersion(CString &fileVersion, CString &fileCreateDateTime, CString &peTimestamp)
 {
 	char moduleName[MAX_PATH];
 	::GetModuleFileName(NULL, moduleName, MAX_PATH);
@@ -101,8 +101,8 @@ BOOL CDlgAbout::GetFileVersion(CString &fileVersion, CString &fileCreateDateTime
 		return FALSE;
 	memcpy(&fixedFileInfo, lpVoid, nSize);
 
-	fileVersion.Format("%d.%d.%d", HIWORD(fixedFileInfo.dwFileVersionMS),
-		LOWORD(fixedFileInfo.dwFileVersionMS), HIWORD(fixedFileInfo.dwFileVersionLS));
+	fileVersion.Format("%d.%d.%d.%d", HIWORD(fixedFileInfo.dwFileVersionMS),
+		LOWORD(fixedFileInfo.dwFileVersionMS), HIWORD(fixedFileInfo.dwFileVersionLS), LOWORD(fixedFileInfo.dwFileVersionLS));
 	delete fileVersionInfo;
 	fileVersionInfo = NULL;
 	
@@ -110,6 +110,9 @@ BOOL CDlgAbout::GetFileVersion(CString &fileVersion, CString &fileCreateDateTime
         OPEN_EXISTING, 0, NULL);
 	if(hFile == INVALID_HANDLE_VALUE)
 		return FALSE;
+
+	peTimestamp = GetPeTimeStamp(hFile);
+
     FILETIME ftCreate, ftAccess, ftWrite;
     SYSTEMTIME stUTC, stLocal;
 
@@ -123,8 +126,30 @@ BOOL CDlgAbout::GetFileVersion(CString &fileVersion, CString &fileCreateDateTime
     FileTimeToSystemTime(&ftWrite, &stUTC);
     SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
 
-	fileCreateDateTime.Format("%02d.%02d.%d  %02d:%02d:%02d",
+	fileCreateDateTime.Format("%02d.%02d.%d %02d:%02d:%02d",
         stLocal.wDay, stLocal.wMonth, stLocal.wYear,
 		stLocal.wHour, stLocal.wMinute, stLocal.wSecond);
 	return TRUE;
+}
+
+CString CDlgAbout::GetPeTimeStamp(HANDLE fp)
+{
+	SetFilePointer(fp, 0x3C, NULL, FILE_BEGIN);
+	int coffHeaderOffset;
+	DWORD read;
+	ReadFile(fp, &coffHeaderOffset, 4, &read, NULL);
+	SetFilePointer(fp, coffHeaderOffset, NULL, FILE_BEGIN);
+	char key[5] = { 0,0,0,0,0 };
+	ReadFile(fp, &key, 4, &read, NULL);
+	if (strcmp(key, "PE") != 0)
+		return "";
+	_IMAGE_FILE_HEADER header;
+	ReadFile(fp, &header, sizeof(_IMAGE_FILE_HEADER), &read, NULL);
+
+	time_t t = static_cast<time_t>(header.TimeDateStamp);
+	tm timeByComponents;
+	localtime_s(&timeByComponents, &t);
+	char date[50];
+	strftime(date, sizeof(date), "%d.%m.%Y %H:%M:%S", &timeByComponents);
+	return CString(date);
 }
