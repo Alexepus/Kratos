@@ -1,5 +1,6 @@
 #ifndef _THREADS_H_INCLUDED_
 #define _THREADS_H_INCLUDED_
+#include "CRegion.h"
 
 class CMainFrame;
 
@@ -8,7 +9,6 @@ struct THREAD_COMMON
 	FILE* fp;
 	CRegion* pRegEdit;
 	CRegion* pRegNow;
-	//CRegionWnd* pRegWnd;
 	double NSigma; //Number of RMS deviation of Y
 	int Attempts; //Number of attempts to remeasure if delta Y > NSigma*sigma
 	int RegionDelay; //Delay before starting new region, ms

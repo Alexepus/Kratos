@@ -233,13 +233,13 @@ if(DocType==CDoc::XPS)
 			{sprintf(Value," %s", "KE");
 			 fprintf(fp,"%5s|",Value);
 			 //sprintf(Value,"%s", "None");
-			 sprintf(Value,"%s", pReg->h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
+			 sprintf(Value,"%s", CRegion::h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
 			 fprintf(fp,"%5s|",Value);
 			}
 		else
 			{sprintf(Value," %s", "BE");
 			 fprintf(fp,"%5s|",Value);
-			 sprintf(Value,"%s", pReg->h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
+			 sprintf(Value,"%s", CRegion::h_nu_Info.strName_h_nu[pReg->m_DataIn.N_h_nu]);
 			 fprintf(fp,"%5s|",Value);
 			}
 		sprintf(Value,"%.0lf", I2D(pReg->m_DataIn.HV) );

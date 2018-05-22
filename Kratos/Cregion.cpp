@@ -8,9 +8,11 @@ double I2D(int i) { return ((double)i) / 1000.0; }
 int CRegion::m_NReg = 0;
 CRegion* CRegion::m_pFirst = nullptr;
 CRegion* CRegion::m_pEnd = nullptr;
+C_h_nu_Info CRegion::h_nu_Info;
 
 CRegion::CRegion()
 {
+	m_NDataOut = 0;
 	InitNewRegion();
 }
 
@@ -20,6 +22,17 @@ CRegion::CRegion(int dataOutCount) : m_NDataOut(dataOutCount)
 	int bytesCount = m_NDataOut*sizeof(DATA_OUT);
 	m_pDataOut = (DATA_OUT*) malloc(bytesCount);
 	if(m_pDataOut) memset(m_pDataOut, 0, bytesCount);
+}
+
+CRegion::CRegion(CRegion* regionToCopy) : CRegion(regionToCopy->m_NDataOut)
+{
+	m_DataIn = regionToCopy->m_DataIn;
+	m_BeginTime = regionToCopy->m_BeginTime;
+	m_EndTime = regionToCopy->m_EndTime;
+	m_NDataOutCurr = regionToCopy->m_NDataOutCurr;
+	m_NewOrEdit = regionToCopy->m_NewOrEdit;
+	memcpy_s(m_pDataOut, m_NDataOut * sizeof(DATA_OUT), regionToCopy->m_pDataOut, regionToCopy->m_NDataOut * sizeof(DATA_OUT));
+	UpdateStrValues();
 }
 
 void CRegion::InitNewRegion()
@@ -41,7 +54,6 @@ void CRegion::InitNewRegion()
 	m_DataIn.Priority = 10;
 	m_DataIn.LastEditTime = 0;
 
-	m_NDataOut=0;
 	m_NDataOutCurr=0;
 	m_BeginTime = 0;
 	m_EndTime = 0;
@@ -81,7 +93,6 @@ void CRegion::UpdateStrValues()
 	str.Comments = m_DataIn.Comments;
 	sprintf(str.Priority, "%i", m_DataIn.Priority);
 }
-
 
 CRegion::~CRegion()
 {

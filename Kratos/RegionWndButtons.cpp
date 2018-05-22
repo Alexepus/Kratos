@@ -48,11 +48,19 @@ CRegionWndButtons::CRegionWndButtons()
 		nullptr
 	};
 
+	BtnCopy =
+	{
+		"Copy",
+		(HMENU)IDC_BUTTON_COPY,
+		CRect(POINT{ buttonsLeft, BtnOnOff.Rect.bottom + ButtonOffset }, stdSize),
+		nullptr
+	};
+
 	BtnUp =
 	{
 		"/\\",
 		(HMENU)IDC_BUTTON_UP,
-		CRect(POINT{ buttonsLeft, BtnOnOff.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset)/2,  ButtonHeight }),
+		CRect(POINT{ buttonsLeft, BtnCopy.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset)/2,  ButtonHeight }),
 		nullptr
 	};
 
@@ -60,10 +68,10 @@ CRegionWndButtons::CRegionWndButtons()
 	{
 		"\\/",
 		(HMENU)IDC_BUTTON_DOWN,
-		CRect(POINT{ BtnUp.Rect.right + ButtonOffset, BtnOnOff.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset) / 2,  ButtonHeight }),
+		CRect(POINT{ BtnUp.Rect.right + ButtonOffset, BtnCopy.Rect.bottom + ButtonOffset }, SIZE { (ButtonWidth - ButtonOffset) / 2,  ButtonHeight }),
 		nullptr
 	};
-	Buttons = { &BtnAddNew, &BtnEdit, &BtnView, &BtnDelete, &BtnOnOff, &BtnUp, &BtnDown };
+	Buttons = { &BtnAddNew, &BtnEdit, &BtnView, &BtnDelete, &BtnOnOff, &BtnCopy,  &BtnUp, &BtnDown };
 }
 
 CRegionWndButtons::~CRegionWndButtons()

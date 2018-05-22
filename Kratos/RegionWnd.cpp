@@ -80,6 +80,7 @@ BEGIN_MESSAGE_MAP(CRegionWnd, CWnd)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, OnButtonDelete)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW, OnButtonView)
 	ON_BN_CLICKED(IDC_BUTTON_ONOFF, OnButtonOnOff)
+	ON_BN_CLICKED(IDC_BUTTON_COPY, OnButtonCopy)
 	ON_BN_CLICKED(IDC_BUTTON_UP, OnButtonUp)
 	ON_BN_CLICKED(IDC_BUTTON_DOWN, OnButtonDown)
 
@@ -126,19 +127,8 @@ void CRegionWnd::OnButtonAddNew()
 			THRI_UNLOCK();
 		} // end if(m_pMainFrame->m_Doc.fpPrj)			
 
-		if (::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd))
-		{
-			char str[32];
-			sprintf(str, "Region %i", pReg->ID + 1);
-			::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT,
-					        0, (LPARAM)str);
-			::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT,
-					        0, (LPARAM)pReg->m_DataIn.Comments);
-		}
-
 		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
-
 
 		theApp.m_pMainFrame->m_Doc.CheckDocType();
 	} // end if(m_pDlgParamReg->DoModal()==IDOK)
@@ -297,20 +287,17 @@ void CRegionWnd::OnButtonDelete()
 	CSingleLock sLock(&MutexThread);
 
 	BOOL RegNow;
-	int N_Item = (int) ::SendMessage(m_pListRegionWnd->m_hWnd, LVM_GETITEMCOUNT, 0, 0);
+	int N_Item = m_pListRegionWnd->GetItemCount();
 	if (N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "There is no region.", "Attention", MB_OK);
 	else
 	{
-		int SelectedItem = m_pListRegionWnd->FindSelectedItem();
-		if (SelectedItem == -1)
+		auto selectedItems = m_pListRegionWnd->GetSelectedRegions();
+		if (selectedItems.empty())
 			::MessageBox(m_pListRegionWnd->m_hWnd, "Please select a region.", "Attention", MB_OK);
 		else
 		{
-			CRegion* pReg;
-			for (pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
-			{
-				if (pReg->ID == SelectedItem) break;
-			}
+			CRegion* pReg = selectedItems[selectedItems.size() - 1];
+			int itemIndex = pReg->ID;
 
 			THRI_LOCK();
 			if ((pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop == m_pMainFrame->Stop))
@@ -327,7 +314,7 @@ void CRegionWnd::OnButtonDelete()
 			if (!RegNow)
 			{
 				char str[128];
-				sprintf(str, "Are you sure you want\nto delete the region number %i ?", SelectedItem + 1);
+				sprintf(str, "Are you sure you want\nto delete the region R%i ?", itemIndex + 1);
 				if (::MessageBox(m_pListRegionWnd->m_hWnd, str, "Attention", MB_YESNO) == IDYES)
 				{
 					if (::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
@@ -366,7 +353,7 @@ void CRegionWnd::OnButtonDelete()
 						}
 					}// end if(m_pMainFrame->m_Doc.fpPrj)
 					THRI_UNLOCK();
-					::SendMessage(m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, (WPARAM)SelectedItem, 0);
+					::SendMessage(m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, (WPARAM)itemIndex, 0);
 					LV_ITEM item;
 					item.iSubItem = 0;
 					--N_Item;
@@ -478,7 +465,7 @@ void CRegionWnd::OnButtonOnOff()
 	{
 		if (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop == m_pMainFrame->Stop)
 			::MessageBox(m_pListRegionWnd->m_hWnd,
-				            "You can't OFF this region now.\n", "Attention", MB_OK);
+				            Format("You can't turn OFF region R%i right now.\n", pReg->ID + 1).GetString(), "Attention", MB_OK);
 		else
 		{
 			CWaitCursor WCur;
@@ -504,6 +491,33 @@ void CRegionWnd::OnButtonOnOff()
 		}
 
 	}// end else if(SelectedItem != -1)
+	::SetFocus(m_pListRegionWnd->m_hWnd);
+}
+
+void CRegionWnd::OnButtonCopy()
+{
+	CSingleLock sLock(&MutexThread);
+
+	auto selected = m_pListRegionWnd->GetSelectedRegions();
+	::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
+	THRI_LOCK();
+	for (CRegion* pReg : selected)
+	{
+		auto copiedPeg = new CRegion(pReg);
+		m_pListRegionWnd->SetNewRegionItem(copiedPeg);
+		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
+	}
+
+	if (m_pMainFrame->m_Doc.fpPrj)
+	{
+		SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
+		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
+	}
+
+	GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+	m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
+	THRI_UNLOCK();
+	::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
 	::SetFocus(m_pListRegionWnd->m_hWnd);
 }
 

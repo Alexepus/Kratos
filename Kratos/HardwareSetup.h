@@ -6,7 +6,8 @@
 #endif // _MSC_VER > 1000
 // HardwareSetup.h : header file
 //
-#include "main.h"
+#include "Threads.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CHardwareSetup dialog
 

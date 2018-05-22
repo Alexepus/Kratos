@@ -81,8 +81,8 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 		if (m_KE_BE == DATA_IN::EnergyType::KE) { MinBegin = MinKE;  MaxEnd = MaxKE; }
 		else
 		{
-			MinBegin = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MaxKE;
-			MaxEnd = m_pReg->h_nu_Info.Value_h_nu[m_Anode] - MinKE;
+			MinBegin = CRegion::h_nu_Info.Value_h_nu[m_Anode] - MaxKE;
+			MaxEnd = CRegion::h_nu_Info.Value_h_nu[m_Anode] - MinKE;
 		}
 
 		HWND hWndCtrl = pDX->PrepareEditCtrl(IDC_EDIT_HV);
@@ -377,10 +377,9 @@ BOOL CDialogParamRegion::OnInitDialog()
 	UpdateData(FALSE);
 
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-	for(int i = 0; i<m_pReg->h_nu_Info.Nelem; ++i)
+	for(int i = 0; i<CRegion::h_nu_Info.Nelem; ++i)
 		{
-		sprintf(str, "%s     (%.1lf eV)", 
-							m_pReg->h_nu_Info.strName_h_nu[i], m_pReg->h_nu_Info.Value_h_nu[i]);
+		sprintf(str, "%s     (%.1lf eV)", CRegion::h_nu_Info.strName_h_nu[i], m_pReg->h_nu_Info.Value_h_nu[i]);
 		::SendMessage(hWndChild, CB_ADDSTRING, 0, (LPARAM) str);
 		}
 	::SendMessage(hWndChild, CB_SETCURSEL , (WPARAM) (m_pReg->m_DataIn.N_h_nu), 0);
@@ -473,10 +472,10 @@ void CDialogParamRegion::SetKeBe(DATA_IN::EnergyType energyType)
 	m_ComboAnodeControl.EnableWindow(m_KE_BE == DATA_IN::EnergyType::BE);
 	m_AnodeTxtControl.EnableWindow(m_KE_BE == DATA_IN::EnergyType::BE);
 
-	int NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_Start);
+	int NewValue = D2I( ((int) 10* CRegion::h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_Start);
 	m_KE_Start = I2D(NewValue);
 
-	NewValue = D2I( ((int) 10*m_pReg->h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_End);
+	NewValue = D2I( ((int) 10* CRegion::h_nu_Info.Value_h_nu[m_Anode])/10.) - D2I(m_KE_End);
 	m_KE_End = I2D(NewValue);
 	
 	std::swap(m_KE_Start, m_KE_End);

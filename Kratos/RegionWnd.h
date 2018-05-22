@@ -51,6 +51,7 @@ protected:
 	afx_msg void OnButtonDelete();
 	afx_msg void OnButtonView();
 	afx_msg void OnButtonOnOff();
+	afx_msg void OnButtonCopy();
 	afx_msg void OnButtonUp();
 	afx_msg void OnButtonDown();
 	//}}AFX_MSG

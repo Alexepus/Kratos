@@ -28,9 +28,10 @@ public:
 	BUTTON BtnDelete;
 	BUTTON BtnOnOff;
 	BUTTON BtnView;
+	BUTTON BtnCopy;
 	BUTTON BtnUp;
 	BUTTON BtnDown;
-	std::array<BUTTON*, 7> Buttons;
+	std::array<BUTTON*, 8> Buttons;
 
 private:
 	void CreateButton(BUTTON& button, HWND hWndParent, RECT parentRect);

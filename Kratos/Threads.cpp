@@ -94,7 +94,7 @@ try
 			else	//BE
 			{
 				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
-					+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
+					+ D2I(CRegion::h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu])
 					+ D2I(100.0);
 				Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[pointIndex].x;
 			}
@@ -110,7 +110,7 @@ try
 			else	//BE
 			{
 				pReg->m_DataIn.DeltaVolts = D2I((double)ThComm->FiTable.GetFiByHV((int)I2D(pReg->m_DataIn.HV)))
-					+ D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) - pReg->m_DataIn.HV;
+					+ D2I(CRegion::h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) - pReg->m_DataIn.HV;
 				Retard = pReg->m_DataIn.DeltaVolts - pReg->m_pDataOut[pointIndex].x;
 				if (Retard < 0) Retard = 0;
 			}

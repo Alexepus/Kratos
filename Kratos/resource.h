@@ -45,6 +45,7 @@
 #define IDC_BUTTON_VIEW                 1006
 #define IDC_BUTTON_UP                   1007
 #define IDC_BUTTON_DOWN                 1008
+#define IDC_BUTTON_COPY                 1009
 #define IDC_REPORT_REGION               1010
 #define IDC_STATIC_PARAM_HV             1015
 #define IDC_STATIC_PARAM_KE_BEGIN       1016

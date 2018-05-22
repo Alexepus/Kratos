@@ -193,7 +193,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 		pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::BE;
 		pReg->m_DataIn.N_h_nu = pDlgParamReg->m_Anode;
 		pReg->m_DataIn.DeltaVolts = D2I((double) pDlgParamReg->m_pMainFrame->m_Doc.m_ThrComm.FiTable.GetFiByHV((int) I2D(pReg->m_DataIn.HV))) 
-						+D2I(pReg->h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) + D2I(100.0);
+						+D2I(CRegion::h_nu_Info.Value_h_nu[pReg->m_DataIn.N_h_nu]) + D2I(100.0);
 	}
 
 	pReg->UpdateStrValues();

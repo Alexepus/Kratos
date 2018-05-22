@@ -123,7 +123,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 		{
 		
 		if(wID == IDC_BUTTON_ADDNEW || wID == IDC_BUTTON_EDIT || wID == IDC_BUTTON_DELETE 
-				|| wID == IDC_BUTTON_VIEW || wID == IDC_BUTTON_ONOFF)
+				|| wID == IDC_BUTTON_VIEW || wID == IDC_BUTTON_ONOFF || wID == IDC_BUTTON_COPY)
 			{
 			hWnd = ::GetDlgItem(::GetParent(this->m_hWnd), wID);
 			::SendMessage(hWnd, BM_CLICK, 0, 0);
@@ -249,27 +249,27 @@ void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point)
 
 	LVHITTESTINFO TestInfo;
 	TestInfo.pt = point;
-	int res = ::SendMessage(m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM) &TestInfo);
+	const int itemIndex = ::SendMessage(m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM) &TestInfo);
 
 	UINT style;
 	CRegion* pReg;
 	
-	if( (res!=-1) && (::IsWindow(this->m_CommentsWnd) ))
-		{
+	if( (itemIndex!=-1) && (::IsWindow(this->m_CommentsWnd) ))
+	{
 		char str[32];
-		sprintf(str, "Region %i", res+1);
+		sprintf(str, "Region %i", itemIndex+1);
 		::SendMessage(m_CommentsWnd.m_hWnd, WM_SETTEXT, 0, (LPARAM) str);
 				
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-			{ if(pReg->ID == res) break;}
+			{ if(pReg->ID == itemIndex) break;}
 		::SendMessage(m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 0, 
 										(LPARAM) pReg->m_DataIn.Comments);
-		}	
+	}	
 	
 	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
-		{if(pReg->ID == res) break;}
+		{if(pReg->ID == itemIndex) break;}
 	
-	if(res == -1 || (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop==m_pMainFrame->Stop) )
+	if(itemIndex == -1 || (pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow && m_pMainFrame->m_StartStop==m_pMainFrame->Stop) )
 		style = MF_DISABLED | MF_GRAYED	 | MF_STRING;
 	else style = MF_ENABLED | MF_STRING;
 
@@ -280,13 +280,16 @@ void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point)
 	::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_ADDNEW, "Add New");
 	::AppendMenu(hMenu, style, IDC_BUTTON_EDIT, "Edit");
 	::AppendMenu(hMenu, style, IDC_BUTTON_DELETE, "Delete");
-	if(res==-1) 
+	if(itemIndex==-1) 
 		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED	 | MF_STRING, IDC_BUTTON_VIEW, "View");
 	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_VIEW, "View");
 	::AppendMenu(hMenu, style, IDC_BUTTON_ONOFF, "On/Off");
-	if(res==-1) 
+	if(itemIndex==-1) 
 		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED	 | MF_STRING, IDC_BUTTON_RESET, "Reset Data");
 	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_RESET, "Reset Data");
+	if (itemIndex == -1)
+		::AppendMenu(hMenu, MF_DISABLED | MF_GRAYED | MF_STRING, IDC_BUTTON_COPY, "Copy");
+	else ::AppendMenu(hMenu, MF_ENABLED | MF_STRING, IDC_BUTTON_COPY, "Copy");
 
 	::ClientToScreen(this->m_hWnd, &pt);
 	::TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON, 

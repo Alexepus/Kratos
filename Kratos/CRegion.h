@@ -105,7 +105,7 @@ class CRegion
 {
 public:
 static int m_NReg; //-- Number of regions
-C_h_nu_Info h_nu_Info;
+static C_h_nu_Info h_nu_Info;
 int m_NDataOut; // Число точек графика (длина массива m_pDataOut) 
 int m_NDataOutCurr; // Число точек в текущем скане
 DATA_OUT* m_pDataOut;
@@ -126,6 +126,7 @@ static CRegion* m_pEnd;
 
 CRegion();
 explicit CRegion(int n);
+explicit CRegion(CRegion* regionToCopy);
 ~CRegion();
 
 /**
