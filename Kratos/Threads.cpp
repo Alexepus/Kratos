@@ -52,8 +52,7 @@ CString strMessage;
 CString fatalErrorMessage;
 int errorTotalCount = 0; // Количество ошибок за все время с момента запуска изменения
 const int maxErrorPassageCount = 100; // Максимальное количество ошибок за проход, когда измерение будето становлено
-
-std::unique_ptr<IHardware> hardware;
+	std::unique_ptr<IHardware> hardware;
 if(theApp.Ini.CamacSimulation.Value || theApp.Ini.UsbCounterSimulation.Value)
 	hardware = std::make_unique<HardwareSimulation>();
 else if(theApp.Ini.HighPressureMode.Value)
@@ -76,6 +75,7 @@ try
 	do
 	{
 		int errorPassageCount = 0; // Количество ошибок за проход
+		time_t regionStartMeasureTime = pReg->m_BeginTime;
 		THR_UNLOCK();
 		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
 		THR_LOCK();
@@ -150,7 +150,7 @@ try
 		Met_NextSubmeasuring:
 			if (ThComm->StopContinue == ThComm->Stop)
 			{
-				AskAndSaveMeasuringData(ThComm->pMainFrame, NewData, pointIndex - 1);
+				AskAndSaveMeasuringData(ThComm->pMainFrame, NewData, pointIndex - 1, regionStartMeasureTime);
 				LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock, USER_STOP);
 			}
 			if ((pReg == ThComm->pRegEdit) || (pReg->m_DataIn.Off == TRUE))
@@ -282,12 +282,13 @@ try
 			GetXpsTimeRemainedToEnd(&ThComm->TIME);
 			ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
 
-			if (pReg->m_BeginTime == 0)
-				pReg->m_BeginTime = time(nullptr);
+			if (regionStartMeasureTime == 0)
+				regionStartMeasureTime = time(nullptr);
 		}
 
 		//Закончен очередной проход по данному региону
 		++pReg->m_DataIn.Curr_N;
+		pReg->m_BeginTime = regionStartMeasureTime;
 		pReg->UpdateStrValues();
 
 		THR_UNLOCK();
@@ -330,6 +331,10 @@ try
 catch(std::exception& ex)
 {
 	fatalErrorMessage += DetailedException::TryGetDetailedWhat(ex).c_str();
+}
+catch (...)
+{
+	fatalErrorMessage += "Произошло неизвестное исключение";
 }
 Met_EndBigCircle: 
 // Завершающие этапы перед окончанием изменения и выходом из потока

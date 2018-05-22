@@ -45,7 +45,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 #define USER_STOP 1
 void LeaveCrSecAndEndThread(CMainFrame* pMainFrame, CRegion* pReg, int Image, CSingleLock &tsLock, BOOL UserStop=FALSE);
 void LeaveCrSecAndEndDxpsThread(CMainFrame* pMainFrame, CDxpsRegion* pReg, CSingleLock &tsLock, BOOL UserStop=FALSE);
-void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData);
+void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData, time_t regionStartMeasureTime);
 
 void GetXpsTimeRemainedToEnd(int* TIME);
 void TIME2Str(int TIME, char* str);

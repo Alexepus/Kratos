@@ -327,9 +327,9 @@ AfxEndThread(0);
 }
 
 // Спросить пользователя о необходимости сохранить незаконченный скан и сохранить в файл, если надо
-void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData)
+void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNewData, time_t regionStartMeasureTime)
 { //NewData - массив точек в недоснятом скане, NNewData - число точек
-
+	time_t regionEndMeasureTime = time(nullptr);
 	if(::IsWindow(pMainFrame->m_pRegionWnd->m_hWnd) ) 
 		::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, FALSE);
 	int YesNo = ::MessageBox(pMainFrame->m_hWnd, "Do you want to save measured data in unfinished passage?", 
@@ -338,11 +338,13 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 	{// Записать в pReg измеренные данные
 		// 
 		--pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr;
-		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_BeginTime = regionStartMeasureTime;
+		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_EndTime = regionEndMeasureTime;
 		for(int i=0; i<NNewData; ++i)
 		{
 			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
 		}
+		SaveXpsFullRegionDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
 	}
 	//else //if(YesNo == IDNO)
 	//{// Записать в файл старые данные

@@ -372,7 +372,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 	m_Priority = m_pReg->m_DataIn.Priority;
 	m_LastEditTime = m_pReg->m_DataIn.LastEditTime == 0 ? CString() : FormatTime(m_pReg->m_DataIn.LastEditTime, "Last edit: %d.%m.%Y  %H:%M");
 	m_BeginTime = m_pReg->m_BeginTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_BeginTime, "%d.%m.%Y  %H:%M");
-	m_EndTime = m_pReg->m_EndTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_BeginTime, "%d.%m.%Y  %H:%M");
+	m_EndTime = m_pReg->m_EndTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_EndTime, "%d.%m.%Y  %H:%M");
 
 	UpdateData(FALSE);
 
