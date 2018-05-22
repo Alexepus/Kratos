@@ -426,7 +426,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 			break;
 		}
 	}
-	::EnableWindow(*GetDlgItem(IDC_BUTTON_RESET_ALL), dataExists);
+	::EnableWindow(GetDlgItem(IDC_BUTTON_RESET_ALL)->m_hWnd, dataExists);
 
 	if(m_pReg->m_NewOrEdit==m_pReg->New)
 	{
