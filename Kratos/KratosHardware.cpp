@@ -33,7 +33,7 @@ void KratosHardware::SetHv(long voltage)
 
 long KratosHardware::ReadCounter()
 {
-	int ExtraWaitTime = 10; //Extra wait time ~ 100 ms
+	int ExtraWaitTime = 20; //Extra wait time ~ 200 ms
 	CounterState counterState;
 	do {
 		counterState = _counterUnit.ReadLastCounter();
