@@ -276,7 +276,7 @@ try
 
 			NewData[pointIndex].y = DataOut.y;
 
-			pReg->m_NDataOutCurr = ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr = pointIndex + 1;
+			ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr = pointIndex + 1;
 			ThComm->pMainFrame->m_Doc.m_Graph.DrawLineDataShort(pointIndex - 1, pointIndex);
 
 			GetXpsTimeRemainedToEnd(&ThComm->TIME);

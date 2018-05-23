@@ -340,6 +340,7 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 		--pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr;
 		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_BeginTime = regionStartMeasureTime;
 		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_EndTime = regionEndMeasureTime;
+		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = NNewData;
 		for(int i=0; i<NNewData; ++i)
 		{
 			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
