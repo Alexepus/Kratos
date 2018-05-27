@@ -137,6 +137,17 @@ void CRegion::DeleteAllRegions()
 	}
 }
 
+void CRegion::ResetMeasuredData()
+{
+	for (int i = 0; i<m_NDataOut; ++i)
+		m_pDataOut[i].y = 0;
+	m_NDataOutCurr = 0;
+	m_DataIn.Curr_N = 0;
+	m_BeginTime = 0;
+	m_EndTime = 0;
+	UpdateStrValues();
+}
+
 CRegion* CRegion::GetFirst()
 {
 	if(m_pFirst) 

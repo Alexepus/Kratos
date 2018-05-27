@@ -130,25 +130,16 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			}
 		else if(wID == IDC_BUTTON_RESET)
 		{
-			char str[128];
-			int i;
 			CRegion* pReg;
 			int SelectedItem = FindSelectedItem();
 			for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 				{ if(pReg->ID == SelectedItem) break;}
-			sprintf(str,"Are you sure you want\nto reset all measured data ?");
-			if(::MessageBox(this->m_hWnd, str, "Attention",MB_YESNO) == IDYES)
+			if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data ?", "Attention",MB_YESNO) == IDYES)
 			{
-				for(i=0; i<pReg->m_NDataOut; ++i) 
-					{
-					pReg->m_pDataOut[i].x = pReg->m_DataIn.KE_Start + i*pReg->m_DataIn.Step;
-					pReg->m_pDataOut[i].y = 0;
-					SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
-					}
-				pReg->m_NDataOutCurr = 0;
-				pReg->m_DataIn.Curr_N = 0;
-				SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
-				pReg->UpdateStrValues();
+				pReg->ResetMeasuredData();
+				SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				UpdateItem(pReg);
 			}
 		}

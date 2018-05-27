@@ -347,6 +347,11 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 		}
 		SaveXpsFullRegionDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
 	}
+	else
+	{
+		pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;
+		SaveDataInToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+	}
 	//else //if(YesNo == IDNO)
 	//{// Записать в файл старые данные
 	//	pMainFrame->m_Doc.m_ThrComm.pRegNow->m_NDataOutCurr = 0;

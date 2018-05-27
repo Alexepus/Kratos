@@ -590,51 +590,12 @@ void CDialogParamRegion::OnButtonReset()
 {
 	if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data?", "Attention",MB_YESNO) == IDYES)
 	{
-		for(int i = 0; i<m_pReg->m_NDataOut; ++i) 
-		{
-			m_pReg->m_pDataOut[i].y = 0;
-			SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg, i, &m_pReg->m_pDataOut[i]);
-		}
-		m_pReg->m_NDataOutCurr = 0;
-		m_pReg->m_DataIn.Curr_N = 0;
-		m_pReg->m_BeginTime = 0;
-		m_pReg->m_EndTime = 0;
-		SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
-		sprintf(m_pReg->str.Curr_N, "%i", m_pReg->m_DataIn.Curr_N);
+		m_pReg->ResetMeasuredData();
+		SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
 		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
-		
+		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		OnInitDialog();
-		//HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_RESET);
-		////LONG style = ::GetWindowLong(hWndChild, GWL_STYLE);
-		////style = style | WS_DISABLED;
-		////::SetWindowLong(hWndChild, GWL_STYLE, style);
-		//::EnableWindow(hWndChild, FALSE);
-
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_HV);
-		//::EnableWindow(hWndChild, TRUE);
-		//::EnableWindow(m_ComboHV, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_HV1);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_BUTTON_HV_TABLE);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_STEP);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_STEP);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_TIME);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_PARAM_TIME);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_KE_BE);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_KE);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_RADIO_BE);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_COMBO_ANODE);
-		//::EnableWindow(hWndChild, TRUE);
-		//hWndChild = ::GetDlgItem(this->m_hWnd, IDC_STATIC_ANODE_TXT);
-		//::EnableWindow(hWndChild, TRUE);
 	}		
 }
 
@@ -697,35 +658,12 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 	{
 		for(CRegion* pReg = CRegion::GetFirst(); pReg != NULL ;pReg = CRegion::GetNext(pReg))
 		{
-			for(int i=0; i<pReg->m_NDataOut; ++i) 
-			{
-				pReg->m_pDataOut[i].y = 0;
-				SaveDataOutPointToFile(m_pMainFrame->m_Doc.fpPrj, pReg, i, &pReg->m_pDataOut[i]);
-			}
-			pReg->m_NDataOutCurr = 0;
-			pReg->m_DataIn.Curr_N = 0;
-			pReg->m_BeginTime = 0;
-			pReg->m_EndTime = 0;
-			SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
-			sprintf(pReg->str.Curr_N, "%i", pReg->m_DataIn.Curr_N);
-			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
+			m_pReg->ResetMeasuredData();
+			SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
+			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
 		}
-		
+		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		OnInitDialog();
-		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET), FALSE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_RESET_ALL), FALSE);
-		//::EnableWindow(m_ComboHV, TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_HV), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_HV1), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_BUTTON_HV_TABLE), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_STEP), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_STEP), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_EDIT_TIME), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_PARAM_TIME), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_KE_BE), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_KE), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_RADIO_BE), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_COMBO_ANODE), TRUE);
-		//::EnableWindow((HWND)*GetDlgItem(IDC_STATIC_ANODE_TXT), TRUE);
 	}
 }

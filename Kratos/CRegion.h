@@ -137,6 +137,10 @@ static void DeleteAllRegions();
  * \brief ќбновить значени€ в структуре STR_PAR str из данных DATA_IN m_DataIn
  */
 void UpdateStrValues();
+/**
+* \brief —бросить все измеренные данные
+*/
+void ResetMeasuredData();
 static CRegion* GetFirst();
 static CRegion* GetNext(CRegion* reg);
 
