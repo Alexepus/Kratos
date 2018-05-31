@@ -105,5 +105,6 @@ public:
 	ValueSvLd<bool> ViewReceivedRawData; // Выводить в лог полученные из COM-порта данные
 	ValueSvLd<bool> CamacSimulation; // Режим симуляции КАМАКа
 	ValueSvLd<bool> UsbCounterSimulation; // Режим симуляции счетчика USB
+	ValueSvLd<double> StatisticsMediumExtraDelay; //Среднестатистическая дополнительная задержка каждого измерения
 };
 #endif

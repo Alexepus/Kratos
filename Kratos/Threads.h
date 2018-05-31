@@ -1,6 +1,7 @@
 #ifndef _THREADS_H_INCLUDED_
 #define _THREADS_H_INCLUDED_
 #include "CRegion.h"
+#include "MeasureSpeedAnalyzer.h"
 
 class CMainFrame;
 
@@ -24,6 +25,7 @@ struct THREAD_COMMON
 	double LastCurTemperature; // Последняя полученная измеренная температура
 	double LastTemperatureTime; //Время получения температуры в формате COleDateTime
 
+	MeasureSpeedAnalyzer MeasureSpeedStat;
 	THREAD_COMMON():LastTemperatureTime(0), LastRefTemperature(0), LastCurTemperature(0){}
 };
 

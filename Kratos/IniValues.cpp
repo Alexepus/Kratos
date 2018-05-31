@@ -38,6 +38,8 @@ ViewSentRawData.Describe((int)FALSE, "DEBUG", "ViewSentRawData", IniFileName); /
 ViewReceivedRawData.Describe((int)FALSE, "DEBUG", "ViewReceivedRawData", IniFileName); // Выводить в лог полученные из COM-порта данные
 CamacSimulation.Describe((int)FALSE, "DEBUG", "CamacSimulation", IniFileName); // Режим симуляции КАМАКа
 UsbCounterSimulation.Describe((int)FALSE, "DEBUG", "UsbCounterSimulation", IniFileName); // Режим симуляции счетчика USB
+
+StatisticsMediumExtraDelay.Describe(0., "STATISTICS", "StatisticsMediumExtraDelay", IniFileName); //Среднестатистическая дополнительная задержка каждого измерения
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -191,6 +191,8 @@
     <ClCompile Include="LogToFile.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="MeasOptDlg.cpp" />
+    <ClCompile Include="MeasureSpeedAnalyzer.cpp" />
+    <ClCompile Include="StatisticsAnalyzer.cpp" />
     <ClCompile Include="ntgraph.cpp" />
     <ClCompile Include="OleFont.CPP" />
     <ClCompile Include="OpenSaveFun.cpp" />
@@ -256,6 +258,8 @@
     <ClInclude Include="Main.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="MeasOptDlg.h" />
+    <ClInclude Include="MeasureSpeedAnalyzer.h" />
+    <ClInclude Include="StatisticsAnalyzer.h" />
     <ClInclude Include="NotifyStruct.h" />
     <ClInclude Include="ntgraph.h" />
     <ClInclude Include="OleFont.H" />

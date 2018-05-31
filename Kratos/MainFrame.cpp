@@ -272,9 +272,9 @@ void CMainFrame::ResizeStatusBar()
 	// Части статус-бара: координаты курсора, параметры измерения XPS, оставшееся время
 	// "X = , Y = ", "Volts = %.3lf  F = %i  dF = %i", "%.2i:%.2i:%.2i"
 	const int nParts = 4;
-	int coordPart = min(rSB.right/3, 200*m_ScreenDpi/m_DefaultDpi);
-	int timePart = min(rSB.right/7, 70*m_ScreenDpi/m_DefaultDpi);
-	int tempPart = min(rSB.right/6, 105*m_ScreenDpi/m_DefaultDpi);
+	int coordPart = std::min<int>(rSB.right/3, 200*m_ScreenDpi/m_DefaultDpi);
+	int timePart = std::min<int>(rSB.right/7, 70*m_ScreenDpi/m_DefaultDpi);
+	int tempPart = std::min<int>(rSB.right/6, 105*m_ScreenDpi/m_DefaultDpi);
 	int xpsPart = rSB.right - coordPart - timePart - tempPart;
 	int SizeParts[nParts] = {coordPart, coordPart + xpsPart, coordPart + xpsPart + timePart, -1};
 	::SendMessage(m_hStatusBar, SB_SETPARTS, (WPARAM) nParts, (LPARAM) SizeParts);
