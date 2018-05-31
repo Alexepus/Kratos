@@ -57,15 +57,15 @@ TEST_F(CRegionTest, ShouldGetNextByPriority_SamePriority)
 	// Given
 	CreateRegion(2, 5, 5);
 	CreateRegion(2, 5, 4);
-	CreateRegion(2, 5, 3);
+	CreateRegion(2, 5, 5);
 	CreateRegion(2, 5, 3);
 
 	// When
-	auto found = CRegion::GetNextByPriority();
+	auto found = CRegion::GetNextByPriority(3);
 	
 	// Then
 	ASSERT_NE(found, nullptr);
-	ASSERT_EQ(found->ID, 2);
+	ASSERT_EQ(found->ID, 1);
 }
 
 TEST_F(CRegionTest, ShouldGetNextByPriority_SkipOff)
@@ -77,7 +77,7 @@ TEST_F(CRegionTest, ShouldGetNextByPriority_SkipOff)
 	CreateRegion(2, 5, 0);
 
 	// When
-	auto found = CRegion::GetNextByPriority();
+	auto found = CRegion::GetNextByPriority(3);
 
 	// Then
 	ASSERT_NE(found, nullptr);
@@ -93,7 +93,7 @@ TEST_F(CRegionTest, ShouldGetNextByPriority_SkipOffAndEdited)
 	CreateRegion(2, 5, 0);
 
 	// When
-	auto found = CRegion::GetNextByPriority(edited);
+	auto found = CRegion::GetNextByPriority(3, edited);
 
 	// Then
 	ASSERT_NE(found, nullptr);
@@ -110,7 +110,7 @@ TEST_F(CRegionTest, ShouldGetNextByPriority_DifferentPriorities)
 	CreateRegion(4, 5, 3);
 
 	// When
-	auto found = CRegion::GetNextByPriority();
+	auto found = CRegion::GetNextByPriority(-1);
 
 	// Then
 	ASSERT_NE(found, nullptr);

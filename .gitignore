@@ -4,3 +4,5 @@
 
 **/*.tmp
 **/~$*.docx
+/Kratos/Kratos.Test/Release/Kratos.Test.tlog
+/Kratos/Kratos.Test/Release

@@ -146,8 +146,8 @@ static CRegion* GetNext(CRegion* reg);
 
 static std::vector<CRegion*> GetAsVector();
 /**
-* \brief Находит следующий регион: среди включенных, среди незавершенных, с минимальным приоритетом, с минимальным количеством проходов, 
-* с минимальным ID. Если skipRegion задан, то его должен пропустить 
+* \brief Находит следующий регион: среди включенных, среди незавершенных, с минимальным приоритетом, 
+*  следующий (закольцовано) за регионом с индексом prevIndex. Если skipRegion задан, то его должен пропустить 
 */
 static CRegion* GetNextByPriority(int prevIndex, CRegion* skipRegion = nullptr);
 static CRegion* GetAtPosition(int position);

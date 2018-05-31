@@ -174,6 +174,10 @@ std::vector<CRegion*> CRegion::GetAsVector()
 	return res;
 }
 
+/**
+* \brief Ќаходит следующий регион: среди включенных, среди незавершенных, с минимальным приоритетом,
+*  следующий (закольцовано) за регионом с индексом prevIndex. ≈сли skipRegion задан, то его должен пропустить
+*/
 CRegion* CRegion::GetNextByPriority(int prevIndex, CRegion* skipRegion)
 {
 	auto regions = GetAsVector();
