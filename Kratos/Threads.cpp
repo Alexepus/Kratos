@@ -284,6 +284,14 @@ try
 
 			if (regionStartMeasureTime == 0)
 				regionStartMeasureTime = time(nullptr);
+			ThComm->MeasureSpeedStat.RegisterPointTime(pReg->ID, pReg->m_DataIn.Curr_N, pointIndex, pReg->m_DataIn.Time);
+			if (pointIndex % 5 == 0)
+				LogFileFormat("—татистика доп. времени измерени€: Min: %i, Aver-Sigma: %f, Aver: %f, Aver+Sigma: %f, Max: %i",
+					ThComm->MeasureSpeedStat.GetMin(),
+					ThComm->MeasureSpeedStat.GetAverage() - ThComm->MeasureSpeedStat.GetStdDeviation(),
+					ThComm->MeasureSpeedStat.GetAverage(),
+					ThComm->MeasureSpeedStat.GetAverage() + ThComm->MeasureSpeedStat.GetStdDeviation(),
+					ThComm->MeasureSpeedStat.GetMax());
 		}
 
 		//«акончен очередной проход по данному региону

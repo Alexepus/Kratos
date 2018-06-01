@@ -35,6 +35,11 @@ public:
 
 class StatisticsAnalyzer
 {
+	int _min = std::numeric_limits<int>::max();
+	int _max = std::numeric_limits<int>::min();
+	AverageCounter<int> _averageCalculator;
+	AverageCounter<long long> _averageOfSquaredCalculator;
+	
 public:
 	StatisticsAnalyzer();
 	~StatisticsAnalyzer();
@@ -43,14 +48,6 @@ public:
 	double GetStdDeviation() const;
 	int GetMin() const;
 	int GetMax() const;
-
-private:
 	void AddPoint(int v);
-	int _pointsAdded = -1;
-	double _medium;
-	int _min = std::numeric_limits<int>::max();
-	int _max = std::numeric_limits<int>::min();
-	AverageCounter<int> _averageCalculator;
-	AverageCounter<long long> _averageOfSquaredCalculator;
 };
 
