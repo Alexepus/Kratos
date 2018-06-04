@@ -141,6 +141,10 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				UpdateItem(pReg);
+
+				m_pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
+				m_pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
+				m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
 			}
 		}
 		else if(wID == IDC_BUTTON_COMMENTS)
