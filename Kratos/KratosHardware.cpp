@@ -33,15 +33,17 @@ void KratosHardware::SetHv(long voltage)
 
 long KratosHardware::ReadCounter()
 {
-	int ExtraWaitTime = 20; //Extra wait time ~ 200 ms
+	bool firstTry = true;
+	int ExtraWaitTime = 300; //Extra wait time ~ 3000 ms
 	CounterState counterState;
 	do {
 		counterState = _counterUnit.ReadLastCounter();
-		if (ExtraWaitTime<10)
+		if (!firstTry)
 		{
-			LogFileFormat("ExtraWaitTime: %i ", ExtraWaitTime);
+			LogFileFormat("USB counter ExtraWaitTime: %i ", ExtraWaitTime);
 			Sleep(10);
 		}
+		firstTry = false;
 		if (--ExtraWaitTime <= 0)
 			throw EXCEPTION("Ошибка в блоке USB-счетчика: счетчик во время не закончил счет.");
 				
