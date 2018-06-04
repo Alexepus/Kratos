@@ -51,8 +51,9 @@ int RealTime;
 CString strMessage;
 CString fatalErrorMessage;
 int errorTotalCount = 0; // Количество ошибок за все время с момента запуска изменения
-const int maxErrorPassageCount = 100; // Максимальное количество ошибок за проход, когда измерение будето становлено
-	std::unique_ptr<IHardware> hardware;
+const int maxErrorPassageCount = 10; // Максимальное количество ошибок за проход, когда измерение будето становлено
+std::unique_ptr<IHardware> hardware;
+
 if(theApp.Ini.CamacSimulation.Value || theApp.Ini.UsbCounterSimulation.Value)
 	hardware = std::make_unique<HardwareSimulation>();
 else if(theApp.Ini.HighPressureMode.Value)
@@ -187,7 +188,6 @@ try
 			int sleepTime = (int)(RealTime - startOperationLength * 0.4);
 			if (sleepTime > 0)
 				::Sleep(sleepTime);			//Wait for time interval
-
 			int NewN;
 			bool isSucsessful = false;
 			do{
@@ -285,13 +285,12 @@ try
 			if (regionStartMeasureTime == 0)
 				regionStartMeasureTime = time(nullptr);
 			ThComm->MeasureSpeedStat.RegisterPointTime(pReg->ID, pReg->m_DataIn.Curr_N, pointIndex, pReg->m_DataIn.Time);
-			if (pointIndex % 5 == 0)
-				LogFileFormat("Статистика доп. времени измерения: Min: %i, Aver-Sigma: %f, Aver: %f, Aver+Sigma: %f, Max: %i",
+			if (pointIndex % 50 == 0)
+				LogFileFormat("Статистика доп. времени измерения: [Min,Max]: [%i,%i], Average: %.1f, Sigma: %.1f",
 					ThComm->MeasureSpeedStat.GetMin(),
-					ThComm->MeasureSpeedStat.GetAverage() - ThComm->MeasureSpeedStat.GetStdDeviation(),
+					ThComm->MeasureSpeedStat.GetMax(),
 					ThComm->MeasureSpeedStat.GetAverage(),
-					ThComm->MeasureSpeedStat.GetAverage() + ThComm->MeasureSpeedStat.GetStdDeviation(),
-					ThComm->MeasureSpeedStat.GetMax());
+					ThComm->MeasureSpeedStat.GetStdDeviation());
 		}
 
 		//Закончен очередной проход по данному региону

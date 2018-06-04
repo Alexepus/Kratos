@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MeasureSpeedAnalyzer.h"
 #include "ProgNew.h"
+#include "LogToFile.h"
 
 extern CProgNewApp theApp;
 
@@ -38,6 +39,7 @@ void MeasureSpeedAnalyzer::AddPoint(int v)
 {
 	_pointsAdded++;
 	_statAnalyzer.AddPoint(v);
+	LogFileFormat("Point %i: %i", _pointsAdded, v);
 	if (_pointsAdded % 100 == 99)
 		SaveToIni();
 }
