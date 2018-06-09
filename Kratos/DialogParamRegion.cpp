@@ -658,9 +658,9 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 	{
 		for(CRegion* pReg = CRegion::GetFirst(); pReg != NULL ;pReg = CRegion::GetNext(pReg))
 		{
-			m_pReg->ResetMeasuredData();
-			SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
-			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
+			pReg->ResetMeasuredData();
+			SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
 		}
 		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
