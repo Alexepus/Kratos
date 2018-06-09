@@ -155,7 +155,7 @@ BOOL CBigClientWnd::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				'%','.',NotifyCoord->n_digitsX,'l','f', '%','.',NotifyCoord->n_digitsY,'l','f');
 			sprintf(str, FormatStr, NotifyCoord->x, NotifyCoord->y);
 			::SendMessage(m_pMainFrame->m_hStatusBar, SB_SETTEXT, 
-					0, (LPARAM) (LPSTR) str);
+				CMainFrame::StatusBarPartCoordinates, (LPARAM) (LPSTR) str);
 			}
 		}// end if(NotifyCoord->hdr.hwndFrom == m_pMainFrame->m_Doc.m_Graph.m_hWnd)
 

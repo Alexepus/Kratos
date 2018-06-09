@@ -7,7 +7,11 @@ extern CProgNewApp theApp;
 
 MeasureSpeedAnalyzer::MeasureSpeedAnalyzer()
 {
-	AddPoint(static_cast<int>(std::floor(theApp.Ini.StatisticsMediumExtraDelay.Value + 0.5)));
+	auto firstVal = static_cast<int>(std::floor(theApp.Ini.StatisticsMediumExtraDelay.Value + 0.5));
+	AddPoint(firstVal);
+	AddPoint(firstVal);
+	AddPoint(firstVal);
+	AddPoint(firstVal);
 }
 
 MeasureSpeedAnalyzer::~MeasureSpeedAnalyzer()

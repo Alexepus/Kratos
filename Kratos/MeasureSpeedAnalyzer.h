@@ -22,6 +22,8 @@ public:
 		{return _statAnalyzer.GetMin();}
 	int GetMax() const
 		{return _statAnalyzer.GetMax();}
+	int GetStatPointsCount() const
+		{return _statAnalyzer.GetStatPointsCount();}
 	void RegisterPointTime(int regionId, int passNumber, int pointIndex, int expectedPointMs);
 
 private:

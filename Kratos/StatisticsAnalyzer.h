@@ -48,6 +48,7 @@ public:
 	double GetStdDeviation() const;
 	int GetMin() const;
 	int GetMax() const;
+	int GetStatPointsCount() const;
 	void AddPoint(int v);
 };
 

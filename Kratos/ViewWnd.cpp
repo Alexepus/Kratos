@@ -163,8 +163,8 @@ BOOL CViewWnd::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 			sprintf(FormatStr, " X = %c%c%i%c%c  Y = %c%c%i%c%c",
 				'%','.',NotifyCoord->n_digitsX,'l','f', '%','.',NotifyCoord->n_digitsY,'l','f');
 			sprintf(str, FormatStr, NotifyCoord->x, NotifyCoord->y);
-			::SendMessage(m_hStatusBar, SB_SETTEXT, 
-					0, (LPARAM) (LPSTR) str);
+			::SendMessage(m_hStatusBar, SB_SETTEXT,
+			              CMainFrame::StatusBarPartCoordinates, (LPARAM) (LPSTR) str);
 			}
 		
 		else if(hdr->code == WM_LBUTTONUP)

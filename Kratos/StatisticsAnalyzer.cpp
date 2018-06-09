@@ -16,7 +16,11 @@ double StatisticsAnalyzer::GetAverage() const
 
 double StatisticsAnalyzer::GetStdDeviation() const
 {
-	return sqrt(_averageOfSquaredCalculator.Average - _averageCalculator.Average*_averageCalculator.Average);
+	// несмещенная оценка среднекватратичного отклонения
+	if (_averageOfSquaredCalculator.StoredCount < 2)
+		return 0.;
+	return sqrt((_averageOfSquaredCalculator.Average - _averageCalculator.Average
+		*_averageCalculator.Average) * _averageOfSquaredCalculator.StoredCount/(_averageOfSquaredCalculator.StoredCount - 1));
 }
 
 int StatisticsAnalyzer::GetMin() const
@@ -27,6 +31,11 @@ int StatisticsAnalyzer::GetMin() const
 int StatisticsAnalyzer::GetMax() const
 {
 	return _max;
+}
+
+int StatisticsAnalyzer::GetStatPointsCount() const
+{
+	return _averageCalculator.StoredCount;
 }
 
 void StatisticsAnalyzer::AddPoint(int v)

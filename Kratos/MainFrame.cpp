@@ -1,26 +1,11 @@
 // MainFrame.cpp : implementation file
-//
-/*
-#include "stdafx.h"
 
-#include "ProgNew.h"
-#include "BigClientWnd.h"
-#include "HideWnd.h"
-#include "CRegion.h"
-#include "DialogParamRegion.h"
-#include "ListRegionWnd.h"
-#include "RegionWnd.h"
-//#include "MainFrame.h"
-#include "OpenSaveFun.h"
-#include "MainFrame.h"
-*/
 #include "stdafx.h"
 #include "DlgAbout.h"
 #include "Main.h"
 #include "MainFrame.h"
 #include "SerialCounter\SerialCounterDlg.h"
-
-//#include<stdio.h>
+#include "Time.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,7 +25,7 @@ UINT wm_CurrentTempMessage=RegisterWindowMessage("RemoteCurrentTemp");
 
 #define POST_POST_CREATEWINDOW 10
 #define TIMER_CHECK_DXPS_STATE 11
-#define TIMER_CHECK_VALID_TEMPERATURE 12
+#define TIMER_MAINFRAME_1SEC 12
 //IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
@@ -63,7 +48,6 @@ CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 	m_Doc.m_ThrComm.pRegEdit = NULL;
 	m_Doc.m_ThrComm.fp = NULL;
 	m_Doc.m_ThrComm.RetardCalibration=theApp.Ini.RetardCalibration.Value;
-//	/*
 	CWinApp* App=AfxGetApp();
 	m_Doc.m_ThrComm.NSigma = App->GetProfileInt("Measuring Options", "NSigma", 30)/10.;
 	m_Doc.m_ThrComm.Attempts= App->GetProfileInt("Measuring Options", "Attempts", 3);
@@ -71,12 +55,46 @@ CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 	m_Doc.m_ThrComm.EnableRemeasure=App->GetProfileInt("Measuring Options", "EnableRemeasure", 1);
 	m_Doc.m_ThrComm.RegionDelay=App->GetProfileInt("Measuring Options", "RegionDelay", 0);
 
-//	*/
-	//	m_Doc.m_ThrComm.pRegWnd = m_pRegionWnd;
 	m_StartStop = Start;
 	m_pDxpsDlg = new CDxpsDlg;
 	m_bSynchronousResize=FALSE;
+	_remainedTime.IsDefined = false;
+}
 
+CMainFrame::TimeStat CMainFrame::GetExtraTimeExpectedByStats()
+{
+	int pointCountToMeasure = 0;
+	for (CRegion * pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
+	{
+		if (!pReg->m_DataIn.Off)
+		{
+			int NumberOfUnstartedPassages = pReg->m_DataIn.N_ - pReg->m_DataIn.Curr_N;
+			if (pReg->m_NDataOutCurr > 0) NumberOfUnstartedPassages--;
+			if (NumberOfUnstartedPassages<0) NumberOfUnstartedPassages = 0;
+			int DeltaMeasurings = pReg->m_NDataOut - pReg->m_NDataOutCurr;
+			if (pReg->m_NDataOutCurr == 0) DeltaMeasurings = 0;
+			pointCountToMeasure += DeltaMeasurings + pReg->m_NDataOut*NumberOfUnstartedPassages;
+		}
+	}
+
+	TimeStat stat;
+	stat.SecondsMathExpectation = static_cast<int>(std::round(pointCountToMeasure * m_Doc.m_ThrComm.MeasureSpeedStat.GetAverage() * 0.001));
+	const double confidenceCoef = 2.576;  //обратное значение функции стандартного нормального распределения для доверительной вероятности 0.99 (1.96 для 0.95)
+	stat.IsPossibleToFindСonfidenceInterval = m_Doc.m_ThrComm.MeasureSpeedStat.GetStatPointsCount() > 16;
+	if (stat.IsPossibleToFindСonfidenceInterval)
+		stat.SecondsСonfidenceDelta = static_cast<int>(std::round((pointCountToMeasure * m_Doc.m_ThrComm.MeasureSpeedStat.GetStdDeviation() * confidenceCoef * 0.001) / sqrt(m_Doc.m_ThrComm.MeasureSpeedStat.GetStatPointsCount())));
+	return stat;
+}
+
+CString CMainFrame::FormatSecondsTo2TimeDigits(int seconds) const
+{
+	if (seconds < 60)
+		return Format("%is", seconds);
+	if (seconds/60. < 59.5)
+		return Format("%.0fm", seconds/60.);
+	if (seconds / 3600. < 59.5)
+		return Format("%.0fh", seconds / 3600.);
+	return Format("%.0fd", seconds / 3600. /24);
 }
 
 CMainFrame::~CMainFrame()
@@ -191,7 +209,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetRecentProjects();
 	m_RegDxpsMessageID=RegisterWindowMessage("RemoteDxpsState");
 	SetTimer(TIMER_CHECK_DXPS_STATE,1000,NULL);
-	SetTimer(TIMER_CHECK_VALID_TEMPERATURE,1000,NULL);
+	SetTimer(TIMER_MAINFRAME_1SEC,1000,NULL);
 
 	return 0;
 }
@@ -270,13 +288,15 @@ void CMainFrame::ResizeStatusBar()
 	RECT rSB;
 	::GetClientRect(m_hStatusBar, &rSB);
 	// Части статус-бара: координаты курсора, параметры измерения XPS, оставшееся время
-	// "X = , Y = ", "Volts = %.3lf  F = %i  dF = %i", "%.2i:%.2i:%.2i"
-	const int nParts = 4;
+	// "X = , Y = ", "Volts = %.3lf  F = %i  dF = %i", "Est.: %.2i:%.2i:%.2i", "%.2i:%.2i:%.2i", "T Cur: %.1fC"
+	const int nParts = 5;
 	int coordPart = std::min<int>(rSB.right/3, 200*m_ScreenDpi/m_DefaultDpi);
-	int timePart = std::min<int>(rSB.right/7, 70*m_ScreenDpi/m_DefaultDpi);
+	int timePartEstimated = std::min<int>(rSB.right / 6, 103 * m_ScreenDpi / m_DefaultDpi);
+	int timePartRemained = std::min<int>(rSB.right / 6, 84 * m_ScreenDpi / m_DefaultDpi);
 	int tempPart = std::min<int>(rSB.right/6, 105*m_ScreenDpi/m_DefaultDpi);
-	int xpsPart = rSB.right - coordPart - timePart - tempPart;
-	int SizeParts[nParts] = {coordPart, coordPart + xpsPart, coordPart + xpsPart + timePart, -1};
+	int xpsPart = rSB.right - coordPart - timePartEstimated - timePartRemained - tempPart;
+	int SizeParts[nParts] = {coordPart, coordPart + xpsPart, coordPart + xpsPart + timePartEstimated, 
+		coordPart + xpsPart + timePartEstimated + timePartRemained, -1};
 	::SendMessage(m_hStatusBar, SB_SETPARTS, (WPARAM) nParts, (LPARAM) SizeParts);
 }
 
@@ -298,15 +318,32 @@ void CMainFrame::SetStatusTemperature(double Temp, bool Defined)
 ///<param name="isDefined">Определено (известно) ли оставшееся время; если false, то не отображается<param> 
 void CMainFrame::SetStatusTime(int milliSeconds, bool isDefined)
 {
-	static char str[255];
+	_remainedTime.MilliSeconds = milliSeconds;
+	_remainedTime.IsDefined = isDefined;
+
+	static char str[50];
+	CString s;
 	if(isDefined)
+	{
 		TIME2Str(milliSeconds, str);
-	else
-		sprintf(str, "\n");
+		s = str;
+		if (m_Doc.CheckDocType() == CDoc::XPS)
+		{
+			_extraTimeStat = GetExtraTimeExpectedByStats();
+			s += " +" + FormatSecondsTo2TimeDigits(_extraTimeStat.SecondsMathExpectation);
+		}
+	}
+
 	if (GetCurrentThreadId() == AfxGetApp()->m_nThreadID)
-		::SendMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTime, (LPARAM)str);
+		::SendMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTimeRemained, (LPARAM)s.GetString());
 	else
-		::PostMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTime, (LPARAM)str);
+	{
+		strcpy_s(str, s);
+		::PostMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTimeRemained, (LPARAM)str);
+	}
+
+	
+
 }
 
 TBBUTTON* CMainFrame::CreateStructTBBUTTON()
@@ -539,8 +576,8 @@ THRI_UNLOCK();
 
 //Clear status
 char *strn="";
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 0, (LPARAM) (LPSTR) strn);
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) strn);
+::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
+::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
 
 sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[no data]");
 SetWindowText(m_Doc.m_WindowCaption);
@@ -634,8 +671,8 @@ void CMainFrame::OnFileOpenProject()
 
 	//Clear status
 	char *strn="";
-	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 0, (LPARAM) (LPSTR) strn);
-	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) strn);
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
 
 	m_Doc.m_TypeFile = m_Doc.Project; 
 	m_Doc.m_SaveAsOpen = m_Doc.Open; 
@@ -801,7 +838,7 @@ void CMainFrame::OnProgrammStop()
 																							(LPARAM) MAKELONG(TRUE, 0));
 	char str[2];
 	str[0] = '\0';
-	::SendMessage(m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) str);
+	::SendMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) str);
 }
 
 void CMainFrame::OnUpdateProgrammStop(CCmdUI* pCmdUI) 
@@ -1197,11 +1234,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				&& CDxpsRegion::PassedNumberOfPoints==0 && strlen(m_Doc.m_ProjectFile.FullPath)>0)?1:0);
 		}
 	}
-	else if(nIDEvent==TIMER_CHECK_VALID_TEMPERATURE)
+	else if(nIDEvent==TIMER_MAINFRAME_1SEC)
 	{
+		// 1. Проверка актуальности температуры. Неактуальная температура скрывается
 		COleDateTimeSpan timeFromTempReception = COleDateTime::GetCurrentTime() - COleDateTime(m_Doc.m_ThrComm.LastTemperatureTime);
 		if( fabs(timeFromTempReception.GetTotalSeconds()) > 1.5 ) // > 1.5 sec
 			SetStatusTemperature(0, false);
+
+		// 2. Расчет и установка ожидаемого времени окончания измерения
+		SetStatusEstimatedTime();
 	}
 	CFrameWnd::OnTimer(nIDEvent);
 }
@@ -1296,6 +1337,19 @@ void CMainFrame::OnFileRecentProjectsFile4()
 OnFileRecentProjects(3);
 }
 
+void CMainFrame::SetStatusEstimatedTime() const
+{
+	CString s;
+	if (_remainedTime.IsDefined && _remainedTime.MilliSeconds > 0)
+	{
+		auto estTime = time(nullptr) + _remainedTime.MilliSeconds / 1000 + _extraTimeStat.SecondsMathExpectation;
+		s = FormatTime(estTime, "Est: %H:%M:%S");
+		if (_extraTimeStat.IsPossibleToFindСonfidenceInterval)
+			s += " ±" + FormatSecondsTo2TimeDigits(_extraTimeStat.SecondsСonfidenceDelta);
+	}
+	::SendMessage(m_hStatusBar, SB_SETTEXT, StatusBarPartTimeEstimated, (LPARAM)s.GetString());
+}
+
 void CMainFrame::OnFileRecentProjects(int Index)
 {
 CSingleLock sLock(&MutexThread);
@@ -1348,8 +1402,8 @@ SetWindowText(m_Doc.m_WindowCaption);
 
 //Clear status
 char *strn="";
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 0, (LPARAM) (LPSTR) strn);
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM) (LPSTR) strn);
+::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
+::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
 
 FILE *fp;
 RetryRead:

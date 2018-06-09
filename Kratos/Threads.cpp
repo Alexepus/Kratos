@@ -271,7 +271,7 @@ try
 
 			THR_UNLOCK();
 			strMessage.Format(" Volts = %.3lf  F = %i  dF = %i", I2D(pReg->m_pDataOut[pointIndex].x), int(floor(NewY + 0.5)), int(floor(NewY - DataOut.y + 0.5)));
-			::SendMessage(ThComm->pMainFrame->m_hStatusBar, SB_SETTEXT, 1, (LPARAM)(LPCSTR)strMessage);
+			::SendMessage(ThComm->pMainFrame->m_hStatusBar, SB_SETTEXT, CMainFrame::StatusBarPartXPSParams, (LPARAM)(LPCSTR)strMessage);
 			THR_LOCK();
 
 			NewData[pointIndex].y = DataOut.y;
@@ -369,7 +369,7 @@ catch (std::exception& ex)
 ::SendMessage(ThComm->pMainFrame->m_hToolBar, TB_ENABLEBUTTON  , 
 							(WPARAM) ID_FILE_NEW_PROJECT, (LPARAM) MAKELONG(TRUE, 0));
 ThComm->TIME = 0;
-ThComm->pMainFrame->SetStatusTime(ThComm->TIME);
+ThComm->pMainFrame->SetStatusTime(ThComm->TIME, false);
 
 HMENU	SysMenu = ::GetSystemMenu(ThComm->pMainFrame->m_hWnd, FALSE);
 ::EnableMenuItem(SysMenu, SC_CLOSE, MF_ENABLED);

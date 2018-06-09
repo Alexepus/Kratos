@@ -26,24 +26,14 @@ class CHideWnd;
 
 class CMainFrame : public CFrameWnd
 {
-//	DECLARE_DYNCREATE(CMainFrame)
-//protected:
 public:
-	CMainFrame();           // protected constructor used by dynamic creation
+	CMainFrame();
 
-// Attributes
-public:
-
-// Operations
-public:
 	UINT m_RegDxpsMessageID;
 	char AppTitle[30];
 	CNTGraph m_Graph;
 	LRESULT OnPostCreateWindow(WPARAM WParam, LPARAM LParam);
 	BOOL m_bSynchronousResize;
-//	CWinThread* m_pMeasThread;
-//	FILE* fpPrj;
-//	HMENU m_hMenu;
 	CDoc m_Doc;
 	//const char* m_ClassNameRegionWnd;
 	CRegion* m_pRegion;
@@ -60,7 +50,7 @@ public:
 	SAndTBarHWND m_SAndTBarHWND;	
 	static const int m_DefaultDpi = 96;
 	int m_ScreenDpi;
-	enum StatusBarPart {StatusBarPartCoordinates = 0, StatusBarPartXPSParams = 1, StatusBarPartTime = 2,  StatusBarPartTemperature = 3};
+	enum StatusBarPart {StatusBarPartCoordinates = 0, StatusBarPartXPSParams = 1, StatusBarPartTimeEstimated = 2, StatusBarPartTimeRemained = 3,  StatusBarPartTemperature = 4};
 
 	BOOL CreateClient(LPCREATESTRUCT lpcs); 
 	BOOL CreateStatusAndToolBar();
@@ -82,11 +72,28 @@ public:
 	//}}AFX_VIRTUAL
 
 // Implementation
-protected:
+private:
 	void OnFileRecentProjectsFile1();
 	void OnFileRecentProjectsFile2();
 	void OnFileRecentProjectsFile3();
 	void OnFileRecentProjectsFile4();
+
+	void SetStatusEstimatedTime() const;
+
+	struct TimeStat
+	{
+		// Ожидаемая величина дополнительного времени, в секундах
+		int SecondsMathExpectation = 0;
+		// Максимальное отклонение от величины дополнительного времени в рамках доверительного интервала, в секундах
+		int SecondsСonfidenceDelta = 0;
+		// Возможно ли определить доверительный интервал
+		bool IsPossibleToFindСonfidenceInterval = false;
+	};
+
+	TimeStat GetExtraTimeExpectedByStats();
+	// Форматирует время, заданное в секундах, до максимум 99 секунд, минут, часов, дней
+	CString FormatSecondsTo2TimeDigits(int seconds) const;
+
 	virtual ~CMainFrame();
 
 	// Generated message map functions
@@ -133,14 +140,20 @@ protected:
 	afx_msg void OnAbout();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnSettingsCountersetup();
+	afx_msg void OnUpdateSettingsCounterSetup(CCmdUI *pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
 	int NumberToolbarsButton;
-	
-public:
-	afx_msg void OnSettingsCountersetup();
-	afx_msg void OnUpdateSettingsCounterSetup(CCmdUI *pCmdUI);
+	struct
+	{
+		int MilliSeconds;
+		bool IsDefined;
+	} _remainedTime;
+
+	TimeStat _extraTimeStat;
+
 };
 
 /////////////////////////////////////////////////////////////////////////////
