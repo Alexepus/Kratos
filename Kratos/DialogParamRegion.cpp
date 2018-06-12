@@ -3,6 +3,8 @@
 #include "hardware.h"
 #include "DialogParamRegion.h"
 #include "Time.h"
+#include "MfcHelper.h"
+#include "CppLinq.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -61,6 +63,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_Priority, 1, 99);
 	DDX_Control(pDX, IDC_STATIC_ANODE_TXT, m_AnodeTxtControl);
 	DDX_Control(pDX, IDC_COMBO_ANODE, m_ComboAnodeControl);
+	DDX_Control(pDX, IDC_EDIT_MAKE_COPY_AT, m_EditMakeCopyAt);
 	//}}AFX_DATA_MAP
 	//*/
 	if (!theApp.Ini.HighPressureMode.Value) //KRATOS
@@ -324,6 +327,7 @@ BEGIN_MESSAGE_MAP(CDialogParamRegion, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_COMMENTS_EDIT, OnButtonCommentsEdit)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_RESET_ALL, &CDialogParamRegion::OnBnClickedButtonResetAll)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAKE_COPY_AT, &CDialogParamRegion::OnKillfocusEditMakeCopyAt)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -651,6 +655,27 @@ BOOL CDialogParamRegion::CheckHV()
 	return TRUE;
 }
 
+std::vector<short> CDialogParamRegion::ParseMakeCopyString(CString s)
+{
+	auto parts = SplitString(s, " ,;.:()'\"");
+	std::vector<short> res;
+	for(auto p : parts)
+	{
+		int val = atoi(p.GetString());
+		if (val > 0)
+			res.push_back(val);
+	}
+	std::sort(res.begin(), res.end());
+	res.erase(std::unique(res.begin(), res.end()), res.end());
+	return res;
+}
+
+CString CDialogParamRegion::FormatMakeCopyString(std::vector<short> passagesWhenMakeCopy)
+{
+	auto strings = Linq::from(passagesWhenMakeCopy).select([](short i) {return Format("%i", i); }).toVector();
+	return JoinStrings(strings, ", ");
+}
+
 void CDialogParamRegion::OnBnClickedButtonResetAll()
 {
 	if(MessageBox("Are you sure you want to reset \nALL measured data in ALL regions?",
@@ -666,4 +691,13 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		OnInitDialog();
 	}
+}
+
+void CDialogParamRegion::OnKillfocusEditMakeCopyAt()
+{
+	CString text;
+	m_EditMakeCopyAt.GetWindowTextA(text);
+	auto passagesWhenCopy = ParseMakeCopyString(text);
+	text = FormatMakeCopyString(passagesWhenCopy);
+	m_EditMakeCopyAt.SetWindowTextA(text);
 }

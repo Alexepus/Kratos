@@ -95,8 +95,12 @@
 #define IDC_EDIT_DXPSPAR_DELAY          1043
 #define IDC_STATIC_KE_END2              1043
 #define IDC_RADIO_OVER                  1044
+#define IDC_STATIC_COMMENTS3            1044
 #define IDC_STATIC_BORDER               1045
+#define IDC_STATIC_PARAM_KE_END3        1045
 #define IDC_STATIC_BIG                  1046
+#define IDC_EDIT_PRIORITY2              1046
+#define IDC_EDIT_MAKE_COPY_AT           1046
 #define IDC_STATIC_SMALL                1047
 #define IDC_STATIC_CAPTION_BIG          1049
 #define IDC_STATIC_CAPTION_SMALL        1050

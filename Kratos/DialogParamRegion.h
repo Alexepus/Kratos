@@ -19,10 +19,10 @@ class CFiTableDlg;
 
 class CDialogParamRegion : public CDialog
 {
-// Construction
 public:
 	BOOL CheckHV();
-
+	std::vector<short> ParseMakeCopyString(CString s);
+	CString FormatMakeCopyString(std::vector<short> passagesWhenMakeCopy);
 	void SubClassingWindows();
 	DATA_IN::EnergyType m_KE_BE;
 	BOOL m_Off;
@@ -47,6 +47,10 @@ public:
 	int		m_Anode;
 	double	m_Time;
 	int m_Priority;
+	CString m_BeginTime;
+	CString m_EndTime;
+	CString m_LastEditTime;
+	CEdit m_EditMakeCopyAt;
 	//}}AFX_DATA
 
 // Overrides
@@ -77,12 +81,11 @@ public:
 	afx_msg void OnButtonHVTable();
 	afx_msg void OnButtonCommentsEdit();
 	afx_msg void OnBnClickedButtonResetAll();
+	afx_msg void OnKillfocusEditMakeCopyAt();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
-	CString m_BeginTime;
-	CString m_EndTime;
-	CString m_LastEditTime;
+
 };
 
 #endif // !defined(AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_)

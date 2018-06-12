@@ -192,6 +192,7 @@
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="MeasOptDlg.cpp" />
     <ClCompile Include="MeasureSpeedAnalyzer.cpp" />
+    <ClCompile Include="MfcHelper.cpp" />
     <ClCompile Include="StatisticsAnalyzer.cpp" />
     <ClCompile Include="ntgraph.cpp" />
     <ClCompile Include="OleFont.CPP" />
@@ -220,7 +221,6 @@
     <ResourceCompile Include="ProgNew.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AlexepusTFS\Spec\MfcHelper.h" />
     <ClInclude Include="BigClientWnd.h" />
     <ClInclude Include="CamacHardware.h" />
     <ClInclude Include="CamSetupDlg.h" />
@@ -259,6 +259,7 @@
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="MeasOptDlg.h" />
     <ClInclude Include="MeasureSpeedAnalyzer.h" />
+    <ClInclude Include="MfcHelper.h" />
     <ClInclude Include="StatisticsAnalyzer.h" />
     <ClInclude Include="NotifyStruct.h" />
     <ClInclude Include="ntgraph.h" />
