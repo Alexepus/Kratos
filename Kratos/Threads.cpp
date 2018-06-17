@@ -189,22 +189,19 @@ try
 			if (sleepTime > 0)
 				::Sleep(sleepTime);			//Wait for time interval
 			int NewN;
-			bool isSucsessful = false;
-			do{
-				try
-				{
-					NewN = hardware->ReadCounter();
-					isSucsessful = true;
-				}
-				catch (std::exception& e)
-				{
-					errorPassageCount++;
-					errorTotalCount++;
-					LogFileFormat("Ошибка №%i из %i: %s", errorPassageCount++, maxErrorPassageCount, DetailedException::TryGetDetailedWhat(e).c_str());
-					if (errorPassageCount > maxErrorPassageCount)
-						throw EXCEPTION_WITH_INNER("Превышено допустимое количество ошибок чтения счетчика. Измерение будет остановлено.", e);
-				}
-			} while (!isSucsessful);
+			try
+			{
+				NewN = hardware->ReadCounter();
+			}
+			catch (std::exception& e)
+			{
+				errorPassageCount++;
+				errorTotalCount++;
+				LogFileFormat("Ошибка №%i из %i: %s", errorPassageCount, maxErrorPassageCount, DetailedException::TryGetDetailedWhat(e).c_str());
+				if (errorPassageCount > maxErrorPassageCount)
+					throw EXCEPTION_WITH_INNER("Превышено допустимое количество ошибок чтения счетчика. Измерение будет остановлено.", e);
+				goto Met_NextSubmeasuring;
+			}
 			THR_LOCK();
 
 			if (DataIn.Time == 0)
