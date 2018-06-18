@@ -51,7 +51,7 @@ int RealTime;
 CString strMessage;
 CString fatalErrorMessage;
 int errorTotalCount = 0; // Количество ошибок за все время с момента запуска изменения
-const int maxErrorPassageCount = 10; // Максимальное количество ошибок за проход, когда измерение будето становлено
+const int maxErrorPassageCount = 20; // Максимальное количество ошибок за проход, когда измерение будето становлено
 std::unique_ptr<IHardware> hardware;
 
 if(theApp.Ini.CamacSimulation.Value || theApp.Ini.UsbCounterSimulation.Value)
@@ -60,6 +60,8 @@ else if(theApp.Ini.HighPressureMode.Value)
 	hardware = std::make_unique<HpHardware>();
 else
 	hardware = std::make_unique<KratosHardware>();
+
+int startPointIndex = 0;
 try
 {
 	hardware->Initialize();
@@ -81,7 +83,7 @@ try
 		ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetIconForReg(pReg, 1);
 		THR_LOCK();
 		ThComm->pRegNow = pReg;
-		int pointIndex = pReg->m_NDataOutCurr;  //current measuring in the region
+		int pointIndex = startPointIndex = pReg->m_NDataOutCurr;  //current measuring in the region
 		DATA_IN DataIn = pReg->m_DataIn;
 
 		if (!theApp.Ini.HighPressureMode.Value) //KRATOS
@@ -193,12 +195,12 @@ try
 			{
 				NewN = hardware->ReadCounter();
 			}
-			catch (std::exception& e)
+			catch (CounterTimeoutException& e)
 			{
 				errorPassageCount++;
 				errorTotalCount++;
 				LogFileFormat("Ошибка №%i из %i: %s", errorPassageCount, maxErrorPassageCount, DetailedException::TryGetDetailedWhat(e).c_str());
-				if (errorPassageCount > maxErrorPassageCount)
+				if (errorPassageCount >= maxErrorPassageCount)
 					throw EXCEPTION_WITH_INNER("Превышено допустимое количество ошибок чтения счетчика. Измерение будет остановлено.", e);
 				goto Met_NextSubmeasuring;
 			}
@@ -334,15 +336,18 @@ try
 }
 catch(std::exception& ex)
 {
+	if (ThComm->pRegNow != nullptr)
+		ThComm->pRegNow->m_NDataOutCurr = startPointIndex;
 	fatalErrorMessage += DetailedException::TryGetDetailedWhat(ex).c_str();
 }
 catch (...)
 {
+	if (ThComm->pRegNow != nullptr)
+		ThComm->pRegNow->m_NDataOutCurr = startPointIndex;
 	fatalErrorMessage += "Произошло неизвестное исключение";
 }
 Met_EndBigCircle: 
 // Завершающие этапы перед окончанием изменения и выходом из потока
-
 ThComm->pRegNow = nullptr;
 
 if (ThreadLock.IsLocked())
