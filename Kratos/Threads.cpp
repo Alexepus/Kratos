@@ -284,12 +284,6 @@ try
 			if (regionStartMeasureTime == 0)
 				regionStartMeasureTime = time(nullptr);
 			ThComm->MeasureSpeedStat.RegisterPointTime(pReg->ID, pReg->m_DataIn.Curr_N, pointIndex, pReg->m_DataIn.Time);
-			if (pointIndex % 50 == 0)
-				LogFileFormat("—татистика доп. времени измерени€: [Min,Max]: [%i,%i], Average: %.1f, Sigma: %.1f",
-					ThComm->MeasureSpeedStat.GetMin(),
-					ThComm->MeasureSpeedStat.GetMax(),
-					ThComm->MeasureSpeedStat.GetAverage(),
-					ThComm->MeasureSpeedStat.GetStdDeviation());
 		}
 
 		//«акончен очередной проход по данному региону

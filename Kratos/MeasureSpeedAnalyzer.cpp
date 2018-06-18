@@ -43,7 +43,6 @@ void MeasureSpeedAnalyzer::AddPoint(int v)
 {
 	_pointsAdded++;
 	_statAnalyzer.AddPoint(v);
-	LogFileFormat("Point %i: %i", _pointsAdded, v);
 	if (_pointsAdded % 100 == 99)
 		SaveToIni();
 }
