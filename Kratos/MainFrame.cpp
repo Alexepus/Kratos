@@ -522,7 +522,7 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
+		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
 		else // if(m_Doc.fpPrj == NULL)
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
@@ -548,7 +548,7 @@ if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
 	m_Doc.m_ViewWnd.DestroyWindow();
 	}
-EmptyAllData();
+m_Doc.EmptyAllData();
 m_Doc.m_NeedSave = m_Doc.NoNeed;
 m_Doc.CheckDocType();
 
@@ -635,7 +635,7 @@ void CMainFrame::OnFileOpenProject()
 		if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 		else if(YesNoCancel == IDYES)
 			{
-			if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
+			if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
 			else // if(m_Doc.fpPrj == NULL)
 				{	
 				m_Doc.m_TypeFile = m_Doc.Project; 
@@ -661,7 +661,7 @@ void CMainFrame::OnFileOpenProject()
 		m_Doc.m_ViewWnd.DestroyWindow();
 		}
 
-	EmptyAllData();
+	m_Doc.EmptyAllData();
 	m_Doc.m_NeedSave = m_Doc.NoNeed;
 	m_Doc.CheckDocType();
 
@@ -679,7 +679,7 @@ void CMainFrame::OnFileOpenProject()
 	if( !WindowSaveAsOpen(this) )
 		{
 		THRI_UNLOCK();
-		EmptyAllData();
+		m_Doc.EmptyAllData();
 		return;
 		}
 	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, m_Doc.m_ProjectFile.FileName);
@@ -924,7 +924,7 @@ void CMainFrame::OnFileSaveProject()
 	if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
 	m_Doc.fpPrj = fopen(m_Doc.m_ProjectFile.FullPath, "wb+");
 	m_Doc.m_ThrComm.fp = m_Doc.fpPrj;
-	SaveBinaryFile(m_Doc.fpPrj);
+	m_Doc.SaveBinaryFile(m_Doc.fpPrj);
 	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, m_Doc.m_ProjectFile.FileName);
 	SetWindowText(m_Doc.m_WindowCaption);
 	m_Doc.m_NeedSave=m_Doc.NoNeed;
@@ -965,7 +965,7 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
+		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
 		else // if(m_Doc.fpPrj == NULL)
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
@@ -991,7 +991,7 @@ if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
 	m_Doc.m_ViewWnd.DestroyWindow();
 	}
-EmptyAllData();
+m_Doc.EmptyAllData();
 
 	RECT r;
 	::GetWindowRect(this->m_hWnd, &r);
@@ -1365,7 +1365,7 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) SaveBinaryFile(m_Doc.fpPrj);
+		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
 		else
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
@@ -1392,7 +1392,7 @@ if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
 	m_Doc.m_ViewWnd.DestroyWindow();
 	}
 
-EmptyAllData();
+m_Doc.EmptyAllData();
 m_Doc.m_NeedSave = m_Doc.NoNeed;
 m_Doc.CheckDocType();
 
@@ -1409,20 +1409,20 @@ FILE *fp;
 RetryRead:
 	fp=fopen((LPCSTR)theApp.Ini.ProjectFile[Index].Value, "rb+");
 	if(!fp) {THRI_UNLOCK(); MessageBox("Cannot open project.   ", "File open failed", MB_OK|MB_ICONSTOP); return;}
-	if(!ReadBinaryFile(fp) )
+	if(!m_Doc.ReadBinaryFile(fp) )
 	{
 		fclose(fp);
 		CString str="Project file is corrupted. Continuing may crash the application.\n"+ FileSaveOpenErrorDescription+ "\n\nDo you want to abort opening this document?";
 		int result=MessageBox(str,"Open project error",MB_ABORTRETRYIGNORE|MB_ICONSTOP); 
 		if(result==IDRETRY)
 		{
-			EmptyAllData();
+			m_Doc.EmptyAllData();
 			goto RetryRead;
 		}
 		if(result==IDABORT)
 		{
 			m_Doc.fpPrj = m_Doc.m_ThrComm.fp = NULL;
-			EmptyAllData();
+			m_Doc.EmptyAllData();
 			THRI_UNLOCK();
 			return;
 		}

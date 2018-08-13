@@ -7,7 +7,7 @@ class CMainFrame;
 
 struct THREAD_COMMON
 {
-	FILE* fp;
+	//FILE* fp;
 	CRegion* pRegEdit;
 	CRegion* pRegNow;
 	double NSigma; //Number of RMS deviation of Y

@@ -1,39 +1,18 @@
 #pragma once 
 #include "StdAfx.h"
+#include <set>
 
 int D2I(double d);
 double I2D(int i);
 
-struct DATA_IN
-{
-int HV;
-int KE_Start;
-int KE_End;
-int Step;
-int Time;   // ¬рем€ измерени€ на точку в мс
-int N_;     // «аданное число сканов
-int Curr_N; // „исло пройденных сканов
-BOOL Off;
-enum class EnergyType
-{
-	KE,
-	BE
-};
-EnergyType KE_BE;
-char N_h_nu; // «десь просто байт
-int DeltaVolts;
-char Comments[256];
-int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
-time_t LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
-};
 
-struct DATA_IN_V1
+struct DATA_IN
 {
 	int HV;
 	int KE_Start;
 	int KE_End;
 	int Step;
-	int Time;   // ¬рем€ измерени€ на точку
+	int Time;   // ¬рем€ измерени€ на точку в мс
 	int N_;     // «аданное число сканов
 	int Curr_N; // „исло пройденных сканов
 	BOOL Off;
@@ -46,12 +25,9 @@ struct DATA_IN_V1
 	char N_h_nu; // «десь просто байт
 	int DeltaVolts;
 	char Comments[256];
-	DATA_IN ToDataIn() const
-	{
-		DATA_IN din {HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu };
-		std::copy(Comments, std::end(Comments), din.Comments);
-		return din;
-	}
+	int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
+	time_t LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
+	std::set<int> PassagesWhenSaveCopy;
 };
 
 //  эш строковых значений региона XPS дл€ отображени€ в таблице

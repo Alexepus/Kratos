@@ -177,6 +177,12 @@
     <ClCompile Include="MfcHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XpsProjectFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DxpsProjectFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ProgNew.rc">
@@ -383,6 +389,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MfcHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XpsProjectFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DxpsProjectFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

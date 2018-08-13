@@ -144,12 +144,8 @@ if(result)
 					return FALSE; 
 				}
 			THRI_LOCK();
-			if(pMainFrame->m_Doc.fpPrj) fclose(pMainFrame->m_Doc.fpPrj); 
-			SaveBinaryFile(fp);
+			pMainFrame->m_Doc.SaveBinaryFile(fp);
 			pMainFrame->m_Doc.m_NeedSave = pMainFrame->m_Doc.NoNeed;
-			//if(pMainFrame->m_Doc.fpPrj) fclose(pMainFrame->m_Doc.fpPrj); 
-			pMainFrame->m_Doc.fpPrj = fp;
-			pMainFrame->m_Doc.m_ThrComm.fp = fp;
 			THRI_UNLOCK();
 			}
 		} // end if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.SaveAs) 
@@ -158,14 +154,14 @@ if(result)
 		// ¬ход в MutexThread происходит при вызове этой функции из OnFileOpenProject
 RetryRead:	fp=fopen(fullpath, "rb+");
 		if(!fp) {AfxMessageBox("Can`t open file"); return FALSE;}
-		if(!ReadBinaryFile(fp) )
+		if(!pMainFrame->m_Doc.ReadBinaryFile(fp) )
 			{
 			fclose(fp);
 			CString str="Project file is corrupted. Continuing may crash the application.\n"+ FileSaveOpenErrorDescription+ "\n\nDo you want to abort opening this document?";
 			int result=pMainFrame->MessageBox(str,"Open project error",MB_ABORTRETRYIGNORE|MB_ICONSTOP); 
 			if(result==IDRETRY)
 			{
-				EmptyAllData();
+				pMainFrame->m_Doc.EmptyAllData();
 				goto RetryRead;
 			}
 			if(result==IDABORT)
