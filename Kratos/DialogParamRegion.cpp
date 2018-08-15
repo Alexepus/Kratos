@@ -595,7 +595,7 @@ void CDialogParamRegion::OnButtonReset()
 	if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data?", "Attention",MB_YESNO) == IDYES)
 	{
 		m_pReg->ResetMeasuredData();
-		SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, m_pReg);
+		m_pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(m_pReg);
 		m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(m_pReg);
 		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
@@ -684,7 +684,7 @@ void CDialogParamRegion::OnBnClickedButtonResetAll()
 		for(CRegion* pReg = CRegion::GetFirst(); pReg != NULL ;pReg = CRegion::GetNext(pReg))
 		{
 			pReg->ResetMeasuredData();
-			SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+			m_pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(m_pReg);
 			m_pMainFrame->m_pRegionWnd->m_pListRegionWnd->UpdateItem(pReg);
 		}
 		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);

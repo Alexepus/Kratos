@@ -168,3 +168,103 @@ void DxpsProjectFile::ReadProject(FILE* fp, int FileVersion)
 		throw;
 	}
 }
+
+void DxpsProjectFile::SaveProject(FILE* fp)
+{
+	/*
+	*** Структура DXPS-файла (Ver.1 (0x13)): ***
+	____________________________________________________________
+	struct key
+	{
+	00			short	KratosKey=KRATOS_KEY=0x0103;
+	02			char	DocumentType=DXPS_TYPE=0xbd;
+	03			char	DocumentVersion=DXPS_VER1=0x13;
+	};
+	04		int	NumberOfRegions;
+	08		DxpsRegPar	<SpecificRegion>Parameters[NumberOfRegions];
+	08+320N	double		ScanTime;
+	16+320N	double		PassedCommonTime;
+	24+320N	int			PassedNumberOfPoints;
+	28+320N	DxpsOutData	OutData[NumberOfPoints];
+	_____________________________________________________________
+	где:
+	struct DxpsRegPar
+	{
+	00			BOOL Off;
+	04			int Type; //0 if "BE Print", 1 if Division Divident/Divisor
+	08			int Divident;
+	12			int Divisor;
+	16			double BE;
+	24			double HV;
+	32			int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
+	36			double Delay; //Задержка перед началом измерений
+	44			double Dwell;	//Время измерения
+	52			int ColorIndex;
+	56			char Comments[256];
+	=312	};
+
+	struct DxpsOutData
+	{
+	int RegionN;
+	double Time;
+	double Freq;
+	};
+	____________________________________________________________________
+
+	*** Структура DXPS-файла (Ver.2 (0x14)): ***
+	____________________________________________________________
+	struct key
+	{
+	00			short	KratosKey=KRATOS_KEY=0x0103;
+	02			char	DocumentType=DXPS_TYPE=0xbd;
+	03			char	DocumentVersion=DXPS_VER2=0x14;
+	};
+	04		int	NumberOfRegions;
+	08		DxpsRegPar	<SpecificRegion>Parameters[NumberOfRegions];
+	08+320N	double		ScanTime;
+	16+320N double      ScanStartDateTime; // Дата/время начала измерения
+	24+320N	double		PassedCommonTime;
+	32+320N	int			PassedNumberOfPoints;
+	36+320N	DxpsOutData	OutData[NumberOfPoints];
+	_____________________________________________________________
+	где:
+	struct DxpsRegPar
+	{
+	00			BOOL Off;
+	04			int Type; //0 if "BE Print", 1 if Division Divident/Divisor
+	08			int Divident;
+	12			int Divisor;
+	16			double BE;
+	24			double HV;
+	32			int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
+	36			double Delay; //Задержка перед началом измерений
+	44			double Dwell;	//Время измерения
+	52			int ColorIndex;
+	56			char Comments[256];
+	=312	};
+
+	struct DxpsOutData
+	{
+	int RegionN;
+	double Time;
+	double Freq;
+	double Tref; // Задаточная температура, может быть NaN, т.е. не задана
+	double Tcur; // Текущая измеренная температура, может быть NaN, т.е. неизвестна
+	};
+	____________________________________________________________________
+
+	Пояснения по записи файла:
+	При изменении параметра региона переписываются все регионы.
+	При изменении количества регионов и очистке данных переписывается весь файл.
+	При прохождении одного скана (проход всех DXPS регионов) дописываются
+	данные всего скана и переписываются пройденное время и количество точек.
+
+	*/
+	UINT ptrCurr = 0;
+	fseek(fp, ptrCurr, SEEK_SET);
+	unsigned char key[4];
+	key[0] = (KRATOS_KEY & 0xff00) >> 8; key[1] = KRATOS_KEY & 0xff; key[2] = DXPS_TYPE; key[3] = DXPS_VER2;
+	ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
+	WriteDxpsRegionsParam(fp);
+	WriteDxpsPoints(fp);
+}

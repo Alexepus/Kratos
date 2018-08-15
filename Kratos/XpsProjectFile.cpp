@@ -3,6 +3,8 @@
 #include "Exceptions.h"
 #include "ProgNew.h"
 
+#define CHECK_FILE_POINTER_FOR_NULL() if (_fpPrj == nullptr) throw EXCEPTION("Ошибка при сохранении проекта. Файл проекта не был открыт: _fpPrj == nullptr.");
+
 #define XPS_VER1 0x13
 #define XPS_VER2 0x14
 #define XPS_VER3 0x15
@@ -57,6 +59,8 @@ void XpsProjectFile::SaveDataInToFile(FILE* fp, CRegion* pReg)
 //Записывает в файл все данные о регионе pReg
 void XpsProjectFile::SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg)
 {
+	CHECK_FILE_POINTER_FOR_NULL();
+
 	SaveDataInToFile(fp, pReg);
 
 	fwrite(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
@@ -66,6 +70,29 @@ void XpsProjectFile::SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg)
 	if (!nextReg || nextReg->m_ptrInFile == currentPos + sizeof(int))
 		return;
 	throw EXCEPTION("Ошибка при сохранении региона. Файл поврежден: неверная запись о смещении следующего региона.");
+}
+
+void XpsProjectFile::SaveProject(FILE* fp)
+{
+	UINT ptrCurr = 0;
+	unsigned char key[4];
+	key[0] = 0x01; key[1] = 0x03; key[2] = 0xbc; key[3] = XPS_VER2;
+	fseek(fp, ptrCurr, SEEK_SET);
+	ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
+	ptrCurr += (UINT) sizeof(int)*fwrite(&CRegion::m_NReg, sizeof(int), 1, fp);
+	for (CRegion* pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
+	{
+		ptrCurr += sizeof(UINT);
+		fwrite(&ptrCurr, sizeof(UINT), 1, fp);
+		pReg->m_ptrInFile = ptrCurr;
+		ptrCurr += (UINT) sizeof(DATA_IN)*fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
+		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
+		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
+		ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
+		ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
+		ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
+			sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+	}
 }
 
 void XpsProjectFile::ReadXpsFileV1(FILE* fp)

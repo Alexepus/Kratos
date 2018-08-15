@@ -7,5 +7,6 @@ public:
 	~DxpsProjectFile();
 
 	void ReadProject(FILE* fp, int FileVersion);
+	void SaveProject(FILE* fp);
 };
 

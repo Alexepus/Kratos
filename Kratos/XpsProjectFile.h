@@ -14,6 +14,7 @@ public:
 	void SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data);
 	void SaveDataInToFile(FILE* fp, CRegion* pReg);
 	void SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg);
+	void SaveProject(FILE* fp);
 
 private:
 	void ReadXpsFileV1(FILE* fp);

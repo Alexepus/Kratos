@@ -96,129 +96,13 @@ return m_DocType;
 #define KRATOS_KEY 0x0103
 #define DXPS_TYPE 0xbd
 
-void SaveProjectFile(FILE* fp)
+void CDoc::SaveProjectFile()
 {
+	FILE* fp = fopen(m_ProjectFile.FullPath, "w+");
 	if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS || theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::NoDoc)
-	{
-		UINT ptrCurr = 0;
-		unsigned char key[4];
-		key[0] = 0x01; key[1] = 0x03; key[2] = 0xbc; key[3] = XPS_VER2;
-		fseek(fp, ptrCurr, SEEK_SET);
-		ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
-		ptrCurr += (UINT) sizeof(int)*fwrite(&CRegion::m_NReg, sizeof(int), 1, fp);
-		for (CRegion* pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
-		{
-			ptrCurr += sizeof(UINT);
-			fwrite(&ptrCurr, sizeof(UINT), 1, fp);
-			pReg->m_ptrInFile = ptrCurr;
-			ptrCurr += (UINT) sizeof(DATA_IN)*fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
-			ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
-			ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
-			ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
-			ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
-			ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
-				sizeof(DATA_OUT), pReg->m_NDataOut, fp);
-		}
-	}
+		XpsProject.SaveProject(fp);
 	else if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::DXPS)
-	{
-		/*
-		*** Структура DXPS-файла (Ver.1 (0x13)): ***
-		____________________________________________________________
-		struct key
-		{
-		00			short	KratosKey=KRATOS_KEY=0x0103;
-		02			char	DocumentType=DXPS_TYPE=0xbd;
-		03			char	DocumentVersion=DXPS_VER1=0x13;
-		};
-		04		int	NumberOfRegions;
-		08		DxpsRegPar	<SpecificRegion>Parameters[NumberOfRegions];
-		08+320N	double		ScanTime;
-		16+320N	double		PassedCommonTime;
-		24+320N	int			PassedNumberOfPoints;
-		28+320N	DxpsOutData	OutData[NumberOfPoints];
-		_____________________________________________________________
-		где:
-		struct DxpsRegPar
-		{
-		00			BOOL Off;
-		04			int Type; //0 if "BE Print", 1 if Division Divident/Divisor
-		08			int Divident;
-		12			int Divisor;
-		16			double BE;
-		24			double HV;
-		32			int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
-		36			double Delay; //Задержка перед началом измерений
-		44			double Dwell;	//Время измерения
-		52			int ColorIndex;
-		56			char Comments[256];
-		=312	};
-
-		struct DxpsOutData
-		{
-		int RegionN;
-		double Time;
-		double Freq;
-		};
-		____________________________________________________________________
-
-		*** Структура DXPS-файла (Ver.2 (0x14)): ***
-		____________________________________________________________
-		struct key
-		{
-		00			short	KratosKey=KRATOS_KEY=0x0103;
-		02			char	DocumentType=DXPS_TYPE=0xbd;
-		03			char	DocumentVersion=DXPS_VER2=0x14;
-		};
-		04		int	NumberOfRegions;
-		08		DxpsRegPar	<SpecificRegion>Parameters[NumberOfRegions];
-		08+320N	double		ScanTime;
-		16+320N double      ScanStartDateTime; // Дата/время начала измерения
-		24+320N	double		PassedCommonTime;
-		32+320N	int			PassedNumberOfPoints;
-		36+320N	DxpsOutData	OutData[NumberOfPoints];
-		_____________________________________________________________
-		где:
-		struct DxpsRegPar
-		{
-		00			BOOL Off;
-		04			int Type; //0 if "BE Print", 1 if Division Divident/Divisor
-		08			int Divident;
-		12			int Divisor;
-		16			double BE;
-		24			double HV;
-		32			int Anode;//0:Al, 1:Mg, 2:He1, 3:He2
-		36			double Delay; //Задержка перед началом измерений
-		44			double Dwell;	//Время измерения
-		52			int ColorIndex;
-		56			char Comments[256];
-		=312	};
-
-		struct DxpsOutData
-		{
-		int RegionN;
-		double Time;
-		double Freq;
-		double Tref; // Задаточная температура, может быть NaN, т.е. не задана
-		double Tcur; // Текущая измеренная температура, может быть NaN, т.е. неизвестна
-		};
-		____________________________________________________________________
-
-		Пояснения по записи файла:
-		При изменении параметра региона переписываются все регионы.
-		При изменении количества регионов и очистке данных переписывается весь файл.
-		При прохождении одного скана (проход всех DXPS регионов) дописываются
-		данные всего скана и переписываются пройденное время и количество точек.
-
-		*/
-		UINT ptrCurr = 0;
-		fseek(fp, ptrCurr, SEEK_SET);
-		unsigned char key[4];
-		key[0] = (KRATOS_KEY & 0xff00) >> 8; key[1] = KRATOS_KEY & 0xff; key[2] = DXPS_TYPE; key[3] = DXPS_VER2;
-		ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
-		WriteDxpsRegionsParam(fp);
-		WriteDxpsPoints(fp);
-	}
+		DxpsProject.SaveProject(fp);
 	fflush(fp);
 }
 
@@ -229,34 +113,28 @@ void CDoc::OpenProjectFile(CString filePath)
 		throw EXCEPTION("Can`t open project file");
 	unsigned char key[4];
 
-	try {
-		if (!fread(key, sizeof(unsigned char), 4, fp)) //return FALSE;
-			throw EXCEPTION("ERROR read 'key' of project file. The file is empty.");
-		int FileVersion = key[3];
-		if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbc) 
-			theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::XPS;
-		else if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbd) 
-			theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::DXPS;
-		else 
-			throw EXCEPTION("This file is not a project file");
+	if (!fread(key, sizeof(unsigned char), 4, fp)) //return FALSE;
+		throw EXCEPTION("ERROR read 'key' of project file. The file is empty.");
+	int FileVersion = key[3];
+	if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbc) 
+		theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::XPS;
+	else if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbd) 
+		theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::DXPS;
+	else 
+		throw EXCEPTION("This file is not a project file");
 
-		if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS)
-			XpsProject.ReadXpsFile(fp, FileVersion);
-		else if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::DXPS)
-			DxpsProject.ReadProject(fp, FileVersion);
+	if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS)
+		XpsProject.ReadXpsFile(fp, FileVersion);
+	else if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::DXPS)
+		DxpsProject.ReadProject(fp, FileVersion);
 		
-		if (!feof(fp)) //must be: eof==0
-		{
-			char ch = '\0';
-			fread(&ch, 1, 1, fp);
-			if (feof(fp)) //must be: eof!=0
-				return;
-			Msg("Warning: Project file has extra data.");
-		}
-	}
-	catch (std::exception& ex)
+	if (!feof(fp)) //must be: eof==0
 	{
-		FileSaveOpenErrorDescription += ex.what();
+		char ch = '\0';
+		fread(&ch, 1, 1, fp);
+		if (feof(fp)) //must be: eof!=0
+			return;
+		Msg("Warning: Project file has extra data.");
 	}
 }
 
