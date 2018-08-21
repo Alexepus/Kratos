@@ -345,7 +345,7 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 		{
 			pMainFrame->m_Doc.m_ThrComm.pRegNow->m_pDataOut[i].y = NewData[i].y;
 		}
-		SaveXpsFullRegionDataToFile(pMainFrame->m_Doc.m_ThrComm.fp, pMainFrame->m_Doc.m_ThrComm.pRegNow);
+		pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(pMainFrame->m_Doc.m_ThrComm.pRegNow);
 	}
 	else
 	{

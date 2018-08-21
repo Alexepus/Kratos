@@ -3,7 +3,7 @@
 #include "Exceptions.h"
 
 extern CProgNewApp theApp;
-CDoc::CDoc()
+CDoc::CDoc() : XpsProject(this), DxpsProject(this)
 {
 sprintf(m_EasyPlotFile.FileName,"");
 sprintf(m_EasyPlotFile.FullPath,"");

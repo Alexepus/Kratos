@@ -1,25 +1,26 @@
 #pragma once
-#include "DxpsRegion.h"
-class CRegion;
+#include "IProjectFilePointerProvider.h"
+#include  "CRegion.h"
 
 class XpsProjectFile
 {
-	FILE* _fpPrj = nullptr;
-
+	IProjectFilePointerProvider* _projectFilePointerProvider;
 public:
-	XpsProjectFile();
+	XpsProjectFile(IProjectFilePointerProvider* projectFilePointerProvider);
 	~XpsProjectFile();
 
 	void ReadXpsFile(FILE* fp, int FileVersion);
-	void SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data);
-	void SaveDataInToFile(FILE* fp, CRegion* pReg);
-	void SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg);
+	void SaveDataOutPointToFile(CRegion* pReg, int N, DATA_OUT* data);
+	void SaveDataInToFile(CRegion* pReg);
+	void SaveXpsFullRegionDataToFile(CRegion* pReg);
 	void SaveProject(FILE* fp);
 
 private:
 	void ReadXpsFileV1(FILE* fp);
 	void ReadXpsFileV2(FILE* fp);
 	void ReadXpsFileV3(FILE* fp);
+
+	FILE* GetFilePointer();
 
 	struct DATA_IN_V3
 	{

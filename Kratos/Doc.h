@@ -11,7 +11,7 @@ char Dir[MAX_PATH + 1];
 int NeedSave;
 };
 
-class CDoc
+class CDoc : public IProjectFilePointerProvider
 {
 public: //members
 	CDoc();

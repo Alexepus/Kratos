@@ -397,6 +397,9 @@
     <ClInclude Include="DxpsProjectFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IProjectFilePointerProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\1.ico">

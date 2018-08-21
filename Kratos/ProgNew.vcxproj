@@ -254,6 +254,7 @@
     <ClInclude Include="HpHardware.h" />
     <ClInclude Include="IHardware.h" />
     <ClInclude Include="IniValues.h" />
+    <ClInclude Include="IProjectFilePointerProvider.h" />
     <ClInclude Include="IPS6.h" />
     <ClInclude Include="KratosHardware.h" />
     <ClInclude Include="ListRegionWnd.h" />

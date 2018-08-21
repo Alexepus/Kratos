@@ -7,15 +7,14 @@
 #define DXPS_VER1 0x13
 #define DXPS_VER2 0x14
 
-DxpsProjectFile::DxpsProjectFile()
+DxpsProjectFile::DxpsProjectFile(IProjectFilePointerProvider* projectFilePointerProvider)
 {
+	_projectFilePointerProvider = projectFilePointerProvider;
 }
 
 
 DxpsProjectFile::~DxpsProjectFile()
 {
-	if (_fpPrj != nullptr)
-		CloseHandle(_fpPrj);
 }
 
 void DxpsProjectFile::ReadProject(FILE* fp, int FileVersion)

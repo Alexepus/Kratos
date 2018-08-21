@@ -1,9 +1,11 @@
 #pragma once
+#include "IProjectFilePointerProvider.h"
+
 class DxpsProjectFile
 {
-	FILE* _fpPrj = nullptr;
+	IProjectFilePointerProvider* _projectFilePointerProvider;
 public:
-	DxpsProjectFile();
+	DxpsProjectFile(IProjectFilePointerProvider* projectFilePointerProvider);
 	~DxpsProjectFile();
 
 	void ReadProject(FILE* fp, int FileVersion);

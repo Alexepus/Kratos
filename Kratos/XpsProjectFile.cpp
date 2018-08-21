@@ -9,25 +9,22 @@
 #define XPS_VER2 0x14
 #define XPS_VER3 0x15
 
-XpsProjectFile::XpsProjectFile()
+XpsProjectFile::XpsProjectFile(IProjectFilePointerProvider* projectFilePointerProvider)
 {
+	_projectFilePointerProvider = projectFilePointerProvider;
 }
-
 
 XpsProjectFile::~XpsProjectFile()
 {
-	if (_fpPrj != nullptr)
-		CloseHandle(_fpPrj);
 }
 
 //Записывает N-ую точку data региона pReg
-void XpsProjectFile::SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA_OUT* data)
+void XpsProjectFile::SaveDataOutPointToFile(CRegion* pReg, int N, DATA_OUT* data)
 {
-	if (!fp)
-		throw EXCEPTION("Writing data point to project file: Pointer to file is NULL");
 	if (!pReg)
 		throw EXCEPTION("Writing data point to project file: Pointer to region is NULL");
 
+	auto fp = GetFilePointer();
 	fseek(fp, (pReg->m_ptrInFile + sizeof(DATA_IN) + 2 * sizeof(time_t) + 2 * sizeof(int) + (N * sizeof(DATA_OUT))),
 		SEEK_SET);
 	fwrite(data, sizeof(DATA_OUT), 1, fp);
@@ -35,13 +32,12 @@ void XpsProjectFile::SaveDataOutPointToFile(FILE* fp, CRegion* pReg, int N, DATA
 }
 
 //Записывает входные параметры региона pReg, время начала и конца, число снятых в нем точек и общее число точек
-void XpsProjectFile::SaveDataInToFile(FILE* fp, CRegion* pReg)
+void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 {
-	if (!fp)
-		throw EXCEPTION("Writing data point to project file: Pointer to file is NULL");
 	if (!pReg)
 		throw EXCEPTION("Writing data point to project file: Pointer to region is NULL");
 
+	auto fp = GetFilePointer();
 	fseek(fp, pReg->m_ptrInFile - sizeof(UINT), SEEK_SET);
 	int currentPos;
 	fread(&currentPos, sizeof(UINT), 1, fp);
@@ -57,11 +53,11 @@ void XpsProjectFile::SaveDataInToFile(FILE* fp, CRegion* pReg)
 }
 
 //Записывает в файл все данные о регионе pReg
-void XpsProjectFile::SaveXpsFullRegionDataToFile(FILE* fp, CRegion* pReg)
+void XpsProjectFile::SaveXpsFullRegionDataToFile(CRegion* pReg)
 {
-	CHECK_FILE_POINTER_FOR_NULL();
+	auto fp = GetFilePointer();
 
-	SaveDataInToFile(fp, pReg);
+	SaveDataInToFile(pReg);
 
 	fwrite(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
 	fflush(fp);
@@ -222,6 +218,11 @@ void XpsProjectFile::ReadXpsFileV2(FILE* fp)
 void XpsProjectFile::ReadXpsFileV3(FILE* fp)
 {
 	
+}
+
+FILE* XpsProjectFile::GetFilePointer()
+{
+	return _projectFilePointerProvider->GetProjectFilePointer();
 }
 
 void XpsProjectFile::ReadXpsFile(FILE* fp, int FileVersion)
