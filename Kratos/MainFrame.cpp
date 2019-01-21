@@ -1388,31 +1388,7 @@ char *strn="";
 ::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
 ::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
 
-FILE *fp;
-RetryRead:
-	fp=fopen((LPCSTR)theApp.Ini.ProjectFile[Index].Value, "rb+");
-	if(!fp) {THRI_UNLOCK(); MessageBox("Cannot open project.   ", "File open failed", MB_OK|MB_ICONSTOP); return;}
-	if(!m_Doc.ReadBinaryFile(fp) )
-	{
-		fclose(fp);
-		CString str="Project file is corrupted. Continuing may crash the application.\n"+ FileSaveOpenErrorDescription+ "\n\nDo you want to abort opening this document?";
-		int result=MessageBox(str,"Open project error",MB_ABORTRETRYIGNORE|MB_ICONSTOP); 
-		if(result==IDRETRY)
-		{
-			m_Doc.EmptyAllData();
-			goto RetryRead;
-		}
-		if(result==IDABORT)
-		{
-			m_Doc.CloseFileIfNeed();
-			m_Doc.EmptyAllData();
-			THRI_UNLOCK();
-			return;
-		}
-		if(result==IDIGNORE)
-			fp=fopen((LPCSTR)theApp.Ini.ProjectFile[Index].Value, "rb+");
-	}
-	m_Doc.fpPrj = fp;
+OpenProjectWithMessageAndRetry(theApp.m_pMainFrame, (LPCSTR)theApp.Ini.ProjectFile[Index].Value);
 	strcpy(m_Doc.m_ProjectFile.FullPath,(LPCSTR)theApp.Ini.ProjectFile[Index].Value);
 	strcpy(m_Doc.m_ProjectFile.FileName,m_Doc.m_ProjectFile.FullPath+theApp.Ini.ProjectFile[Index].Value.ReverseFind('\\')+1);
 

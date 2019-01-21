@@ -138,7 +138,7 @@ void CDoc::OpenFile(CString filePath, FileOpenMode mode)
 {
 	_fpPrj = fopen(filePath.GetString(), mode == FileOpenMode::Existing? "rb+" : "wb+");
 	if (!_fpPrj)
-		throw EXCEPTION((std::string("Can`t open project file: ") + std::strerror(errno)).c_str());
+		throw EXCEPTION_SPECIFIC(FileOpenException, (std::string("Can`t open project file: ") + std::strerror(errno)).c_str());
 }
 
 void CDoc::OpenProjectFile(CString filePath)

@@ -1,22 +1,44 @@
-/*
 #include "stdafx.h"
-#include <string.h>
-#include "ProgNew.h"
-#include "DialogParamRegion.h"
-#include "RegionWnd.h"
-#include "MainFrame.h"
-//#include "RegionWnd.h"
-#include "OpenSaveFun.h"
-//#include "MainFrame.h"
-*/
-#include "stdafx.h"
-#include <limits>
 #include "Main.h"
 #include "Time.h"
+#include "Exceptions.h"
 
 extern CMutex MutexThread;
 extern CProgNewApp theApp;
 CString FileSaveOpenErrorDescription;
+
+BOOL OpenProjectWithMessageAndRetry(CMainFrame* pMainFrame, const char* fullpath)
+{
+RetryRead:
+	try
+	{
+		pMainFrame->m_Doc.OpenProjectFile(fullpath);
+	}
+	catch (FileOpenException &ex)
+	{
+		pMainFrame->MessageBox(ex.what());
+		return FALSE;
+	}
+	catch (std::exception &ex)
+	{
+		auto str = "Project file is corrupted. Continuing may crash the application.\n" + DetailedException::TryGetDetailedWhat(ex) + "\n\nDo you want to abort opening this document?";
+		LogFile(str);
+		int messageBoxChoiñe = pMainFrame->MessageBox(str.c_str(), "Open project error", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
+		if (messageBoxChoiñe == IDRETRY)
+		{
+			pMainFrame->m_Doc.EmptyAllData();
+			goto RetryRead;
+		}
+		if (messageBoxChoiñe == IDABORT)
+		{
+			pMainFrame->m_Doc.EmptyAllData();
+			pMainFrame->m_Doc.CloseFileIfNeed();
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
 //___________________________________________________________________________
 BOOL WindowSaveAsOpen(CMainFrame* pMainFrame)
 {
@@ -27,35 +49,26 @@ if(::IsWindow(pMainFrame->m_pRegionWnd->m_hWnd))
 char fullpath[260]; char filename[260]; char dir[256]; char ext[8];
 FILE_NAME* FN;
 FILE* fp;
-//sprintf(fullpath,"FileName"); sprintf(filename,""); sprintf(dir,"");
 
 OPENFILENAME ofn;
 memset(&ofn, 0, sizeof(OPENFILENAME));
 ofn.lStructSize = sizeof(OPENFILENAME);
-ofn.hwndOwner = pMainFrame->m_hWnd; //NULL; //???????????
+ofn.hwndOwner = pMainFrame->m_hWnd;
 ofn.hInstance = AfxGetInstanceHandle();
 if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.EasyPlot) 
 	{FN = &(pMainFrame->m_Doc.m_EasyPlotFile);
 	ofn.lpstrFilter = "EasyPlot files (*.epx)\0*.epx\0All files (*.*)\0*.*\0";
 	sprintf(ext, "epx");
-	//if(FN->FileName[0]=='\0') 
-		//strcpy(FN->FileName,(LPCSTR)*theApp.Ini.EasyPlotFile.Value);
-	//ofn.lpstrDefExt = ext;
-	//AfxMessageBox(pMainFrame->m_Doc.m_EasyPlotFile.FileName);
 	}
 else if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.EasyPlotMC) 
 	{FN = &(pMainFrame->m_Doc.m_EasyPlotFile);
 	ofn.lpstrFilter = "MultiColomn EasyPlot files (*.epx)\0*.epx\0All files (*.*)\0*.*\0";
 	sprintf(ext, "epx");
-	//if(FN->FileName[0]=='\0') 
-		//strcpy(FN->FileName,(LPCSTR)*theApp.Ini.EasyPlotFile.Value);
 	}
 else if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Origin) 
 	{FN = &(pMainFrame->m_Doc.m_OriginFile);
 	ofn.lpstrFilter = "Origin files (*.dat)\0*.dat\0All files (*.*)\0*.*\0";
 	sprintf(ext, "epx");
-	//if(FN->FileName[0]=='\0') 
-		//strcpy(FN->FileName,(LPCSTR)*theApp.Ini.OriginFile.Value);
 	}
 else // Ïî óìîë÷àíèþ: if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Project) 
 	{FN = &(pMainFrame->m_Doc.m_ProjectFile);	
@@ -64,16 +77,11 @@ else // Ïî óìîë÷àíèþ: if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Proje
 	if(FN->FileName[0]=='\0' && !theApp.Ini.ProjectFile[0].Value.IsEmpty()) 
 		strcpy(FN->FileName,(LPCSTR)theApp.Ini.ProjectFile[0].Value);
 	}
-//CString cstr=FN->FileName;
-//int EndPath=cstr.ReverseFind('\\');
-//cstr.Delete(EndPath+1,cstr.GetLength()-EndPath-1);
-//if(FN->Dir[0]=='\0') 
-		//strcpy(FN->Dir,(LPCSTR)cstr);
-//else {AfxMessageBox("Error WindowSaveAs 2"); return FALSE;}
+
 sprintf(fullpath,"%s",FN->FileName);
 sprintf(filename,"%s",FN->FileName);
 sprintf(dir,"%s",FN->Dir);
-//ofn.lpstrFilter = "Text files (*.txt)\0*.txt\0All files (*.*)\0*.*\0";
+
 ofn.lpstrDefExt = ext;
 ofn.nFilterIndex = 1;
 ofn.lpstrFile = fullpath; //filename;
@@ -86,16 +94,21 @@ if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.SaveAs)
 else ofn.lpstrTitle = "Open";	
 ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_EXPLORER;
 
-
 int result;
 if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.SaveAs) 
-				result = ::GetSaveFileName(&ofn);
-else		result = ::GetOpenFileName(&ofn);
-//sprintf(dir, "%s", fullpath); 
-//dir[ofn.nFileOffset-1]='\0';
+	result = ::GetSaveFileName(&ofn);
+else
+	result = ::GetOpenFileName(&ofn);
+
 ::EnableWindow(pMainFrame->m_pRegionWnd->m_hWnd, TRUE);
 if(result)
 	{
+	sprintf(dir, "%s", fullpath);
+	dir[ofn.nFileOffset - 1] = '\0';
+	sprintf(FN->FullPath, "%s", fullpath);
+	sprintf(FN->FileName, "%s", filename);
+	sprintf(FN->Dir, "%s", dir);
+
 	if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Project)
 		theApp.m_pMainFrame->InsertProjectToRecent(fullpath);
 	else if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.EasyPlot
@@ -104,12 +117,6 @@ if(result)
 	else if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Origin)
 		theApp.Ini.OriginFile.Value=(LPCTSTR)fullpath;
 
-//	sprintf(dir, "%s", fullpath); 
-//	dir[ofn.nFileOffset-1]='\0';
-//	sprintf(FN->FullPath,"%s",fullpath);
-//	sprintf(FN->FileName,"%s",filename);
-//	sprintf(FN->Dir,"%s",dir);
-	
 	if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.SaveAs) 
 		{
 		if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.EasyPlot)
@@ -144,45 +151,11 @@ if(result)
 			THRI_UNLOCK();
 			}
 		} // end if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.SaveAs) 
-	else if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.Open)
-		{
-		// Âõîä â MutexThread ïðîèñõîäèò ïðè âûçîâå ýòîé ôóíêöèè èç OnFileOpenProject
-RetryRead:	fp=fopen(fullpath, "rb+");
-		if(!fp) {AfxMessageBox("Can`t open file"); return FALSE;}
-		if(!pMainFrame->m_Doc.ReadBinaryFile(fp) )
-			{
-			fclose(fp);
-			CString str="Project file is corrupted. Continuing may crash the application.\n"+ FileSaveOpenErrorDescription+ "\n\nDo you want to abort opening this document?";
-			int result=pMainFrame->MessageBox(str,"Open project error",MB_ABORTRETRYIGNORE|MB_ICONSTOP); 
-			if(result==IDRETRY)
-			{
-				pMainFrame->m_Doc.EmptyAllData();
-				goto RetryRead;
-			}
-			if(result==IDABORT)
-			{
-				pMainFrame->m_Doc.fpPrj = pMainFrame->m_Doc.m_ThrComm.fp = NULL;
-				return FALSE;
-			}
-			if(result==IDIGNORE)
-				fp=fopen(fullpath, "rb+");
-			}
-		pMainFrame->m_Doc.fpPrj = fp;
-		} //end else //if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.Open)
-	
-	sprintf(dir, "%s", fullpath); 
-	dir[ofn.nFileOffset-1]='\0';
-	sprintf(FN->FullPath,"%s",fullpath);
-	sprintf(FN->FileName,"%s",filename);
-	sprintf(FN->Dir,"%s",dir);
-	
+	else if (pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.Open)
+		return OpenProjectWithMessageAndRetry(pMainFrame, fullpath);
 	}//end if(result) 
 else
-	{
-	if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.Open)
-		pMainFrame->m_Doc.fpPrj = pMainFrame->m_Doc.m_ThrComm.fp = NULL;
 	return FALSE;
-	}
 
 return TRUE;
 }

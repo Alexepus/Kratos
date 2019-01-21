@@ -301,8 +301,15 @@ try
 		memmove((void*)pReg->m_pDataOut, (void*)NewData, pReg->m_NDataOut * sizeof(DATA_OUT));
 		
 		// Сохраняем в файл все данные по региону: массив DataOut, количество проходов, время и т.п.
-		if (!SaveXpsFullRegionDataToFile(ThComm->fp, pReg))
+		try
+		{
+			ThComm->pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(pReg);
+		}
+		catch(std::exception &ex)
+		{
+			LogFile(DetailedException::TryGetDetailedWhat(ex));
 			LeaveCrSecAndEndThread(ThComm->pMainFrame, pReg, 0, ThreadLock);
+		}
 
 		if (ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort)
 		{
@@ -413,8 +420,6 @@ int NewN=0; //Число считанных импульсов с пересчетки
 CDxpsRegion *pReg=NULL;
 int k=0;
 int NewSimN[50]={120,120,120,120,120,120,120};
-
-DxpsOutList::iterator iter=CDxpsRegion::OutData.end();
 
 bool useUsbCounter = theApp.Ini.UseUsbCounter.Value;
 int& LastRealTime = theApp.Ini.CounterCountTime.Value;
@@ -697,11 +702,8 @@ SkipSwitchedOff:
 		}
 		CDxpsRegion::PassedCommonTime+=StepTime;
 		StepTime=0;
-		WriteDxpsPoints(ThComm->fp);
-		iter=CDxpsRegion::OutData.end();
-		iter--;
+		ThComm->pMainFrame->m_Doc.DxpsProject.WriteDxpsPoints();
 		memset(LastRegDataWritten,0, sizeof(LastRegDataWritten));
-
 	}
 	THRD_UNLOCK();
 

@@ -109,29 +109,21 @@ void CRegionWnd::OnButtonAddNew()
 
 		m_pListRegionWnd->SetNewRegionItem(pReg);
 		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
-		if (m_pMainFrame->m_Doc.fpPrj)
+		if (m_pMainFrame->m_Doc.IsFileOpen())
 		{
 			CWaitCursor WCur;
 
 			THRI_LOCK();
-			fclose(m_pMainFrame->m_Doc.fpPrj);
-			m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
-			if (!m_pMainFrame->m_Doc.fpPrj)
-				m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-			else
-			{
-				SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
-				m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
-				m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-			}
+			m_pMainFrame->m_Doc.SaveProjectFile();
+			m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
 			THRI_UNLOCK();
-		} // end if(m_pMainFrame->m_Doc.fpPrj)			
+		}		
 
 		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 
 		theApp.m_pMainFrame->m_Doc.CheckDocType();
-	} // end if(m_pDlgParamReg->DoModal()==IDOK)
+	}
 	else { delete pReg; } // OK!
 
 	m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
@@ -213,31 +205,19 @@ void CRegionWnd::OnButtonEdit()
 					if (memcmp(&oldDataIn, &pReg->m_DataIn, sizeof(DATA_IN)) != 0)
 						pReg->m_DataIn.LastEditTime = time(nullptr); // Если реально было изменение, то обновляем время редактирования
 
-					if (m_pMainFrame->m_Doc.fpPrj != NULL)
+					if (m_pMainFrame->m_Doc.IsFileOpen())
 					{
 						CWaitCursor WCur;
 						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
 						THRI_LOCK();
 						if (ReWriteFile) // Перезапись всего файла если изменился диапазон или шаг региона
-						{
-							fclose(m_pMainFrame->m_Doc.fpPrj);
-							m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
-							if (!m_pMainFrame->m_Doc.fpPrj)
-								m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-							else
-							{
-								SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
-								m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-								m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
-							}
-						}
+							m_pMainFrame->m_Doc.SaveProjectFile();
 						else //Перезаписать только параметры региона
-						{
-							SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
-						}
+							m_pMainFrame->m_Doc.XpsProject.SaveDataInToFile(pReg);
+
 						THRI_UNLOCK();
 						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-					} // end else if(m_pMainFrame->m_Doc.fpPrj != NULL)
+					}
 
 					if ((::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd)))
 					{
@@ -339,19 +319,12 @@ void CRegionWnd::OnButtonDelete()
 					delete pReg;
 					if (!CRegion::GetFirst())
 						m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-					if (m_pMainFrame->m_Doc.fpPrj)
+					if (m_pMainFrame->m_Doc.IsFileOpen())
 					{
-						fclose(m_pMainFrame->m_Doc.fpPrj);
-						m_pMainFrame->m_Doc.fpPrj = fopen(m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "wb+");
-						if (!m_pMainFrame->m_Doc.fpPrj)
-							m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-						else
-						{
-							SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
-							m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-							m_pMainFrame->m_Doc.m_ThrComm.fp = m_pMainFrame->m_Doc.fpPrj;
-						}
-					}// end if(m_pMainFrame->m_Doc.fpPrj)
+						m_pMainFrame->m_Doc.SaveProjectFile();
+						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
+					}
+
 					THRI_UNLOCK();
 					::SendMessage(m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, (WPARAM)itemIndex, 0);
 					LV_ITEM item;
@@ -481,7 +454,8 @@ void CRegionWnd::OnButtonOnOff()
 				pReg->m_DataIn.Off = FALSE;
 				m_pListRegionWnd->SetOnOffIcon(pReg);
 			}
-			if (m_pMainFrame->m_Doc.fpPrj) SaveDataInToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+			if (m_pMainFrame->m_Doc.IsFileOpen()) 
+				m_pMainFrame->m_Doc.XpsProject.SaveDataInToFile(pReg);
 			THRI_UNLOCK();
 
 			GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
@@ -508,9 +482,9 @@ void CRegionWnd::OnButtonCopy()
 		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.Need;
 	}
 
-	if (m_pMainFrame->m_Doc.fpPrj)
+	if (m_pMainFrame->m_Doc.IsFileOpen())
 	{
-		SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
+		m_pMainFrame->m_Doc.SaveProjectFile();
 		m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
 	}
 
@@ -562,7 +536,8 @@ void CRegionWnd::MoveSelectedRegions(Directions dir)
 	m_pListRegionWnd->SelectItems(regsToMove);
 
 	m_pListRegionWnd->SetFocus();
-	SaveBinaryFile(m_pMainFrame->m_Doc.fpPrj);
+	if (m_pMainFrame->m_Doc.IsFileOpen())
+		m_pMainFrame->m_Doc.SaveProjectFile();
 }
 
 BOOL CRegionWnd::RegisterRegionWndClass()

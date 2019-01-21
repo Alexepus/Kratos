@@ -62,6 +62,15 @@ public:
 	{}
 };
 
+class FileOpenException : public DetailedException
+{
+public:
+	FileOpenException(const char* reason, std::string func, std::string file, int line)
+		: DetailedException(reason, func, file, line)
+	{}
+};
+
+
 #define EXCEPTION(reason) DetailedException(reason, __FUNCSIG__, __FILE__, __LINE__)
 #define EXCEPTION_WITH_INNER(reason, innerException) DetailedException(reason, innerException, __FUNCSIG__, __FILE__, __LINE__)
 #define EXCEPTION_SPECIFIC(exceptionType, reason) exceptionType(reason, __FUNCSIG__, __FILE__, __LINE__)
