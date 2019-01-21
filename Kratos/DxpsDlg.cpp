@@ -424,8 +424,8 @@ void CDxpsDlg::OnKillfocusEditDxpsTime()
 		GetDlgItem(IDC_EDIT_DXPS_TIME)->SetWindowText((LPCSTR)m_EditTime);
 		theApp.WriteProfileString("DxpsDlg", "ScanTime", (LPCSTR)m_EditTime);
 		
-		if(theApp.m_pMainFrame->m_Doc.fpPrj)
-			WriteDxpsRegionsParam(theApp.m_pMainFrame->m_Doc.fpPrj);
+
+		theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
 
 		EditScanTimeActualized=TRUE;
 		GetDlgItem(IDC_EDIT_DXPS_TIME)->Invalidate();
@@ -478,12 +478,8 @@ if(dlg.DoModal()==IDOK)
 	memcpy(&PreferredParams,&CDxpsRegion::GetLast()->Parameters,sizeof(DxpsRegPar));
 	SaveRegionPreferences();
 	//Если проект был сохранен (или открыт), удаляем его и переписываем заново
-	if(theApp.m_pMainFrame->m_Doc.fpPrj)
-	{
-		fclose(theApp.m_pMainFrame->m_Doc.fpPrj);
-		theApp.m_pMainFrame->m_Doc.fpPrj=fopen(theApp.m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "w");
-		SaveBinaryFile(theApp.m_pMainFrame->m_Doc.fpPrj);
-	}
+	if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
+		theApp.m_pMainFrame->m_Doc.SaveProjectFile();
 	else
 		theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
 	THRI_UNLOCK();
@@ -522,8 +518,8 @@ if(dlg.DoModal()==IDOK)
 	memcpy(&PreferredParams,&reg->Parameters,sizeof(DxpsRegPar));
 
 	//Если проект был сохранен (или открыт), переписываем параметры регионов
-	if(theApp.m_pMainFrame->m_Doc.fpPrj)
-		WriteDxpsRegionsParam(theApp.m_pMainFrame->m_Doc.fpPrj);
+	if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
+		theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
 	else
 		theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
 	THRI_UNLOCK();
@@ -616,12 +612,8 @@ THRI_LOCK();
 
 delete reg;
 //Если проект был сохранен (или открыт), удаляем его и переписываем заново
-if(theApp.m_pMainFrame->m_Doc.fpPrj)
-{
-	fclose(theApp.m_pMainFrame->m_Doc.fpPrj);
-	theApp.m_pMainFrame->m_Doc.fpPrj=fopen(theApp.m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "w");
-	SaveBinaryFile(theApp.m_pMainFrame->m_Doc.fpPrj);
-}
+if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+	theApp.m_pMainFrame->m_Doc.SaveProjectFile();
 else
 	theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
 THRI_UNLOCK();
@@ -681,8 +673,8 @@ reg->Parameters.Off=!reg->Parameters.Off;
 SetIcon(Selection,reg->Parameters.ColorIndex,reg->Parameters.Off*2);
 
 //Если проект был сохранен (или открыт), переписываем параметры регионов
-if(theApp.m_pMainFrame->m_Doc.fpPrj)
-	WriteDxpsRegionsParam(theApp.m_pMainFrame->m_Doc.fpPrj);
+if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
+	theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
 else
 	theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
 THRI_UNLOCK();

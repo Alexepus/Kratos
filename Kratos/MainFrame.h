@@ -1,23 +1,6 @@
-#if !defined(AFX_MAINFRAME_H__113AB9B3_6F91_11D5_9A4B_008048FD9845__INCLUDED_)
-#define AFX_MAINFRAME_H__113AB9B3_6F91_11D5_9A4B_008048FD9845__INCLUDED_
-
-#include "ntgraph.h"	// Added by ClassView
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
-// MainFrame.h : header file
-//
+#include "ntgraph.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CMainFrame frame
-
-/*  
-typedef struct _SandTBarHWND
-	{
-		HWND Sb; 
-		HWND Tb;
-	} SandTBarHWND;
-*/
 #define WM_POSTCREATEWINDOW WM_USER+1
 class CRegion;
 class CRegionWnd;
@@ -155,10 +138,3 @@ private:
 	TimeStat _extraTimeStat;
 
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Developer Studio will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_MAINFRAME_H__113AB9B3_6F91_11D5_9A4B_008048FD9845__INCLUDED_)

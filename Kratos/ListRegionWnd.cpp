@@ -137,7 +137,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data ?", "Attention",MB_YESNO) == IDYES)
 			{
 				pReg->ResetMeasuredData();
-				SaveXpsFullRegionDataToFile(m_pMainFrame->m_Doc.fpPrj, pReg);
+				m_pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(pReg);
 				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				UpdateItem(pReg);

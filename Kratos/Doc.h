@@ -13,6 +13,8 @@ int NeedSave;
 
 class CDoc : public IProjectFilePointerProvider
 {
+	FILE* _fpPrj;
+
 public: //members
 	CDoc();
 
@@ -25,6 +27,12 @@ public: //members
 	enum {Need, NoNeed} m_NeedSave;
 	enum {NoDoc=-1, XPS, DXPS} m_DocType;
 
+	enum class FileOpenMode
+	{
+		Existing,
+		ExistingOrNew
+	};
+
 	CViewWnd m_ViewWnd;
 	char m_WindowCaption[MAX_PATH+10];
 	CWinThread* m_pMeasThread;
@@ -36,12 +44,18 @@ public: //members
 	DxpsProjectFile DxpsProject;
 	
 	void OpenProjectFile(CString filePath);
+	/**
+	 * \brief ѕолное пересохранение файла с переоткрытием и с возможным усечением
+	 */
 	void SaveProjectFile();
 	void SaveProjectAs(CString filePath);
 
 	void EmptyAllData();
 
-private:
-	FILE* _fpPrj;
+	bool IsFileOpen() const;
+	FILE* GetProjectFilePointer() override;
+	void CloseFileIfNeed();
 
+private:
+	void OpenFile(CString filePath, FileOpenMode mode);
 };

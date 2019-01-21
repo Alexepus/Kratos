@@ -138,13 +138,8 @@ if(result)
 			}
 		else if(pMainFrame->m_Doc.m_TypeFile == pMainFrame->m_Doc.Project)
 			{
-			fp=fopen(fullpath, "wb+");
-			if(!fp) 
-				{ AfxMessageBox("Can`t save file"); 
-					return FALSE; 
-				}
 			THRI_LOCK();
-			pMainFrame->m_Doc.SaveBinaryFile(fp);
+			pMainFrame->m_Doc.SaveProjectAs(fullpath);
 			pMainFrame->m_Doc.m_NeedSave = pMainFrame->m_Doc.NoNeed;
 			THRI_UNLOCK();
 			}
@@ -173,7 +168,6 @@ RetryRead:	fp=fopen(fullpath, "rb+");
 				fp=fopen(fullpath, "rb+");
 			}
 		pMainFrame->m_Doc.fpPrj = fp;
-		pMainFrame->m_Doc.m_ThrComm.fp = fp;
 		} //end else //if(pMainFrame->m_Doc.m_SaveAsOpen == pMainFrame->m_Doc.Open)
 	
 	sprintf(dir, "%s", fullpath); 

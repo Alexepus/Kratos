@@ -3,22 +3,22 @@
 #include "Exceptions.h"
 
 extern CProgNewApp theApp;
-CDoc::CDoc() : XpsProject(this), DxpsProject(this)
+CDoc::CDoc() : _fpPrj(nullptr), XpsProject(this), DxpsProject(this)
 {
-sprintf(m_EasyPlotFile.FileName,"");
-sprintf(m_EasyPlotFile.FullPath,"");
-sprintf(m_EasyPlotFile.Dir,"");
+	sprintf(m_EasyPlotFile.FileName, "");
+	sprintf(m_EasyPlotFile.FullPath, "");
+	sprintf(m_EasyPlotFile.Dir, "");
 
-m_OriginFile.FullPath[0]='\0';
-m_OriginFile.FileName[0]='\0';
-m_OriginFile.Dir[0]='\0';
+	m_OriginFile.FullPath[0] = '\0';
+	m_OriginFile.FileName[0] = '\0';
+	m_OriginFile.Dir[0] = '\0';
 
-m_EasyPlotFile.NeedSave = Need;
+	m_EasyPlotFile.NeedSave = Need;
 
-m_ProjectFile.FullPath[0]='\0';
-m_ProjectFile.FileName[0]='\0';
-m_ProjectFile.Dir[0]='\0';
-m_ProjectFile.NeedSave = Need;
+	m_ProjectFile.FullPath[0] = '\0';
+	m_ProjectFile.FileName[0] = '\0';
+	m_ProjectFile.Dir[0] = '\0';
+	m_ProjectFile.NeedSave = Need;
 }
 
 int CDoc::CheckDocType()
@@ -93,46 +93,80 @@ else
 return m_DocType;
 }
 
-#define KRATOS_KEY 0x0103
-#define DXPS_TYPE 0xbd
-
+/**
+* \brief ѕолное пересохранение файла с переоткрытием и с возможным усечением
+*/
 void CDoc::SaveProjectFile()
 {
-	FILE* fp = fopen(m_ProjectFile.FullPath, "w+");
+	CloseFileIfNeed();
+	OpenFile(m_ProjectFile.FullPath, FileOpenMode::ExistingOrNew);
 	if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS || theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::NoDoc)
-		XpsProject.SaveProject(fp);
+		XpsProject.SaveProject(_fpPrj);
 	else if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::DXPS)
-		DxpsProject.SaveProject(fp);
-	fflush(fp);
+		DxpsProject.SaveProject(_fpPrj);
+	fflush(_fpPrj);
+	m_NeedSave = NoNeed;
+}
+
+void CDoc::SaveProjectAs(CString filePath)
+{
+	sprintf(m_ProjectFile.FullPath, filePath.GetString());
+	OpenFile(filePath, FileOpenMode::ExistingOrNew);
+	SaveProjectFile();
+}
+
+bool CDoc::IsFileOpen() const
+{
+	return _fpPrj != nullptr;
+}
+
+FILE* CDoc::GetProjectFilePointer()
+{
+	if (_fpPrj == nullptr)
+		throw EXCEPTION("‘айл проекта не открыт или открыт неправильно (CDoc::_fpPrj == nullptr)");
+	return _fpPrj;
+}
+
+void CDoc::CloseFileIfNeed()
+{
+	if (_fpPrj != nullptr)
+		fclose(_fpPrj); // при закрытии внутри делаетс€ fflush
+	_fpPrj = nullptr;
+}
+
+void CDoc::OpenFile(CString filePath, FileOpenMode mode)
+{
+	_fpPrj = fopen(filePath.GetString(), mode == FileOpenMode::Existing? "rb+" : "wb+");
+	if (!_fpPrj)
+		throw EXCEPTION((std::string("Can`t open project file: ") + std::strerror(errno)).c_str());
 }
 
 void CDoc::OpenProjectFile(CString filePath)
 {
-	auto fp = fopen(filePath.GetString(), "rb+");
-	if (!fp) 
-		throw EXCEPTION("Can`t open project file");
+	CloseFileIfNeed();
+	OpenFile(filePath, FileOpenMode::Existing);
 	unsigned char key[4];
 
-	if (!fread(key, sizeof(unsigned char), 4, fp)) //return FALSE;
+	if (!fread(key, sizeof(unsigned char), 4, _fpPrj))
 		throw EXCEPTION("ERROR read 'key' of project file. The file is empty.");
 	int FileVersion = key[3];
-	if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbc) 
+	if (key[0] == KRATOS_KEY0 && key[1] == KRATOS_KEY1 && key[2] == XPS_TYPE)
 		theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::XPS;
-	else if (key[0] == 0x01 && key[1] == 0x03 && key[2] == 0xbd) 
+	else if (key[0] == KRATOS_KEY0 && key[1] == KRATOS_KEY1 && key[2] == DXPS_TYPE)
 		theApp.m_pMainFrame->m_Doc.m_DocType = CDoc::DXPS;
 	else 
-		throw EXCEPTION("This file is not a project file");
+		throw EXCEPTION("This file is not a Kratos project file");
 
 	if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS)
-		XpsProject.ReadXpsFile(fp, FileVersion);
+		XpsProject.ReadXpsFile(_fpPrj, FileVersion);
 	else if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::DXPS)
-		DxpsProject.ReadProject(fp, FileVersion);
+		DxpsProject.ReadProject(_fpPrj, FileVersion);
 		
-	if (!feof(fp)) //must be: eof==0
+	if (!feof(_fpPrj)) //must be: eof==0
 	{
 		char ch = '\0';
-		fread(&ch, 1, 1, fp);
-		if (feof(fp)) //must be: eof!=0
+		fread(&ch, 1, 1, _fpPrj);
+		if (feof(_fpPrj)) //must be: eof!=0
 			return;
 		Msg("Warning: Project file has extra data.");
 	}
@@ -158,79 +192,6 @@ void EmptyAllData()
 	if (CDxpsRegion::OutData.size())
 		Msg("There are still some DXPS data.");
 	theApp.m_pMainFrame->m_pDxpsDlg->FillTable();
-}
-
-//________________________________________________________________________
-//«аписывает входные переметры всех регионов
-BOOL WriteDxpsRegionsParam(FILE *fp)
-{
-	CDxpsRegion *pReg;
-	size_t ptrCurr = 0;
-	fseek(fp, 4, SEEK_SET);
-	int a = CDxpsRegion::GetRegNumber();
-	ptrCurr += sizeof(int)*fwrite(&a, sizeof(int), 1, fp);
-	for (pReg = CDxpsRegion::GetFirst(); pReg != NULL; pReg = CDxpsRegion::GetNext(pReg))
-	{
-		ptrCurr += sizeof(DxpsRegPar)*fwrite(&pReg->Parameters,
-			sizeof(DxpsRegPar), 1, fp);
-	}
-	ptrCurr += sizeof(double)*fwrite(&CDxpsRegion::ScanTime, sizeof(double), 1, fp);
-	ptrCurr += sizeof(double)*fwrite(&CDxpsRegion::ScanStartDateTime, sizeof(double), 1, fp);
-	if (ptrCurr != sizeof(int) + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber() + sizeof(double))
-		return FALSE;
-	return TRUE;
-}
-//________________________________________________________________________
-//ƒописывает данные в конец файла, начина€ с точки, на которую указывает iter.
-//¬ерси€ без iter записывает все точки с позиции начала области данных.
-// роме того, записывает прошедшее врем€ и количество точек
-BOOL WriteDxpsPoints(FILE *fp, DxpsOutList::iterator iter)
-{
-	DxpsOutList::iterator i;
-	const int pos_PassedCommonTime = 24;
-
-	fseek(fp, 0, SEEK_END);
-	for (i = iter; i != CDxpsRegion::OutData.end(); i++)
-	{
-		fwrite(&(*i), sizeof(DxpsOutData), 1, fp);
-	}
-	fseek(fp, pos_PassedCommonTime + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber(), SEEK_SET);
-	fwrite(&CDxpsRegion::PassedCommonTime, sizeof(double), 1, fp);
-	fwrite(&CDxpsRegion::PassedNumberOfPoints, sizeof(int), 1, fp);
-
-	return TRUE;
-}
-
-//________________________________________________________________________
-//«аписывает все точки с позиции начала области данных.
-// роме того, записывает прошедшее врем€ и количество точек
-BOOL WriteDxpsPoints(FILE *fp)
-{
-	DxpsOutList::iterator i;
-
-	size_t Pos;
-	const int pos_PassedCommonTime = 24;
-	Pos = pos_PassedCommonTime + sizeof(CDxpsRegion::PassedCommonTime) + sizeof(CDxpsRegion::PassedNumberOfPoints) +
-		sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber();
-	fseek(fp, Pos, SEEK_SET); // Ќачало блока измеренных данных
-	for (i = CDxpsRegion::OutData.begin(); i != CDxpsRegion::OutData.end(); i++)
-	{
-		if ((i->RegionN>CDxpsRegion::GetRegNumber() - 1) || (i->RegionN<0))
-		{
-			Msg("Out data of incorrect region %i", i->RegionN);
-			return FALSE;
-		}
-		Pos += sizeof(DxpsOutData)*fwrite(&(*i), sizeof(DxpsOutData), 1, fp);
-	}
-	Pos = pos_PassedCommonTime + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber();
-	if (fseek(fp, Pos, SEEK_SET))
-		Msg("fseek fails");
-	Pos += sizeof(double)*fwrite(&CDxpsRegion::PassedCommonTime, sizeof(double), 1, fp);
-	if (CDxpsRegion::OutData.size() != CDxpsRegion::PassedNumberOfPoints)
-		Msg("WriteDxpsPoints: Incorrect number of points.\nOutData.size()=%i, CDxpsRegion::PassedNumberOfPoints=%i", CDxpsRegion::OutData.size(), CDxpsRegion::PassedNumberOfPoints);
-	Pos += sizeof(int)*fwrite(&CDxpsRegion::PassedNumberOfPoints, sizeof(int), 1, fp);
-
-	return TRUE;
 }
 
 void ParseXPSFile(FILE *fp)

@@ -1,5 +1,6 @@
 #pragma once
 #include "IProjectFilePointerProvider.h"
+#include "DxpsRegion.h"
 
 class DxpsProjectFile
 {
@@ -10,5 +11,9 @@ public:
 
 	void ReadProject(FILE* fp, int FileVersion);
 	void SaveProject(FILE* fp);
+
+	BOOL WriteDxpsRegionsParam();
+	BOOL WriteDxpsPoints(DxpsOutList::iterator iter);
+	BOOL WriteDxpsPoints();
 };
 

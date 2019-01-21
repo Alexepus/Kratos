@@ -40,13 +40,11 @@ CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 	m_ScreenDpi = GetDeviceCaps(dc, LOGPIXELSX);
 	DeleteDC(dc);
 
-	m_pRegion = NULL;
+	m_pRegion = nullptr;
 	m_pRegionWnd = new CRegionWnd(this);
-	m_Doc.fpPrj=NULL;
 	m_Doc.m_NeedSave = m_Doc.NoNeed;
-	m_Doc.m_ThrComm.pRegNow = NULL;
-	m_Doc.m_ThrComm.pRegEdit = NULL;
-	m_Doc.m_ThrComm.fp = NULL;
+	m_Doc.m_ThrComm.pRegNow = nullptr;
+	m_Doc.m_ThrComm.pRegEdit = nullptr;
 	m_Doc.m_ThrComm.RetardCalibration=theApp.Ini.RetardCalibration.Value;
 	CWinApp* App=AfxGetApp();
 	m_Doc.m_ThrComm.NSigma = App->GetProfileInt("Measuring Options", "NSigma", 30)/10.;
@@ -509,78 +507,75 @@ void CMainFrame::RecalcClient() // Need del
 
 void CMainFrame::OnFileNew() 
 {
-CSingleLock sLock(&MutexThread);
-
+	CSingleLock sLock(&MutexThread);
 	THRI_LOCK();
-//Дополнительное сохранение
-if(m_Doc.CheckDocType()!=m_Doc.NoDoc)
-	m_Doc.m_NeedSave = m_Doc.Need;
-if(m_Doc.m_NeedSave == m_Doc.Need)
+
+	if(m_Doc.m_NeedSave == m_Doc.Need)
 	{
-	int YesNoCancel = AfxMessageBox("The progect has changed.\n\nDo you want save the changes?", 
-	                                MB_YESNOCANCEL);
-	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
-	else if(YesNoCancel == IDYES)
+		int YesNoCancel = AfxMessageBox("The progect has changed.\n\nDo you want save the changes?", 
+										MB_YESNOCANCEL);
+		if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
+		else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
-		else // if(m_Doc.fpPrj == NULL)
+			if(m_Doc.IsFileOpen()) 
+				m_Doc.SaveProjectFile();
+			else
 			{	
-			m_Doc.m_TypeFile = m_Doc.Project; 
-			m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
-			WindowSaveAsOpen(this);			
+				m_Doc.m_TypeFile = m_Doc.Project; 
+				m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
+				WindowSaveAsOpen(this);			
 			}
-		//return;
 		}
-	}// end if(m_Doc.m_NeedSave == m_Doc.Need)
-if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-m_Doc.fpPrj=NULL;
-m_Doc.m_ThrComm.pRegNow = NULL;
-m_Doc.m_ProjectFile.FullPath[0] = '\0';
-
-m_Doc.m_Graph.m_pDataAll=NULL;
-m_Doc.m_Graph.m_pDataShort=NULL;
-m_Doc.m_Graph.ReDrawAll();
-
-if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
-	{
-	m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
-	m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
-	::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
-	m_Doc.m_ViewWnd.DestroyWindow();
-	}
-m_Doc.EmptyAllData();
-m_Doc.m_NeedSave = m_Doc.NoNeed;
-m_Doc.CheckDocType();
-
-if( !(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd)) ) 
-		OnRegions();
-else
-	{	m_pRegionWnd->ShowWindow(SW_SHOWNORMAL);
-		::SetFocus(m_pRegionWnd->m_hWnd);
 	}
 
-if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
-	{
-	char str[32];
-	sprintf(str, "No Comments");
-	::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
-								0, (LPARAM) str);
-	::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
-								0, (LPARAM) str);
-	}
+	m_Doc.CloseFileIfNeed();
+	m_Doc.m_ThrComm.pRegNow = nullptr;
+	m_Doc.m_ProjectFile.FullPath[0] = '\0';
 
-GetXpsTimeRemainedToEnd(&m_Doc.m_ThrComm.TIME);
-SetStatusTime(m_Doc.m_ThrComm.TIME);
+	m_Doc.m_Graph.m_pDataAll = nullptr;
+	m_Doc.m_Graph.m_pDataShort = nullptr;
+	m_Doc.m_Graph.ReDrawAll();
 
-THRI_UNLOCK();
+	if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd))
+		{
+		m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = nullptr;
+		m_Doc.m_ViewWnd.m_ViewGraph.ReDrawAll();
+		::SendMessage(m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0,0);
+		m_Doc.m_ViewWnd.DestroyWindow();
+		}
+	m_Doc.EmptyAllData();
+	m_Doc.m_NeedSave = m_Doc.NoNeed;
+	m_Doc.CheckDocType();
 
-//Clear status
-char *strn="";
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
-::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
+	if( !(::IsWindow(m_pRegionWnd->m_pListRegionWnd->m_hWnd)) ) 
+			OnRegions();
+	else
+		{	m_pRegionWnd->ShowWindow(SW_SHOWNORMAL);
+			::SetFocus(m_pRegionWnd->m_hWnd);
+		}
 
-sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[no data]");
-SetWindowText(m_Doc.m_WindowCaption);
+	if( (::IsWindow(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd) ))
+		{
+		char str[32];
+		sprintf(str, "No Comments");
+		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT, 
+									0, (LPARAM) str);
+		::SendMessage(this->m_pRegionWnd->m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 
+									0, (LPARAM) str);
+		}
+
+	GetXpsTimeRemainedToEnd(&m_Doc.m_ThrComm.TIME);
+	SetStatusTime(m_Doc.m_ThrComm.TIME);
+
+	THRI_UNLOCK();
+
+	//Clear status
+	char *strn="";
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartCoordinates, (LPARAM) (LPSTR) strn);
+	::SendMessage(theApp.m_pMainFrame->m_hStatusBar, SB_SETTEXT, StatusBarPartXPSParams, (LPARAM) (LPSTR) strn);
+
+	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, "[no data]");
+	SetWindowText(m_Doc.m_WindowCaption);
 }
 
 
@@ -591,11 +586,7 @@ void CMainFrame::OnRegions()
 
 void CMainFrame::OnDestroy() 
 {
-	if(m_Doc.fpPrj != NULL)
-		{
-		fclose(m_Doc.fpPrj);
-		m_Doc.fpPrj = NULL;
-		}
+	m_Doc.CloseFileIfNeed();
 	
 	if(::IsWindow(m_Doc.m_ViewWnd.m_hWnd)) 
 		{
@@ -635,20 +626,21 @@ void CMainFrame::OnFileOpenProject()
 		if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 		else if(YesNoCancel == IDYES)
 			{
-			if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
-			else // if(m_Doc.fpPrj == NULL)
+			if(m_Doc.IsFileOpen()) 
+				m_Doc.SaveProjectFile();
+			else
 				{	
 				m_Doc.m_TypeFile = m_Doc.Project; 
 				m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
 				WindowSaveAsOpen(this);			
 				}
 			}
-		}// end if(m_Doc.m_NeedSave == m_Doc.Need)
-	if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-	m_Doc.m_ThrComm.pRegNow = NULL;
-
-	m_Doc.m_Graph.m_pDataAll=NULL;
-	m_Doc.m_Graph.m_pDataShort=NULL;
+		}
+	m_Doc.CloseFileIfNeed();
+	
+	m_Doc.m_ThrComm.pRegNow = nullptr;
+	m_Doc.m_Graph.m_pDataAll = nullptr;
+	m_Doc.m_Graph.m_pDataShort = nullptr;
 	m_Doc.m_Graph.ReDrawAll();
 	m_pHideWnd->ShowWindow(SW_SHOW);
 	m_Graph.ShowWindow(SW_HIDE);
@@ -787,7 +779,7 @@ void CMainFrame::OnProgrammStart()
 	m_Doc.m_ThrComm.StopContinue = m_Doc.m_ThrComm.Continue;
 	m_Doc.m_ThrComm.pMainFrame = this;
 
-	if(!m_Doc.fpPrj)
+	if(!m_Doc.IsFileOpen())
 		{
 		m_Doc.m_TypeFile = m_Doc.Project; 
 		m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
@@ -918,23 +910,16 @@ void CMainFrame::OnFileSaveProject()
 	CSingleLock sLock(&MutexThread);
 	THRI_LOCK();
 
-	if(!m_Doc.fpPrj) 
-		return;
+	if(!m_Doc.IsFileOpen()) 
+		return;	
 	
-	if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-	m_Doc.fpPrj = fopen(m_Doc.m_ProjectFile.FullPath, "wb+");
-	m_Doc.m_ThrComm.fp = m_Doc.fpPrj;
-	m_Doc.SaveBinaryFile(m_Doc.fpPrj);
-	sprintf(m_Doc.m_WindowCaption, "%s - %s", AppTitle, m_Doc.m_ProjectFile.FileName);
-	SetWindowText(m_Doc.m_WindowCaption);
-	m_Doc.m_NeedSave=m_Doc.NoNeed;
+	m_Doc.SaveProjectFile();
 	THRI_UNLOCK();
 }
 
 void CMainFrame::OnUpdateFileSaveProject(CCmdUI* pCmdUI) 
 {
-	if(m_Doc.fpPrj) pCmdUI->Enable(TRUE);
-	else pCmdUI->Enable(FALSE);
+	pCmdUI->Enable(m_Doc.IsFileOpen());
 }
 
 void CMainFrame::OnUpdateFileNewProject(CCmdUI* pCmdUI) 
@@ -965,19 +950,17 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
-		else // if(m_Doc.fpPrj == NULL)
+		if(m_Doc.IsFileOpen()) m_Doc.SaveProjectFile();
+		else
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
 			m_Doc.m_SaveAsOpen = m_Doc.SaveAs; 
 			WindowSaveAsOpen(this);			
 			}
-		//return;
 		}
 	}// end if(m_Doc.m_NeedSave == m_Doc.Need)
-if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-m_Doc.fpPrj=NULL;
-m_Doc.m_ThrComm.pRegNow = NULL;
+m_Doc.CloseFileIfNeed();
+m_Doc.m_ThrComm.pRegNow = nullptr;
 m_Doc.m_ProjectFile.FullPath[0] = '\0';
 
 m_Doc.m_Graph.m_pDataAll=NULL;
@@ -1365,7 +1348,7 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 	if(YesNoCancel == IDCANCEL) { THRI_UNLOCK(); return;}
 	else if(YesNoCancel == IDYES)
 		{
-		if(m_Doc.fpPrj) m_Doc.SaveBinaryFile(m_Doc.fpPrj);
+		if(m_Doc.IsFileOpen()) m_Doc.SaveProjectFile();
 		else
 			{	
 			m_Doc.m_TypeFile = m_Doc.Project; 
@@ -1375,11 +1358,11 @@ if(m_Doc.m_NeedSave == m_Doc.Need)
 		//return;
 		}
 	}// end if(m_Doc.m_NeedSave == m_Doc.Need)
-if(m_Doc.fpPrj) fclose(m_Doc.fpPrj);
-m_Doc.m_ThrComm.pRegNow = NULL;
+m_Doc.CloseFileIfNeed();
+m_Doc.m_ThrComm.pRegNow = nullptr;
 
-m_Doc.m_Graph.m_pDataAll=NULL;
-m_Doc.m_Graph.m_pDataShort=NULL;
+m_Doc.m_Graph.m_pDataAll = nullptr;
+m_Doc.m_Graph.m_pDataShort = nullptr;
 m_Doc.m_Graph.ReDrawAll();
 m_pHideWnd->ShowWindow(SW_SHOW);
 m_Graph.ShowWindow(SW_HIDE);
@@ -1421,7 +1404,7 @@ RetryRead:
 		}
 		if(result==IDABORT)
 		{
-			m_Doc.fpPrj = m_Doc.m_ThrComm.fp = NULL;
+			m_Doc.CloseFileIfNeed();
 			m_Doc.EmptyAllData();
 			THRI_UNLOCK();
 			return;
@@ -1430,7 +1413,6 @@ RetryRead:
 			fp=fopen((LPCSTR)theApp.Ini.ProjectFile[Index].Value, "rb+");
 	}
 	m_Doc.fpPrj = fp;
-	m_Doc.m_ThrComm.fp = fp;
 	strcpy(m_Doc.m_ProjectFile.FullPath,(LPCSTR)theApp.Ini.ProjectFile[Index].Value);
 	strcpy(m_Doc.m_ProjectFile.FileName,m_Doc.m_ProjectFile.FullPath+theApp.Ini.ProjectFile[Index].Value.ReverseFind('\\')+1);
 

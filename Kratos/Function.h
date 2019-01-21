@@ -49,7 +49,4 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 
 void GetXpsTimeRemainedToEnd(int* TIME);
 void TIME2Str(int TIME, char* str);
-BOOL WriteDxpsRegionsParam(FILE *fp);
-BOOL WriteDxpsPoints(FILE *fp, DxpsOutList::iterator iter);
-BOOL WriteDxpsPoints(FILE *fp);
 long GetRegisterHVCodeFromHV(double HV);

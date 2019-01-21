@@ -301,12 +301,8 @@ void CDxpsParamDlg::OnButtonResetReg()
 
 
 	//Если проект был сохранен (или открыт), удаляем его и переписываем заново
-	if(theApp.m_pMainFrame->m_Doc.fpPrj)
-	{
-		fclose(theApp.m_pMainFrame->m_Doc.fpPrj);
-		theApp.m_pMainFrame->m_Doc.fpPrj=fopen(theApp.m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "w");
-		SaveBinaryFile(theApp.m_pMainFrame->m_Doc.fpPrj);
-	}
+	if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+		theApp.m_pMainFrame->m_Doc.SaveProjectFile();
 	theApp.m_pMainFrame->m_Doc.CheckDocType();
 }
 
@@ -322,13 +318,8 @@ void CDxpsParamDlg::OnButtonResetAll()
 	CDxpsRegion::PassedCommonTime=0;
 	CDxpsRegion::PassedNumberOfPoints=0;
 	//Если проект был сохранен (или открыт), удаляем его и переписываем заново
-	if(theApp.m_pMainFrame->m_Doc.fpPrj)
-	{
-		fclose(theApp.m_pMainFrame->m_Doc.fpPrj);
-		theApp.m_pMainFrame->m_Doc.fpPrj=fopen(theApp.m_pMainFrame->m_Doc.m_ProjectFile.FullPath, "w");
-		SaveBinaryFile(theApp.m_pMainFrame->m_Doc.fpPrj);
-	}
-	//THRI_UNLOCK();
+	if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+		theApp.m_pMainFrame->m_Doc.SaveProjectFile();
 	EnableDisableControls();
 	theApp.m_pMainFrame->m_Doc.CheckDocType();
 }

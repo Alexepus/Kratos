@@ -3,6 +3,7 @@
 #include "DxpsRegion.h"
 #include "Exceptions.h"
 #include "MfcHelper.h"
+#include "ProgNew.h"
 
 #define DXPS_VER1 0x13
 #define DXPS_VER2 0x14
@@ -264,6 +265,78 @@ void DxpsProjectFile::SaveProject(FILE* fp)
 	unsigned char key[4];
 	key[0] = (KRATOS_KEY & 0xff00) >> 8; key[1] = KRATOS_KEY & 0xff; key[2] = DXPS_TYPE; key[3] = DXPS_VER2;
 	ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
-	WriteDxpsRegionsParam(fp);
-	WriteDxpsPoints(fp);
+	WriteDxpsRegionsParam();
+	WriteDxpsPoints();
+}
+
+//________________________________________________________________________
+//Записывает входные параметры всех регионов
+BOOL DxpsProjectFile::WriteDxpsRegionsParam()
+{
+	auto fp = _projectFilePointerProvider->GetProjectFilePointer();
+	fseek(fp, 4, SEEK_SET);
+	int regNumber = CDxpsRegion::GetRegNumber();
+	auto ptrCurr = sizeof(int)*fwrite(&regNumber, sizeof(int), 1, fp);
+	for (auto pReg = CDxpsRegion::GetFirst(); pReg != NULL; pReg = CDxpsRegion::GetNext(pReg))
+	{
+		ptrCurr += sizeof(DxpsRegPar)*fwrite(&pReg->Parameters,
+			sizeof(DxpsRegPar), 1, fp);
+	}
+	ptrCurr += sizeof(double)*fwrite(&CDxpsRegion::ScanTime, sizeof(double), 1, fp);
+	ptrCurr += sizeof(double)*fwrite(&CDxpsRegion::ScanStartDateTime, sizeof(double), 1, fp);
+	if (ptrCurr != sizeof(int) + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber() + sizeof(double))
+		return FALSE;
+	return TRUE;
+}
+
+//________________________________________________________________________
+//Дописывает данные в конец файла, начиная с точки, на которую указывает iter.
+//Версия без iter записывает все точки с позиции начала области данных.
+//Кроме того, записывает прошедшее время и количество точек
+BOOL DxpsProjectFile::WriteDxpsPoints(DxpsOutList::iterator iter)
+{
+	auto fp = _projectFilePointerProvider->GetProjectFilePointer();
+	const int pos_PassedCommonTime = 24;
+
+	fseek(fp, 0, SEEK_END);
+	for (auto i = iter; i != CDxpsRegion::OutData.end(); i++)
+	{
+		fwrite(&(*i), sizeof(DxpsOutData), 1, fp);
+	}
+	fseek(fp, pos_PassedCommonTime + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber(), SEEK_SET);
+	fwrite(&CDxpsRegion::PassedCommonTime, sizeof(double), 1, fp);
+	fwrite(&CDxpsRegion::PassedNumberOfPoints, sizeof(int), 1, fp);
+
+	return TRUE;
+}
+
+//________________________________________________________________________
+//Записывает все точки с позиции начала области данных.
+//Кроме того, записывает прошедшее время и количество точек
+BOOL DxpsProjectFile::WriteDxpsPoints()
+{
+		auto fp = _projectFilePointerProvider->GetProjectFilePointer();
+
+	const int pos_PassedCommonTime = 24;
+	auto Pos = pos_PassedCommonTime + sizeof(CDxpsRegion::PassedCommonTime) + sizeof(CDxpsRegion::PassedNumberOfPoints) +
+		sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber();
+	fseek(fp, Pos, SEEK_SET); // Начало блока измеренных данных
+	for (auto i = CDxpsRegion::OutData.begin(); i != CDxpsRegion::OutData.end(); i++)
+	{
+		if ((i->RegionN>CDxpsRegion::GetRegNumber() - 1) || (i->RegionN<0))
+		{
+			Msg("Out data of incorrect region %i", i->RegionN);
+			return FALSE;
+		}
+		Pos += sizeof(DxpsOutData)*fwrite(&(*i), sizeof(DxpsOutData), 1, fp);
+	}
+	Pos = pos_PassedCommonTime + sizeof(DxpsRegPar)*CDxpsRegion::GetRegNumber();
+	if (fseek(fp, Pos, SEEK_SET))
+		Msg("fseek fails");
+	Pos += sizeof(double)*fwrite(&CDxpsRegion::PassedCommonTime, sizeof(double), 1, fp);
+	if (CDxpsRegion::OutData.size() != CDxpsRegion::PassedNumberOfPoints)
+		Msg("WriteDxpsPoints: Incorrect number of points.\nOutData.size()=%i, CDxpsRegion::PassedNumberOfPoints=%i", CDxpsRegion::OutData.size(), CDxpsRegion::PassedNumberOfPoints);
+	Pos += sizeof(int)*fwrite(&CDxpsRegion::PassedNumberOfPoints, sizeof(int), 1, fp);
+
+	return TRUE;
 }
