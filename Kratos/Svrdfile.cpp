@@ -95,7 +95,7 @@ char Value[16];
 	fprintf(fp, "%14s|", FormatTime(pReg->m_BeginTime, "%d.%m.%Y %H:%M").GetString());
 	fprintf(fp, "%14s|", FormatTime(pReg->m_EndTime, "%d.%m.%Y %H:%M").GetString());
 	fprintf(fp,"\n"); ++NLine;
-	fprintf(fp,";%s\n",pReg->m_DataIn.Comments); ++NLine;
+	fprintf(fp,";%s\n",pReg->m_DataIn.Comments.GetString()); ++NLine;
 return NLine;
 }
 
@@ -161,7 +161,7 @@ int i=0;
 int k=0;
 int m=0;
 BOOL InWord;
-char* str = pReg->m_DataIn.Comments;
+const char* str = pReg->m_DataIn.Comments.GetString();
 
 sprintf(strWord, "%c", '-');
 while(str[i]==' ' || str[i]=='\t') ++i;

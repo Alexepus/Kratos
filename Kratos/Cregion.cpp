@@ -10,6 +10,25 @@ CRegion* CRegion::m_pFirst = nullptr;
 CRegion* CRegion::m_pEnd = nullptr;
 C_h_nu_Info CRegion::h_nu_Info;
 
+bool operator==(const DATA_IN& l, const DATA_IN& r)
+{
+	return l.HV == r.HV
+		&& l.KE_Start == r.KE_Start
+		&& l.KE_End == r.KE_End
+		&& l.Step == r.Step
+		&& l.Time == r.Time
+		&& l.N_ == r.N_
+		&& l.Curr_N == r.Curr_N
+		&& l.Off == r.Off
+		&& l.KE_BE == r.KE_BE
+		&& l.N_h_nu == r.N_h_nu
+		&& l.Comments == r.Comments
+		&& l.Priority == r.Priority
+		&& l.LastEditTime == r.LastEditTime
+		&& l.PassagesWhenSaveCopy == r.PassagesWhenSaveCopy;
+}
+
+
 CRegion::CRegion()
 {
 	m_NDataOut = 0;
@@ -39,8 +58,8 @@ void CRegion::InitNewRegion()
 {
 	ID=CRegion::m_NReg;
 	++m_NReg;
-	memset(&m_DataIn, 0, sizeof(DATA_IN));
 	m_DataIn.N_ = 1;
+	m_DataIn.Curr_N = 0;
 	m_DataIn.Step = D2I(0.1);
 	m_DataIn.KE_Start = D2I(-50.0);
 	m_DataIn.KE_End = D2I(-50.0 + 0.1);
@@ -90,7 +109,7 @@ void CRegion::UpdateStrValues()
 	else  
 		sprintf(str.KE_BE, "%s", "BE");
 	sprintf(str.Name_h_nu, "%s", h_nu_Info.strName_h_nu[m_DataIn.N_h_nu]);
-	str.Comments = m_DataIn.Comments;
+	sprintf(str.Comments, "%s", m_DataIn.Comments.GetString());
 	sprintf(str.Priority, "%i", m_DataIn.Priority);
 }
 

@@ -178,8 +178,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 	pReg->m_DataIn.Step = D2I(pDlgParamReg->m_Step);
 	pReg->m_DataIn.N_ = pDlgParamReg->m_N;
 	pReg->m_DataIn.Time = D2I(pDlgParamReg->m_Time);
-	sprintf(pReg->m_DataIn.Comments, "%s", (LPCSTR)pDlgParamReg->m_Comments);
-	pReg->m_DataIn.Comments[255] = '\0';
+	pReg->m_DataIn.Comments = pDlgParamReg->m_Comments;
 	pReg->m_DataIn.Off = pDlgParamReg->m_Off;
 	pReg->m_DataIn.Priority = pDlgParamReg->m_Priority;
 	if(pDlgParamReg->m_KE_BE == DATA_IN::EnergyType::KE)

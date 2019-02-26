@@ -120,7 +120,7 @@ void XpsProjectFile::ReadXpsFileV1(FILE* fp)
 				throw EXCEPTION(Format("Error read file when reading number of output points in R%i", pReg->ID));
 
 			if (pReg->m_NDataOut<0 || pReg->m_NDataOut>60000)
-				throw EXCEPTION("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut);
+				throw EXCEPTION(Format("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut));
 
 			if (pReg->m_NDataOut)
 			{
@@ -184,7 +184,7 @@ void XpsProjectFile::ReadXpsFileV2(FILE* fp)
 				throw EXCEPTION(Format("Error read file when reading number of output points in R%i", pReg->ID));
 
 			if (pReg->m_NDataOut<0 || pReg->m_NDataOut>60000)
-				throw EXCEPTION("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut);
+				throw EXCEPTION(Format("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut));
 
 			if (pReg->m_NDataOut)
 			{

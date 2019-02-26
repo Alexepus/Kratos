@@ -202,7 +202,7 @@ void CRegionWnd::OnButtonEdit()
 					}
 					auto oldDataIn = pReg->m_DataIn;
 					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
-					if (memcmp(&oldDataIn, &pReg->m_DataIn, sizeof(DATA_IN)) != 0)
+					if (oldDataIn == pReg->m_DataIn)
 						pReg->m_DataIn.LastEditTime = time(nullptr); // Если реально было изменение, то обновляем время редактирования
 
 					if (m_pMainFrame->m_Doc.IsFileOpen())
@@ -226,7 +226,7 @@ void CRegionWnd::OnButtonEdit()
 						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT,
 						              0, (LPARAM)str);
 						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT,
-						              0, (LPARAM)pReg->m_DataIn.Comments);
+						              0, (LPARAM)pReg->m_DataIn.Comments.GetString());
 					}
 
 					GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);

@@ -175,7 +175,7 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 				{ if(pReg->ID == SelectedItem) break;}
 			::SendMessage(m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 0, 
-										(LPARAM) pReg->m_DataIn.Comments);
+										(LPARAM) pReg->m_DataIn.Comments.GetString());
 			if(::IsIconic(m_CommentsWnd.m_hWnd) ) ::ShowWindow(m_CommentsWnd.m_hWnd, SW_RESTORE);
 			::SetForegroundWindow(m_CommentsWnd.m_hWnd);
 			}// end else if(wID == IDC_BUTTON_COMMENTS)
@@ -258,7 +258,7 @@ void CListRegionWnd::OnRButtonDown(UINT nFlags, CPoint point)
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ if(pReg->ID == itemIndex) break;}
 		::SendMessage(m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 0, 
-										(LPARAM) pReg->m_DataIn.Comments);
+										(LPARAM) pReg->m_DataIn.Comments.GetString());
 	}	
 	
 	for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
@@ -309,7 +309,7 @@ void CListRegionWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		for(pReg=CRegion::GetFirst(); pReg!=NULL; pReg=CRegion::GetNext(pReg))
 			{ if(pReg->ID == res) break;}
 		::SendMessage(m_CommentsWnd.m_hWndEdit, WM_SETTEXT, 0, 
-										(LPARAM) pReg->m_DataIn.Comments);
+										(LPARAM) pReg->m_DataIn.Comments.GetString());
 		}	
 
 	CListCtrl::OnLButtonDown(nFlags, point);

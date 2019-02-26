@@ -222,7 +222,7 @@ if(DocType==CDoc::XPS)
 		fprintf(fp, "%17s|", FormatTime(pReg->m_BeginTime, "%d.%m.%Y %H:%M").GetString());
 		fprintf(fp, "%17s|", FormatTime(pReg->m_EndTime, "%d.%m.%Y %H:%M").GetString());
 		fprintf(fp,"\n"); 
-		fprintf(fp,";%s\n",pReg->m_DataIn.Comments); 
+		fprintf(fp,";%s\n",pReg->m_DataIn.Comments.GetString()); 
 
 	}
 
@@ -232,7 +232,7 @@ if(DocType==CDoc::XPS)
 	{
 		if(pReg->m_DataIn.Off)
 			continue;
-		fprintf(fp,"/sa l \"%s\" %i\n",pReg->m_DataIn.Comments, Count);
+		fprintf(fp,"/sa l \"%s\" %i\n",pReg->m_DataIn.Comments.GetString(), Count);
 		Count+=2;
 	}
 

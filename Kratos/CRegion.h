@@ -24,11 +24,13 @@ struct DATA_IN
 	EnergyType KE_BE;
 	char N_h_nu; // «десь просто байт
 	int DeltaVolts;
-	char Comments[256];
+	CString Comments;
 	int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
 	time_t LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
 	std::set<int> PassagesWhenSaveCopy;
 };
+
+bool operator==(const DATA_IN& lhs, const DATA_IN& rhs);
 
 //  эш строковых значений региона XPS дл€ отображени€ в таблице
 struct STR_PAR
@@ -42,7 +44,7 @@ char N_[16];
 char KE_BE[16];
 char Name_h_nu[16];
 char Curr_N[16];
-char* Comments;
+char Comments[256];
 char Priority[16];
 } ;
 

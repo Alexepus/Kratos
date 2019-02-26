@@ -173,7 +173,7 @@ void CDoc::OpenProjectFile(CString filePath)
 }
 
 
-void EmptyAllData()
+void CDoc::EmptyAllData()
 {
 	CRegion* pReg;
 	while ((pReg = CRegion::GetFirst()) != NULL)
@@ -237,7 +237,7 @@ void ParseXPSFile(FILE *fp)
 			fprintf(fpOutput, " KE_BE=%i\n", m_DataIn.KE_BE);
 			fprintf(fpOutput, " N_h_nu=%i\n", (int)m_DataIn.N_h_nu);
 			fprintf(fpOutput, " DeltaVolts=%.3f\n", m_DataIn.DeltaVolts / 1000.);
-			fprintf(fpOutput, " Comments=%s\n", m_DataIn.Comments);
+			fprintf(fpOutput, " Comments=%s\n", m_DataIn.Comments.GetString());
 			pointer += j;
 			fseek(fp, pointer, SEEK_SET);
 			j = sizeof(int)*fread(&m_NDataOutCurr, sizeof(int), 1, fp);

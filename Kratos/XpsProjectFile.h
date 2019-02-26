@@ -69,6 +69,14 @@ private:
 		char Comments[256];
 		int Priority = 10; // Приоритет региона. Регионы сканируются, начиная с минимального приоритета, до выполнения N_ сканов в каждом регионе с данным приоритетом
 		time_t LastEditTime = 0; //Время последнего изменения параметров региона
+		DATA_IN ToDataIn() const
+		{
+			DATA_IN din{ HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu };
+			din.Comments = Comments;
+			din.Priority = Priority;
+			din.LastEditTime = LastEditTime;
+			return din;
+		}
 	};
 
 	struct DATA_IN_V1
@@ -93,7 +101,7 @@ private:
 		DATA_IN ToDataIn() const
 		{
 			DATA_IN din{ HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu };
-			std::copy(Comments, std::end(Comments), din.Comments);
+			din.Comments = Comments;
 			return din;
 		}
 	};
