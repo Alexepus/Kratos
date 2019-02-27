@@ -27,7 +27,7 @@ struct DATA_IN
 	CString Comments;
 	int Priority = 10; // Приоритет региона. Регионы сканируются, начиная с минимального приоритета, до выполнения N_ сканов в каждом регионе с данным приоритетом
 	time_t LastEditTime = 0; //Время последнего изменения параметров региона
-	std::set<int> PassagesWhenSaveCopy;
+	std::vector<short> PassagesWhenSaveCopy;
 };
 
 bool operator==(const DATA_IN& lhs, const DATA_IN& rhs);

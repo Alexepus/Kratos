@@ -26,7 +26,7 @@ public:
 	void SubClassingWindows();
 	DATA_IN::EnergyType m_KE_BE;
 	BOOL m_Off;
-	
+
 	CMainFrame* m_pMainFrame;
 	CDlgKEEnd* m_pDlgKEEnd;
 	CRegion* m_pReg;
@@ -47,6 +47,8 @@ public:
 	int		m_Anode;
 	double	m_Time;
 	int m_Priority;
+	std::vector<short> m_PassagesWhenCopy;
+
 	CString m_BeginTime;
 	CString m_EndTime;
 	CString m_LastEditTime;
@@ -84,8 +86,8 @@ public:
 	afx_msg void OnKillfocusEditMakeCopyAt();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-public:
-
+	
+	void SetPassagesWhenSaveCopy(std::vector<short> passagesWhenSaveCopy);
 };
 
 #endif // !defined(AFX_DIALOGPARAMREGION_H__078C4E45_871B_11D5_9A4B_008048FD9845__INCLUDED_)

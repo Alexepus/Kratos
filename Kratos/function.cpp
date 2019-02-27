@@ -181,6 +181,7 @@ bool SetRegionParametersFromDialog(CRegion* pReg, CDialogParamRegion* pDlgParamR
 	pReg->m_DataIn.Comments = pDlgParamReg->m_Comments;
 	pReg->m_DataIn.Off = pDlgParamReg->m_Off;
 	pReg->m_DataIn.Priority = pDlgParamReg->m_Priority;
+	pReg->m_DataIn.PassagesWhenSaveCopy = pDlgParamReg->m_PassagesWhenCopy;
 	if(pDlgParamReg->m_KE_BE == DATA_IN::EnergyType::KE)
 	{ 
 		pReg->m_DataIn.KE_BE = DATA_IN::EnergyType::KE;

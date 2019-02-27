@@ -374,6 +374,7 @@ BOOL CDialogParamRegion::OnInitDialog()
 	m_KE_BE = m_pReg->m_DataIn.KE_BE;
 	m_Anode = m_pReg->m_DataIn.N_h_nu;
 	m_Priority = m_pReg->m_DataIn.Priority;
+	SetPassagesWhenSaveCopy(m_pReg->m_DataIn.PassagesWhenSaveCopy);
 	m_LastEditTime = m_pReg->m_DataIn.LastEditTime == 0 ? CString() : FormatTime(m_pReg->m_DataIn.LastEditTime, "Last edit: %d.%m.%Y  %H:%M");
 	m_BeginTime = m_pReg->m_BeginTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_BeginTime, "%d.%m.%Y  %H:%M");
 	m_EndTime = m_pReg->m_EndTime == 0? CString("--.--.--  --:--") : FormatTime(m_pReg->m_EndTime, "%d.%m.%Y  %H:%M");
@@ -697,7 +698,12 @@ void CDialogParamRegion::OnKillfocusEditMakeCopyAt()
 {
 	CString text;
 	m_EditMakeCopyAt.GetWindowTextA(text);
-	auto passagesWhenCopy = ParseMakeCopyString(text);
-	text = FormatMakeCopyString(passagesWhenCopy);
+	SetPassagesWhenSaveCopy(ParseMakeCopyString(text));
+}
+
+void CDialogParamRegion::SetPassagesWhenSaveCopy(std::vector<short> passagesWhenSaveCopy)
+{
+	m_PassagesWhenCopy = passagesWhenSaveCopy;
+	auto text = FormatMakeCopyString(m_PassagesWhenCopy);
 	m_EditMakeCopyAt.SetWindowTextA(text);
 }
