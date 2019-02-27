@@ -30,7 +30,8 @@ struct DATA_IN
 	std::vector<short> PassagesWhenSaveCopy;
 };
 
-bool operator==(const DATA_IN& lhs, const DATA_IN& rhs);
+bool operator==(const DATA_IN& l, const DATA_IN& r);
+bool operator!=(const DATA_IN& l, const DATA_IN& r);
 
 // Кэш строковых значений региона XPS для отображения в таблице
 struct STR_PAR

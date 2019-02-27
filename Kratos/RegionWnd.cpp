@@ -202,7 +202,7 @@ void CRegionWnd::OnButtonEdit()
 					}
 					auto oldDataIn = pReg->m_DataIn;
 					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
-					if (oldDataIn == pReg->m_DataIn)
+					if (oldDataIn != pReg->m_DataIn)
 						pReg->m_DataIn.LastEditTime = time(nullptr); // Если реально было изменение, то обновляем время редактирования
 
 					if (m_pMainFrame->m_Doc.IsFileOpen())

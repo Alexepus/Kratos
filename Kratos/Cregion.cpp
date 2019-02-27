@@ -28,6 +28,10 @@ bool operator==(const DATA_IN& l, const DATA_IN& r)
 		&& l.PassagesWhenSaveCopy == r.PassagesWhenSaveCopy;
 }
 
+bool operator!=(const DATA_IN& l, const DATA_IN& r)
+{
+	return !operator==(l, r);
+}
 
 CRegion::CRegion()
 {
