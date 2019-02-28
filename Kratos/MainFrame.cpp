@@ -910,8 +910,11 @@ void CMainFrame::OnFileSaveProject()
 	CSingleLock sLock(&MutexThread);
 	THRI_LOCK();
 
-	if(!m_Doc.IsFileOpen()) 
-		return;	
+	if (!m_Doc.IsFileOpen())
+	{
+		OnFileSaveProjectAs();
+		return;
+	}
 	
 	m_Doc.SaveProjectFile();
 	THRI_UNLOCK();
