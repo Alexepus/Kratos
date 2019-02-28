@@ -44,7 +44,8 @@ void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 	if (currentPos != pReg->m_ptrInFile)
 		throw EXCEPTION("Файл поврежден: неверная запись о смещении хранения настроек региона");
 	fseek(fp, pReg->m_ptrInFile, SEEK_SET);
-	fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
+	auto dataIn = DATA_IN_V2(pReg->m_DataIn);
+	fwrite(&dataIn, sizeof(dataIn), 1, fp);
 	fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
@@ -70,6 +71,11 @@ void XpsProjectFile::SaveXpsFullRegionDataToFile(CRegion* pReg)
 
 void XpsProjectFile::SaveProject(FILE* fp)
 {
+	SaveProjectV2(fp);
+}
+
+void XpsProjectFile::SaveProjectV2(FILE* fp)
+{
 	UINT ptrCurr = 0;
 	unsigned char key[4];
 	key[0] = 0x01; key[1] = 0x03; key[2] = 0xbc; key[3] = XPS_VER2;
@@ -81,7 +87,8 @@ void XpsProjectFile::SaveProject(FILE* fp)
 		ptrCurr += sizeof(UINT);
 		fwrite(&ptrCurr, sizeof(UINT), 1, fp);
 		pReg->m_ptrInFile = ptrCurr;
-		ptrCurr += (UINT) sizeof(DATA_IN)*fwrite(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp);
+		auto dataIn = DATA_IN_V2(pReg->m_DataIn);
+		ptrCurr += (UINT) sizeof(dataIn)*fwrite(&dataIn, sizeof(dataIn), 1, fp);
 		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
 		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 		ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
@@ -89,6 +96,10 @@ void XpsProjectFile::SaveProject(FILE* fp)
 		ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
 			sizeof(DATA_OUT), pReg->m_NDataOut, fp);
 	}
+}
+
+void XpsProjectFile::SaveProjectV3(FILE* fp)
+{
 }
 
 void XpsProjectFile::ReadXpsFileV1(FILE* fp)
@@ -168,8 +179,10 @@ void XpsProjectFile::ReadXpsFileV2(FILE* fp)
 			if (currentPos != pReg->m_ptrInFile)
 				throw EXCEPTION(Format("Неверная позиция региона R%i, записанная в файле. Вероятно, файл поврежден", pReg->ID));
 
-			if (fread(&pReg->m_DataIn, sizeof(DATA_IN), 1, fp) != 1)
+			DATA_IN_V2 dataInV2;
+			if (fread(&dataInV2, sizeof(DATA_IN_V2), 1, fp) != 1)
 				throw EXCEPTION(Format("Error read file when reading region input parameters in R%i", pReg->ID));
+			pReg->m_DataIn = dataInV2.ToDataIn();
 
 			if (fread(&pReg->m_BeginTime, sizeof(time_t), 1, fp) != 1)
 				throw EXCEPTION(Format("Error read file when reading region begin time in R%i", pReg->ID));

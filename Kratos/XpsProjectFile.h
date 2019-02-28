@@ -16,6 +16,9 @@ public:
 	void SaveProject(FILE* fp);
 
 private:
+	void SaveProjectV2(FILE* fp);
+	void SaveProjectV3(FILE* fp);
+
 	void ReadXpsFileV1(FILE* fp);
 	void ReadXpsFileV2(FILE* fp);
 	void ReadXpsFileV3(FILE* fp);
@@ -65,17 +68,35 @@ private:
 		};
 		EnergyType KE_BE;
 		char N_h_nu; // «десь просто байт
-		int DeltaVolts;
+		int DeltaVolts = 0;
 		char Comments[256];
 		int Priority = 10; // ѕриоритет региона. –егионы сканируютс€, начина€ с минимального приоритета, до выполнени€ N_ сканов в каждом регионе с данным приоритетом
 		time_t LastEditTime = 0; //¬рем€ последнего изменени€ параметров региона
 		DATA_IN ToDataIn() const
 		{
-			DATA_IN din{ HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu };
+			DATA_IN din{ HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu, DeltaVolts };
 			din.Comments = Comments;
 			din.Priority = Priority;
 			din.LastEditTime = LastEditTime;
 			return din;
+		}
+		DATA_IN_V2() = default;
+		DATA_IN_V2(DATA_IN &din)
+		{
+			HV = din.HV;
+			KE_Start = din.KE_Start;
+			KE_End = din.KE_End;
+			Step = din.Step;
+			Time = din.Time;
+			N_ = din.N_;
+			Curr_N = din.Curr_N;
+			Off = din.Off;
+			KE_BE = (EnergyType)(int)din.KE_BE;
+			N_h_nu = din.N_h_nu;
+			DeltaVolts = din.DeltaVolts;
+			strcpy_s(Comments, sizeof(Comments), din.Comments.GetString());
+			Priority = din.Priority;
+			LastEditTime = din.LastEditTime;
 		}
 	};
 
