@@ -51,10 +51,10 @@ void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 	fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
+	fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 	std::vector<byte> reserved;
 	reserved.assign(16, 0);
 	fwrite(reserved.data(), sizeof(byte), reserved.size(), fp);
-	fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 	fflush(fp);
 }
 
