@@ -55,7 +55,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_STEP, m_Step);
 	DDV_MinMaxDouble(pDX, m_Step, 2.5e-002, 1517.975);
 	DDX_Text(pDX, IDC_EDIT_COMMENTS, m_Comments);
-	DDV_MaxChars(pDX, m_Comments, 250);
+	DDV_MaxChars(pDX, m_Comments, 255);
 	DDX_CBIndex(pDX, IDC_COMBO_ANODE, m_Anode);
 	DDX_Text(pDX, IDC_EDIT_TIME, m_Time);
 	DDV_MinMaxDouble(pDX, m_Time, 1.e-002, 50);
@@ -585,9 +585,9 @@ void CDialogParamRegion::OnKillFocusEditTime()
 
 void CDialogParamRegion::OnKillFocusEditComments() 
 {
-	char str[64];
+	char str[256];
 	HWND hWndChild = ::GetDlgItem(this->m_hWnd, IDC_EDIT_COMMENTS);
-	::GetWindowText(hWndChild, str, 64);
+	::GetWindowText(hWndChild, str, sizeof(str));
 	m_Comments = str;			
 }
 
@@ -662,7 +662,7 @@ std::vector<short> CDialogParamRegion::ParseMakeCopyString(CString s)
 	std::vector<short> res;
 	for(auto p : parts)
 	{
-		int val = atoi(p.GetString());
+		short val = static_cast<short>(atoi(p.GetString()));
 		if (val > 0)
 			res.push_back(val);
 	}

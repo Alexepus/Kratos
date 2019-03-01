@@ -30,7 +30,7 @@ void CDlgCommentsEdit::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDlgCommentsEdit)
 	DDX_Text(pDX, IDC_EDIT, m_strComments);
-	DDV_MaxChars(pDX, m_strComments, 250);
+	DDV_MaxChars(pDX, m_strComments, 255);
 	//}}AFX_DATA_MAP
 }
 
