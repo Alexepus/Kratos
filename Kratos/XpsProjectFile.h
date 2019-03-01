@@ -1,10 +1,13 @@
 #pragma once
 #include "IProjectFilePointerProvider.h"
 #include  "CRegion.h"
+#include "Exceptions.h"
 
 class XpsProjectFile
 {
 	IProjectFilePointerProvider* _projectFilePointerProvider;
+	int _version = 0;
+	const int SupportedVersion = 3;
 public:
 	XpsProjectFile(IProjectFilePointerProvider* projectFilePointerProvider);
 	~XpsProjectFile();
@@ -22,7 +25,7 @@ private:
 	void ReadXpsFileV1(FILE* fp);
 	void ReadXpsFileV2(FILE* fp);
 	void ReadXpsFileV3(FILE* fp);
-
+	void FullResaveIfVersionConflicts();
 	FILE* GetFilePointer();
 
 	struct DATA_IN_V3
@@ -48,7 +51,41 @@ private:
 		time_t LastEditTime = 0; //Время последнего изменения параметров региона
 		short CountOfSaveCopyPoints;
 		short PassagesWhenSaveCopy[30];
-		char Reserved[16];
+		byte Reserved[256];
+
+		DATA_IN ToDataIn() const
+		{
+			DATA_IN din{ HV, KE_Start, KE_End, Step, Time, N_, Curr_N, Off, (DATA_IN::EnergyType)(int)KE_BE, N_h_nu, DeltaVolts };
+			din.Comments = Comments;
+			din.Priority = Priority;
+			din.LastEditTime = LastEditTime;
+			if (CountOfSaveCopyPoints < 0 || CountOfSaveCopyPoints > sizeof(PassagesWhenSaveCopy))
+				throw EXCEPTION("Из файла проекта считано неверное значение CountOfSaveCopyPoints");
+			din.PassagesWhenSaveCopy.assign(&PassagesWhenSaveCopy[0], &PassagesWhenSaveCopy[CountOfSaveCopyPoints]);
+			return din;
+		}
+
+		DATA_IN_V3() = default;
+		DATA_IN_V3(DATA_IN &din)
+		{
+			HV = din.HV;
+			KE_Start = din.KE_Start;
+			KE_End = din.KE_End;
+			Step = din.Step;
+			Time = din.Time;
+			N_ = din.N_;
+			Curr_N = din.Curr_N;
+			Off = din.Off;
+			KE_BE = (EnergyType)(int)din.KE_BE;
+			N_h_nu = din.N_h_nu;
+			DeltaVolts = din.DeltaVolts;
+			strcpy_s(Comments, sizeof(Comments), din.Comments.GetString());
+			Priority = din.Priority;
+			LastEditTime = din.LastEditTime;
+			CountOfSaveCopyPoints = static_cast<short>(din.PassagesWhenSaveCopy.size());
+			memcpy_s(PassagesWhenSaveCopy, sizeof(PassagesWhenSaveCopy)*sizeof(short), din.PassagesWhenSaveCopy.data(), din.PassagesWhenSaveCopy.size() * sizeof(short));
+			memset(Reserved, 0, sizeof(Reserved));
+		}
 	};
 
 	struct DATA_IN_V2

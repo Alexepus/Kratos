@@ -47,7 +47,7 @@ public: //members
 	/**
 	 * \brief ѕолное пересохранение файла с переоткрытием и с возможным усечением
 	 */
-	void SaveProjectFile();
+	void SaveProjectFile() override;
 	void SaveProjectAs(CString filePath);
 
 	void EmptyAllData();

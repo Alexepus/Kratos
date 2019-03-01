@@ -23,6 +23,7 @@ void XpsProjectFile::SaveDataOutPointToFile(CRegion* pReg, int N, DATA_OUT* data
 {
 	if (!pReg)
 		throw EXCEPTION("Writing data point to project file: Pointer to region is NULL");
+	FullResaveIfVersionConflicts();
 
 	auto fp = GetFilePointer();
 	fseek(fp, (pReg->m_ptrInFile + sizeof(DATA_IN) + 2 * sizeof(time_t) + 2 * sizeof(int) + (N * sizeof(DATA_OUT))),
@@ -36,6 +37,7 @@ void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 {
 	if (!pReg)
 		throw EXCEPTION("Writing data point to project file: Pointer to region is NULL");
+	FullResaveIfVersionConflicts();
 
 	auto fp = GetFilePointer();
 	fseek(fp, pReg->m_ptrInFile - sizeof(UINT), SEEK_SET);
@@ -44,11 +46,14 @@ void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 	if (currentPos != pReg->m_ptrInFile)
 		throw EXCEPTION("Файл поврежден: неверная запись о смещении хранения настроек региона");
 	fseek(fp, pReg->m_ptrInFile, SEEK_SET);
-	auto dataIn = DATA_IN_V2(pReg->m_DataIn);
+	auto dataIn = DATA_IN_V3(pReg->m_DataIn);
 	fwrite(&dataIn, sizeof(dataIn), 1, fp);
 	fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
 	fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
+	std::vector<byte> reserved;
+	reserved.assign(16, 0);
+	fwrite(reserved.data(), sizeof(byte), reserved.size(), fp);
 	fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
 	fflush(fp);
 }
@@ -56,9 +61,9 @@ void XpsProjectFile::SaveDataInToFile(CRegion* pReg)
 //Записывает в файл все данные о регионе pReg
 void XpsProjectFile::SaveXpsFullRegionDataToFile(CRegion* pReg)
 {
-	auto fp = GetFilePointer();
-
 	SaveDataInToFile(pReg);
+
+	auto fp = GetFilePointer();
 
 	fwrite(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
 	fflush(fp);
@@ -71,11 +76,17 @@ void XpsProjectFile::SaveXpsFullRegionDataToFile(CRegion* pReg)
 
 void XpsProjectFile::SaveProject(FILE* fp)
 {
-	SaveProjectV2(fp);
+	if(SupportedVersion == 2)
+		SaveProjectV2(fp);
+	else if(SupportedVersion == 3)
+		SaveProjectV3(fp);
+	else
+		throw EXCEPTION("Ошибка при сохранении. Непонятна поддерживаемая версия формата.");
 }
 
 void XpsProjectFile::SaveProjectV2(FILE* fp)
 {
+	_version = 2;
 	UINT ptrCurr = 0;
 	unsigned char key[4];
 	key[0] = 0x01; key[1] = 0x03; key[2] = 0xbc; key[3] = XPS_VER2;
@@ -100,10 +111,35 @@ void XpsProjectFile::SaveProjectV2(FILE* fp)
 
 void XpsProjectFile::SaveProjectV3(FILE* fp)
 {
+	_version = 3;
+	UINT ptrCurr = 0;
+	unsigned char key[4];
+	key[0] = 0x01; key[1] = 0x03; key[2] = 0xbc; key[3] = XPS_VER3;
+	fseek(fp, ptrCurr, SEEK_SET);
+	ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
+	ptrCurr += (UINT) sizeof(int)*fwrite(&CRegion::m_NReg, sizeof(int), 1, fp);
+	for (CRegion* pReg = CRegion::GetFirst(); pReg != NULL; pReg = CRegion::GetNext(pReg))
+	{
+		ptrCurr += sizeof(UINT);
+		fwrite(&ptrCurr, sizeof(UINT), 1, fp);
+		pReg->m_ptrInFile = ptrCurr;
+		auto dataIn = DATA_IN_V3(pReg->m_DataIn);
+		ptrCurr += (UINT) sizeof(dataIn)*fwrite(&dataIn, sizeof(dataIn), 1, fp);
+		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_BeginTime, sizeof(time_t), 1, fp);
+		ptrCurr += (UINT) sizeof(time_t)*fwrite(&pReg->m_EndTime, sizeof(time_t), 1, fp);
+		ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOutCurr, sizeof(int), 1, fp);
+		ptrCurr += (UINT) sizeof(int)*fwrite(&pReg->m_NDataOut, sizeof(int), 1, fp);
+		std::vector<byte> reserved;
+		reserved.assign(16, 0x0);
+		ptrCurr += (UINT) sizeof(byte)*fwrite(reserved.data(), sizeof(byte), reserved.size(), fp);
+		ptrCurr += (UINT) sizeof(DATA_OUT)*fwrite(pReg->m_pDataOut,
+			sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+	}
 }
 
 void XpsProjectFile::ReadXpsFileV1(FILE* fp)
 {
+	_version = 1;
 	int NReg;
 	if (fread(&NReg, sizeof(int), 1, fp) != 1)
 		throw EXCEPTION("Error read file when reading number of regions");
@@ -164,6 +200,7 @@ void XpsProjectFile::ReadXpsFileV1(FILE* fp)
 
 void XpsProjectFile::ReadXpsFileV2(FILE* fp)
 {
+	_version = 2;
 	int NReg;
 	if (fread(&NReg, sizeof(int), 1, fp) != 1)
 		throw EXCEPTION("Error read file when reading number of regions");
@@ -230,7 +267,79 @@ void XpsProjectFile::ReadXpsFileV2(FILE* fp)
 
 void XpsProjectFile::ReadXpsFileV3(FILE* fp)
 {
-	
+	_version = 3;
+	int NReg;
+	if (fread(&NReg, sizeof(int), 1, fp) != 1)
+		throw EXCEPTION("Error read file when reading number of regions");
+
+	for (int i = 0; i < NReg; ++i)
+	{
+		CRegion* pReg = new CRegion;
+		if (pReg != NULL)
+		{
+			if (fread(&pReg->m_ptrInFile, sizeof(UINT), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading pointer to file location in R%i", pReg->ID));
+			int currentPos = ftell(fp);
+			if (currentPos != pReg->m_ptrInFile)
+				throw EXCEPTION(Format("Неверная позиция региона R%i, записанная в файле. Вероятно, файл поврежден", pReg->ID));
+
+			DATA_IN_V3 dataInV3;
+			if (fread(&dataInV3, sizeof(DATA_IN_V3), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading region input parameters in R%i", pReg->ID));
+			pReg->m_DataIn = dataInV3.ToDataIn();
+
+			if (fread(&pReg->m_BeginTime, sizeof(time_t), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading region begin time in R%i", pReg->ID));
+
+			if (fread(&pReg->m_EndTime, sizeof(time_t), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading region begin time in R%i", pReg->ID));
+
+			if (fread(&pReg->m_NDataOutCurr, sizeof(int), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading current point number in R%i", pReg->ID));
+
+			if (fread(&pReg->m_NDataOut, sizeof(int), 1, fp) != 1)
+				throw EXCEPTION(Format("Error read file when reading number of output points in R%i", pReg->ID));
+
+			if (pReg->m_NDataOut < 0 || pReg->m_NDataOut>60000)
+				throw EXCEPTION(Format("Region R%i: incorrect number of data points (%i). ", pReg->ID + 1, pReg->m_NDataOut));
+
+			byte reserved[16];
+			if (fread(reserved, sizeof(reserved), sizeof(byte), fp) != 1)
+				throw EXCEPTION(Format("Error read file when reserved space in R%i", pReg->ID));
+
+			if (pReg->m_NDataOut)
+			{
+				pReg->m_pDataOut = (DATA_OUT*)malloc(pReg->m_NDataOut * sizeof(DATA_OUT));
+				if (pReg->m_pDataOut != NULL)
+				{
+					memset(pReg->m_pDataOut, 0, pReg->m_NDataOut * sizeof(DATA_OUT));
+					int Read = fread(pReg->m_pDataOut, sizeof(DATA_OUT), pReg->m_NDataOut, fp);
+					if (Read != pReg->m_NDataOut)
+					{
+						throw EXCEPTION(Format("Ошибка при чтении данных региона (Region R%i: open %i data points, need %i. Current point measured: %i)",
+							pReg->ID + 1, Read, pReg->m_NDataOut, pReg->m_NDataOutCurr));
+					}
+				}
+				else
+				{
+					delete pReg;
+					throw EXCEPTION(Format("Can`t alloc memory for DataOut of region number %i", CRegion::m_NReg).GetString());
+				}
+			}
+
+			if (pReg->m_DataIn.N_h_nu < 0) pReg->m_DataIn.N_h_nu = 0;
+			if (pReg->m_DataIn.N_h_nu > 3) pReg->m_DataIn.N_h_nu = 3;
+			pReg->UpdateStrValues();
+		}  // end if(pReg != NULL)
+		else
+			throw EXCEPTION(Format("Can`t alloc memory for object CRegion number %i", CRegion::m_NReg + 1).GetString());
+	}
+}
+
+void XpsProjectFile::FullResaveIfVersionConflicts()
+{
+	if (_version != SupportedVersion)
+		_projectFilePointerProvider->SaveProjectFile();
 }
 
 FILE* XpsProjectFile::GetFilePointer()

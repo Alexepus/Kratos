@@ -9,5 +9,6 @@ class IProjectFilePointerProvider
 {
 public:
 	virtual FILE* GetProjectFilePointer() = 0;
+	virtual void SaveProjectFile() = 0;
 	virtual ~IProjectFilePointerProvider(){}
 };
