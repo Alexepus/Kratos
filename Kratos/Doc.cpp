@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Main.h"
 #include "Exceptions.h"
+#include "BackupFileManager.h"
 
 extern CProgNewApp theApp;
 CDoc::CDoc() : _fpPrj(nullptr), XpsProject(this), DxpsProject(this)
@@ -99,6 +100,7 @@ return m_DocType;
 void CDoc::SaveProjectFile()
 {
 	CloseFileIfNeed();
+	CBackupFileManager backup(m_ProjectFile.FullPath);
 	OpenFile(m_ProjectFile.FullPath, FileOpenMode::ExistingOrNew);
 	if (theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::XPS || theApp.m_pMainFrame->m_Doc.m_DocType == CDoc::NoDoc)
 		XpsProject.SaveProject(_fpPrj);
@@ -106,6 +108,7 @@ void CDoc::SaveProjectFile()
 		DxpsProject.SaveProject(_fpPrj);
 	fflush(_fpPrj);
 	m_NeedSave = NoNeed;
+	backup.DeleteBackup();
 }
 
 void CDoc::SaveProjectAs(CString filePath)

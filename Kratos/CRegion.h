@@ -28,6 +28,11 @@ struct DATA_IN
 	int Priority = 10; // Приоритет региона. Регионы сканируются, начиная с минимального приоритета, до выполнения N_ сканов в каждом регионе с данным приоритетом
 	time_t LastEditTime = 0; //Время последнего изменения параметров региона
 	std::vector<short> PassagesWhenSaveCopy;
+
+	bool PassagesWhenSaveCopyContain(int passage)
+	{
+		return std::find(PassagesWhenSaveCopy.begin(), PassagesWhenSaveCopy.end(), static_cast<short>(passage)) != PassagesWhenSaveCopy.end();
+	}
 };
 
 bool operator==(const DATA_IN& l, const DATA_IN& r);

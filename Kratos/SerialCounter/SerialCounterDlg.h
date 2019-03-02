@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	std::auto_ptr<SerialCounterUnit> m_counterUnit;
+	std::unique_ptr <SerialCounterUnit> m_counterUnit;
 	bool m_firstActivating;
 	bool m_portChanged;
 	bool m_disableMsgBox;

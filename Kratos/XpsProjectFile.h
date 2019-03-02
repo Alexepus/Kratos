@@ -79,6 +79,8 @@ private:
 			KE_BE = (EnergyType)(int)din.KE_BE;
 			N_h_nu = din.N_h_nu;
 			DeltaVolts = din.DeltaVolts;
+			if (din.Comments.GetLength() > sizeof(Comments) - 1)
+				din.Comments = din.Comments.Left(sizeof(Comments) - 1);
 			strcpy_s(Comments, sizeof(Comments), din.Comments.GetString());
 			Priority = din.Priority;
 			LastEditTime = din.LastEditTime;

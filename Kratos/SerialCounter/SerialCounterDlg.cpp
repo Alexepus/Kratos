@@ -17,7 +17,7 @@ IMPLEMENT_DYNAMIC(CSerialCounterDlg, CDialog)
 CSerialCounterDlg::CSerialCounterDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSerialCounterDlg::IDD, pParent), m_firstActivating(true), m_portChanged(false),m_disableMsgBox(false)
 {
-	m_counterUnit = std::auto_ptr<SerialCounterUnit>(new SerialCounterUnit(&theApp.m_AdamCom));
+	m_counterUnit = std::make_unique<SerialCounterUnit>(&theApp.m_AdamCom);
 }
 
 CSerialCounterDlg::~CSerialCounterDlg()
