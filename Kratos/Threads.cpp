@@ -312,8 +312,8 @@ try
 					&& copiedReg->m_DataIn.Comments[copiedReg->m_DataIn.Comments.GetLength() - 1] != ' ')
 					copiedReg->m_DataIn.Comments += " ";
 				copiedReg->m_DataIn.Comments += Format("%i scans", copiedReg->m_DataIn.Curr_N);
+				copiedReg->m_DataIn.N_ = copiedReg->m_DataIn.Curr_N;
 				copiedReg->UpdateStrValues();
-				copiedReg->m_DataIn.Off = true;
 				ThComm->pMainFrame->m_pRegionWnd->m_pListRegionWnd->SetNewRegionItem(copiedReg);
 				ThComm->pMainFrame->m_Doc.SaveProjectFile();
 			}
