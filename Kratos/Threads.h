@@ -1,7 +1,9 @@
 #ifndef _THREADS_H_INCLUDED_
 #define _THREADS_H_INCLUDED_
 #include "CRegion.h"
+#include <map>
 #include "MeasureSpeedAnalyzer.h"
+#include "DxpsRegion.h"
 
 class CMainFrame;
 
@@ -31,5 +33,8 @@ struct THREAD_COMMON
 
 UINT MeasuringThread(LPVOID pParam);
 UINT DxpsThread(LPVOID pParam);
+
+// Рассчитать значения Dxps-регионов типа DIV, которые берутся их соотношения других регионов
+void CalcDivDxpsRegionData(std::map<int, DxpsOutData> &LastRegData, std::function<void(DxpsOutData)> onOutDataAddedFunc);
 
 #endif //_THREADS_H_INCLUDED_ 

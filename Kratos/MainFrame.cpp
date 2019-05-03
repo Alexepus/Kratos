@@ -30,10 +30,7 @@ UINT wm_CurrentTempMessage=RegisterWindowMessage("RemoteCurrentTemp");
 
 CMainFrame::CMainFrame() : m_pHideWnd(0), m_ScreenDpi(96)
 {
-	if(!theApp.Ini.HighPressureMode.Value)
-		strcpy(AppTitle, "KRATOS");
-	else
-		strcpy(AppTitle, "HP");
+	strcpy(AppTitle, GetAppTitle());
 	strcpy(m_Doc.m_WindowCaption, AppTitle);
 	
 	HDC dc = CreateDC("DISPLAY", NULL, NULL, NULL);
@@ -190,6 +187,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(GetExStyle() & WS_EX_CLIENTEDGE) 
 		ModifyStyleEx(WS_EX_CLIENTEDGE,0,SWP_FRAMECHANGED);
 	::SetClassLong(this->m_hWnd, GCL_HBRBACKGROUND, (LONG) GetStockObject(LTGRAY_BRUSH));
+	CDxpsRegion::ScanTime = theApp.Ini.DxpsLastScanTime.Value;
 	m_bSynchronousResize = TRUE; // Проигнорируем настройки размеров окна DxpsDlg
 	m_pDxpsDlg->Create();
 	m_bSynchronousResize = FALSE;
@@ -241,7 +239,6 @@ BOOL CMainFrame::CreateClient(LPCREATESTRUCT lpcs)
 	ULONG B=( ((GetSysColor(COLOR_3DFACE)&0xff) + (GetSysColor(COLOR_3DHILIGHT)&0xff)) /2);
 	
     m_Graph.SetControlFrameColor(R+G+B);
-	CDxpsRegion::ScanTime=atof(theApp.GetProfileString("DxpsDlg", "ScanTime", "30"));
 	m_Graph.SetRange(0, 1/24./60./60.*CDxpsRegion::ScanTime, 0,100);
 	m_Graph.SetYGridNumber(10);
 	m_Graph.SetXTime(TRUE);
@@ -325,7 +322,7 @@ void CMainFrame::SetStatusTime(int milliSeconds, bool isDefined)
 	{
 		TIME2Str(milliSeconds, str);
 		s = str;
-		if (m_Doc.CheckDocType() == CDoc::XPS)
+		if (m_Doc.m_DocType == CDoc::XPS)
 		{
 			_extraTimeStat = GetExtraTimeExpectedByStats();
 			s += " +" + FormatSecondsTo2TimeDigits(_extraTimeStat.SecondsMathExpectation);

@@ -29,7 +29,6 @@ public:
 	void FillTableRow(int Row, DxpsRegPar* Param);
 	void MoveControls();
 	BOOL Create();
-	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	CDxpsDlg(CWnd* pParent = NULL);   // standard constructor
 	DxpsRegPar PreferredParams;
 // Dialog Data
@@ -59,7 +58,7 @@ protected:
 	HICON m_hIcon;
 	// Generated message map functions
 	//{{AFX_MSG(CDxpsDlg)
-	virtual BOOL OnInitDialog();
+	virtual BOOL OnInitDialog() override;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDblclkListDxps(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnRclickListDxps(NMHDR* pNMHDR, LRESULT* pResult);
@@ -74,8 +73,6 @@ protected:
 	afx_msg void OnRootEdit();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnButtonDxpsOnoff();
-	afx_msg void OnPaint();
-	afx_msg void OnButtonDxpsView();
 	afx_msg void OnChangeEditDxpsTime();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnButtonDxpsClose();

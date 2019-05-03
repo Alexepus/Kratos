@@ -70,8 +70,6 @@ BEGIN_MESSAGE_MAP(CDxpsDlg, CDialog)
 	ON_COMMAND(ID_ROOT_EDIT, OnRootEdit)
 	ON_WM_SHOWWINDOW()
 	ON_BN_CLICKED(IDC_BUTTON_DXPS_ONOFF, OnButtonDxpsOnoff)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_BUTTON_DXPS_VIEW, OnButtonDxpsView)
 	ON_EN_CHANGE(IDC_EDIT_DXPS_TIME, OnChangeEditDxpsTime)
 	ON_WM_CTLCOLOR()
 	ON_WM_DESTROY()
@@ -86,7 +84,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDxpsDlg message handlers
 
-BOOL CDxpsDlg::OnInitDialog() 
+BOOL CDxpsDlg::OnInitDialog()
 {
 	CWnd::SetIcon(m_hIcon, TRUE);			// Set big icon
 
@@ -113,8 +111,6 @@ BOOL CDxpsDlg::OnInitDialog()
 	pfont=m_ListDxps.GetFont();	
 	pfont->GetLogFont(&lgfnt);
 
-	//lgfnt.lfHeight			= -MulDiv(10, GetDeviceCaps(GetDC()->m_hDC, LOGPIXELSY), 72);
-	//lgfnt.lfItalic			= TRUE;
 	strcpy( lgfnt.lfFaceName, "MS Sans Serif" );
 
 	m_Font.DeleteObject();
@@ -138,7 +134,6 @@ BOOL CDxpsDlg::OnInitDialog()
 	if(right-left>ScreenSizeX) left=right-ScreenSizeX;
 	if(bottom-top>ScreenSizeY) top=bottom-ScreenSizeY;
 
-
 	MoveWindow(left,top,right-left,	bottom-top);
 	CString str;
 	str.Format("%.3g", CDxpsRegion::ScanTime);
@@ -156,9 +151,10 @@ BOOL CDxpsDlg::OnInitDialog()
 	ImLst.Add(&bm, RGB(255, 255, 255));
 	bm.DeleteObject();
 	m_ListDxps.SetImageList(&ImLst, LVSIL_SMALL);	
+	m_EditTime.Format("%g", CDxpsRegion::ScanTime);
 	LoadRegionPreferences();
 	Init=FALSE;
-	//SetTimer(DXPS_TIMER_INIT,0,NULL);
+
 	MoveControls();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -175,13 +171,6 @@ void CDxpsDlg::MoveRegionWindow()
 			theApp.m_pMainFrame->m_pRegionWnd->MoveWindow(&rect,FALSE);
 		theApp.m_pMainFrame->m_bSynchronousResize=FALSE;
 	}
-
-	/*	GetWindowRect(&rect);
-	CWinApp* App=AfxGetApp();
-	App->WriteProfileInt("SizeOfRegionWindow", "Left", rect.left);
-	App->WriteProfileInt("SizeOfRegionWindow", "Top", rect.top);
-	App->WriteProfileInt("SizeOfRegionWindow", "Right", rect.right);
-	App->WriteProfileInt("SizeOfRegionWindow", "Bottom", rect.bottom);*/
 }
 
 void CDxpsDlg::OnSize(UINT nType, int cx, int cy) 
@@ -194,14 +183,6 @@ void CDxpsDlg::OnSize(UINT nType, int cx, int cy)
 
 		MoveRegionWindow();
 	}
-}
-
-void CDxpsDlg::OnGetMinMaxInfo(MINMAXINFO *lpMMI)
-{
-//RECT rect={0, 0, 100, 125};
-//MapDialogRect(&rect);
-//lpMMI->ptMinTrackSize.x=rect.right;
-//lpMMI->ptMinTrackSize.y=rect.bottom;
 }
 
 void CDxpsDlg::OnDblclkListDxps(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -219,35 +200,29 @@ void CDxpsDlg::OnDblclkListDxps(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CDxpsDlg::OnRclickListDxps(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	DWORD EnableItem;
 	LPNMITEMACTIVATE lpnmitem = (LPNMITEMACTIVATE) pNMHDR;
-	//LastRClickedItem=lpnmitem;
-	//Selecting the item clicked (may be not have been selected if clicked over checkbox)
-	//m_ListDxps.SetItem(lpnmitem->iItem, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);
 
-   CPoint point = lpnmitem->ptAction;
-   EnableItem=(m_ListDxps.HitTest(point)>=0)? MF_ENABLED:MF_GRAYED;
- //ClientToScreen(&point);
-   RECT ListRect;
-   m_ListDxps.GetWindowRect(&ListRect);
-   point.x+=ListRect.left;
-   point.y+=ListRect.top;
+	CPoint point = lpnmitem->ptAction;
+	DWORD EnableItem = (m_ListDxps.HitTest(point)>=0)? MF_ENABLED:MF_GRAYED;
+	RECT ListRect;
+	m_ListDxps.GetWindowRect(&ListRect);
+	point.x+=ListRect.left;
+	point.y+=ListRect.top;
 
- //  ClientToDoc(local);
-      CMenu menu;
-      if (menu.LoadMenu(IDR_MENU_DXPS_POPUP))
-      {
-         CMenu* pPopup = menu.GetSubMenu(0);
-         ASSERT(pPopup != NULL);
-		 pPopup->EnableMenuItem(ID_ROOT_EDIT,MF_BYCOMMAND|EnableItem);
-		 pPopup->EnableMenuItem(ID_ROOT_DELETE,MF_BYCOMMAND|EnableItem);
-		 pPopup->EnableMenuItem(ID_ROOT_VIEW,MF_BYCOMMAND|EnableItem);
-		 pPopup->EnableMenuItem(ID_ROOT_ONOFF,MF_BYCOMMAND|EnableItem);
+    CMenu menu;
+    if (menu.LoadMenu(IDR_MENU_DXPS_POPUP))
+    {
+        CMenu* pPopup = menu.GetSubMenu(0);
+        ASSERT(pPopup != NULL);
+		pPopup->EnableMenuItem(ID_ROOT_EDIT,MF_BYCOMMAND|EnableItem);
+		pPopup->EnableMenuItem(ID_ROOT_DELETE,MF_BYCOMMAND|EnableItem);
+		pPopup->EnableMenuItem(ID_ROOT_VIEW,MF_BYCOMMAND|EnableItem);
+		pPopup->EnableMenuItem(ID_ROOT_ONOFF,MF_BYCOMMAND|EnableItem);
 
-		 pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
-            point.x, point.y,
-            this); // use main window for cmds
-      }	
+		pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+        point.x, point.y,
+        this); // use main window for cmds
+    }	
 	*pResult = 0;
 }
 
@@ -276,8 +251,6 @@ void CDxpsDlg::OnMove(int x, int y)
 		MoveRegionWindow();
 	}
 }
-
-
 
 void CDxpsDlg::MoveControls()
 {
@@ -378,8 +351,6 @@ void CDxpsDlg::OnTimer(UINT nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 }
 
-
-
 BOOL CDxpsDlg::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
 { int a=HDN_ENDTRACK;
 	LPNMHDR pnmHDR=(LPNMHDR)lParam;
@@ -408,126 +379,134 @@ BOOL CDxpsDlg::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 void CDxpsDlg::OnKillfocusEditDxpsTime() 
 {
-	char str[25];
-	GetDlgItem(IDC_EDIT_DXPS_TIME)->GetWindowText(str,24);
-	double NewVal=atof(str);
-	if(CDxpsRegion::ScanTime==NewVal)
-	{
-		EditScanTimeActualized=TRUE;
-		GetDlgItem(IDC_EDIT_DXPS_TIME)->Invalidate();
-	}
-	else if((CDxpsRegion::OutData.size()==0) ||
-		((CDxpsRegion::OutData.size()>0) && (NewVal>CDxpsRegion::PassedCommonTime)))
-	{
-		CDxpsRegion::ScanTime=NewVal;
-		m_EditTime.Format("%g",CDxpsRegion::ScanTime);
-		GetDlgItem(IDC_EDIT_DXPS_TIME)->SetWindowText((LPCSTR)m_EditTime);
-		theApp.WriteProfileString("DxpsDlg", "ScanTime", (LPCSTR)m_EditTime);
-		
+	TryWithMessageBox([&](){
+		char str[25];
+		GetDlgItem(IDC_EDIT_DXPS_TIME)->GetWindowText(str, 24);
+		double NewVal = atof(str);
+		if (CDxpsRegion::ScanTime == NewVal)
+		{
+			EditScanTimeActualized = TRUE;
+			GetDlgItem(IDC_EDIT_DXPS_TIME)->Invalidate();
+		}
+		else if ((CDxpsRegion::OutData.size() == 0) ||
+			((CDxpsRegion::OutData.size() > 0) && (NewVal > CDxpsRegion::PassedCommonTime)))
+		{
+			CDxpsRegion::ScanTime = NewVal;
+			m_EditTime.Format("%g", CDxpsRegion::ScanTime);
+			GetDlgItem(IDC_EDIT_DXPS_TIME)->SetWindowText((LPCSTR)m_EditTime);
+			theApp.Ini.DxpsLastScanTime.Value = (int)NewVal;
+			theApp.Ini.DxpsLastScanTime.Write();
 
-		theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
+			if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
+				theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
 
-		EditScanTimeActualized=TRUE;
-		GetDlgItem(IDC_EDIT_DXPS_TIME)->Invalidate();
-		theApp.m_pMainFrame->m_Graph.SetRange(0, 1/24./60./60.*CDxpsRegion::ScanTime, 0,100);
-	}
-	m_SetFocusEditScanTime=FALSE;
+			EditScanTimeActualized = TRUE;
+			GetDlgItem(IDC_EDIT_DXPS_TIME)->Invalidate();
+			theApp.m_pMainFrame->m_Graph.SetRange(0, 1 / 24. / 60. / 60.*CDxpsRegion::ScanTime, 0, 100);
+		}
+		m_SetFocusEditScanTime = FALSE;
+	}, this);
 }
 
 void CDxpsDlg::OnButtonDxpsAddNew() 
 {
-CDxpsRegion* pReg;
-int i;
-BOOL NeedBreak=FALSE;
-int ExistingColors[15];
-ZeroMemory(&ExistingColors,15*sizeof(int));
-for(pReg=CDxpsRegion::GetFirst(); pReg!=0; pReg=CDxpsRegion::GetNext(pReg))
-{
-	ExistingColors[pReg->Parameters.ColorIndex]+=1;
-}
+	TryWithMessageBox([&]() {
+		CDxpsRegion* pReg;
+		int i;
+		BOOL NeedBreak = FALSE;
+		int ExistingColors[15];
+		ZeroMemory(&ExistingColors, 15 * sizeof(int));
+		for (pReg = CDxpsRegion::GetFirst(); pReg != 0; pReg = CDxpsRegion::GetNext(pReg))
+		{
+			ExistingColors[pReg->Parameters.ColorIndex] += 1;
+		}
 
-while(!NeedBreak)
-for(i=0;i<15; i++)
-{
-	if(ExistingColors[i]--<=0)
-	{
-		NeedBreak=TRUE;
-		break;
-	}
-}
-DxpsRegPar Parameters;
-memcpy(&Parameters,&PreferredParams,sizeof(DxpsRegPar));
-Parameters.Type=TYPE_BE;
-Parameters.Divident=1;
-Parameters.Divisor=2;
-Parameters.ColorIndex=i;
-Parameters.Comments[0]='\0';
-CDxpsParamDlg dlg;
-dlg.pParameters=&Parameters;
-::EnableWindow(theApp.m_pMainFrame->m_hWnd, FALSE);
-dlg.m_pParentWindow=this;
-dlg.m_NewRegion=TRUE;
-if(dlg.DoModal()==IDOK)
-{	
-	CSingleLock sLock(&MutexThread);
-	THRI_LOCK();
-	CDxpsRegion::CreateNewRegion();
-	memcpy(&CDxpsRegion::GetLast()->Parameters,&Parameters,sizeof(DxpsRegPar));
-	FillTableRow(CDxpsRegion::GetLast()->ID,&CDxpsRegion::GetLast()->Parameters);
-	theApp.m_pMainFrame->m_Doc.CheckDocType();
-	memcpy(&PreferredParams,&CDxpsRegion::GetLast()->Parameters,sizeof(DxpsRegPar));
-	SaveRegionPreferences();
-	//Если проект был сохранен (или открыт), удаляем его и переписываем заново
-	if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
-		theApp.m_pMainFrame->m_Doc.SaveProjectFile();
-	else
-		theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
-	THRI_UNLOCK();
-}
-::SetFocus(m_hWnd);
-::EnableWindow(theApp.m_pMainFrame->m_hWnd, TRUE);
-m_ListDxps.SetFocus();
+		while (!NeedBreak)
+			for (i = 0; i < 15; i++)
+			{
+				if (ExistingColors[i]-- <= 0)
+				{
+					NeedBreak = TRUE;
+					break;
+				}
+			}
+		DxpsRegPar Parameters;
+		memcpy(&Parameters, &PreferredParams, sizeof(DxpsRegPar));
+		Parameters.Type = TYPE_BE;
+		Parameters.Divident = 1;
+		Parameters.Divisor = 2;
+		Parameters.ColorIndex = i;
+		Parameters.Comments[0] = '\0';
+		CDxpsParamDlg dlg;
+		dlg.pParameters = &Parameters;
+		::EnableWindow(theApp.m_pMainFrame->m_hWnd, FALSE);
+		dlg.m_pParentWindow = this;
+		dlg.m_NewRegion = TRUE;
+		if (dlg.DoModal() == IDOK)
+		{
+			CSingleLock sLock(&MutexThread);
+			THRI_LOCK();
+			CDxpsRegion::CreateNewRegion();
+			memcpy(&CDxpsRegion::GetLast()->Parameters, &Parameters, sizeof(DxpsRegPar));
+			FillTableRow(CDxpsRegion::GetLast()->ID, &CDxpsRegion::GetLast()->Parameters);
+			theApp.m_pMainFrame->m_Doc.CheckDocType();
+			memcpy(&PreferredParams, &CDxpsRegion::GetLast()->Parameters, sizeof(DxpsRegPar));
+			SaveRegionPreferences();
+			if (Parameters.Type == TYPE_DIV)
+				CDxpsRegion::CalcAllMissingDivRegions([](DxpsOutData outData) { theApp.m_pMainFrame->m_Graph.PlotNewSegment(outData); });
+			//Если проект был сохранен (или открыт), удаляем его и переписываем заново
+			if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+				theApp.m_pMainFrame->m_Doc.SaveProjectFile();
+			else
+				theApp.m_pMainFrame->m_Doc.m_NeedSave = theApp.m_pMainFrame->m_Doc.Need;
+			THRI_UNLOCK();
+		}
+		::SetFocus(m_hWnd);
+		::EnableWindow(theApp.m_pMainFrame->m_hWnd, TRUE);
+		m_ListDxps.SetFocus();
+	}, this);
 }
 
 void CDxpsDlg::OnButtonDxpsEdit() 
 {
-int Selection=FindSelectedItem();
-if(Selection<0)
-	{
-	MessageBox("Please select DXPS region.", "No selection",MB_OK|MB_ICONINFORMATION);
-	return;
-	}
-CDxpsRegion* reg=CDxpsRegion::GetRegByN(m_ListDxps.GetSelectionMark());
-if(reg==NULL)
-{
-	Msg("Error: reg==NULL"); 
-	return;
-}
-CDxpsParamDlg dlg;
-dlg.pParameters=&reg->Parameters;
-dlg.m_RegionID=reg->ID;
-dlg.m_pReg=reg;
-dlg.m_pParentWindow=this;
-::EnableWindow(theApp.m_pMainFrame->m_hWnd, FALSE);
+	TryWithMessageBox([&]() {
+		int Selection=FindSelectedItem();
+		if(Selection<0)
+			{
+			MessageBox("Please select DXPS region.", "No selection",MB_OK|MB_ICONINFORMATION);
+			return;
+			}
+		CDxpsRegion* reg=CDxpsRegion::GetRegByN(m_ListDxps.GetSelectionMark());
+		if(reg==NULL)
+		{
+			Msg("Error: reg==NULL"); 
+			return;
+		}
+		CDxpsParamDlg dlg;
+		dlg.pParameters=&reg->Parameters;
+		dlg.m_RegionID=reg->ID;
+		dlg.m_pReg=reg;
+		dlg.m_pParentWindow=this;
+		::EnableWindow(theApp.m_pMainFrame->m_hWnd, FALSE);
 
-if(dlg.DoModal()==IDOK)
-{
-	CSingleLock sLock(&MutexThread);
-	THRI_LOCK();
+		if(dlg.DoModal()==IDOK)
+		{
+			CSingleLock sLock(&MutexThread);
+			THRI_LOCK();
 
-	memcpy(&PreferredParams,&reg->Parameters,sizeof(DxpsRegPar));
+			memcpy(&PreferredParams,&reg->Parameters,sizeof(DxpsRegPar));
 
-	//Если проект был сохранен (или открыт), переписываем параметры регионов
-	if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
-		theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
-	else
-		theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
-	THRI_UNLOCK();
-}
-::EnableWindow(theApp.m_pMainFrame->m_hWnd, TRUE);
-FillTableRow(reg->ID,&reg->Parameters);
-m_ListDxps.SetFocus();
-
+			//Если проект был сохранен (или открыт), переписываем параметры регионов
+			if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
+				theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
+			else
+				theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
+			THRI_UNLOCK();
+		}
+		::EnableWindow(theApp.m_pMainFrame->m_hWnd, TRUE);
+		FillTableRow(reg->ID,&reg->Parameters);
+		m_ListDxps.SetFocus();
+	}, this);
 }
 
 // Обновляет значения или вобавляет в ListBox строку с индексом Row
@@ -575,51 +554,53 @@ void CDxpsDlg::FillTableRow(int Row, DxpsRegPar *Param)
 
 }
 
-void CDxpsDlg::OnRootAddNew() 
-{OnButtonDxpsAddNew();}
-	
-
+void CDxpsDlg::OnRootAddNew()
+{
+	OnButtonDxpsAddNew();
+}
 
 void CDxpsDlg::OnButtonDxpsDelete() 
 {
-int Selection=FindSelectedItem();
-if(Selection<0)
-	{
-	MessageBox("Please select DXPS region.", "No selection",MB_OK|MB_ICONINFORMATION);
-	return;
-	}
+	TryWithMessageBox([&]() {
+		int Selection = FindSelectedItem();
+		if (Selection < 0)
+		{
+			MessageBox("Please select DXPS region.", "No selection", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
 
-CDxpsRegion* reg=CDxpsRegion::GetRegByN(Selection);
-if(reg==NULL)
-{
-	Msg("Error: reg==NULL"); 
-	return;
-}
-int OkCancel=IDOK;
-if(reg->HasData())
-{		//There is any data in this region
-		CString str;
-		str.Format("Region %i contains data.\n\nAre you sure you want to delete it?", reg->ID);
-		OkCancel=MessageBox((LPCSTR)str, "Warning", MB_ICONEXCLAMATION|MB_OKCANCEL);
-}
-if(OkCancel!=IDOK)
-	{
-	m_ListDxps.SetFocus();
-	return;
-	}
-CSingleLock sLock(&MutexThread);
-THRI_LOCK();
+		CDxpsRegion* reg = CDxpsRegion::GetRegByN(Selection);
+		if (reg == NULL)
+		{
+			Msg("Error: reg==NULL");
+			return;
+		}
+		int OkCancel = IDOK;
+		if (reg->HasData())
+		{		//There is any data in this region
+			CString str;
+			str.Format("Region %i contains data.\n\nAre you sure you want to delete it?", reg->ID);
+			OkCancel = MessageBox((LPCSTR)str, "Warning", MB_ICONEXCLAMATION | MB_OKCANCEL);
+		}
+		if (OkCancel != IDOK)
+		{
+			m_ListDxps.SetFocus();
+			return;
+		}
+		CSingleLock sLock(&MutexThread);
+		THRI_LOCK();
 
-delete reg;
-//Если проект был сохранен (или открыт), удаляем его и переписываем заново
-if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
-	theApp.m_pMainFrame->m_Doc.SaveProjectFile();
-else
-	theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
-THRI_UNLOCK();
-theApp.m_pMainFrame->m_Doc.CheckDocType();
-FillTable();
-m_ListDxps.SetFocus();
+		delete reg;
+		//Если проект был сохранен (или открыт), удаляем его и переписываем заново
+		if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+			theApp.m_pMainFrame->m_Doc.SaveProjectFile();
+		else
+			theApp.m_pMainFrame->m_Doc.m_NeedSave = theApp.m_pMainFrame->m_Doc.Need;
+		THRI_UNLOCK();
+		theApp.m_pMainFrame->m_Doc.CheckDocType();
+		FillTable();
+		m_ListDxps.SetFocus();
+	}, this);
 }
 
 void CDxpsDlg::OnRootDelete() 
@@ -630,23 +611,23 @@ void CDxpsDlg::OnRootEdit()
 
 void CDxpsDlg::FillTable()
 {
-m_ListDxps.DeleteAllItems();
-CDxpsRegion *reg;
-for(reg=CDxpsRegion::GetFirst();reg!=NULL; reg=CDxpsRegion::GetNext(reg))
-	FillTableRow(reg->ID,&reg->Parameters);
+	m_ListDxps.DeleteAllItems();
+	CDxpsRegion *reg;
+	for(reg=CDxpsRegion::GetFirst();reg!=NULL; reg=CDxpsRegion::GetNext(reg))
+		FillTableRow(reg->ID,&reg->Parameters);
 }
 
 int CDxpsDlg::FindSelectedItem()
 {
-UINT N_Item = m_ListDxps.GetItemCount();
-UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
-UINT state;
-for(UINT i=0; i<N_Item; ++i)
+	UINT N_Item = m_ListDxps.GetItemCount();
+	UINT mask = (LVIS_SELECTED | LVIS_FOCUSED);
+	UINT state;
+	for(UINT i=0; i<N_Item; ++i)
 	{
-	state =  m_ListDxps.GetItemState(i, mask);	
-	if( (state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int) i);
+		state =  m_ListDxps.GetItemState(i, mask);	
+		if( (state & LVIS_SELECTED) && (state & LVIS_FOCUSED)) return ((int) i);
 	}
-return -1;
+	return -1;
 }
 
 void CDxpsDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
@@ -659,48 +640,38 @@ void CDxpsDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CDxpsDlg::OnButtonDxpsOnoff() 
 {
-int Selection=FindSelectedItem();
-if(Selection<0)
-	{
-	MessageBox("Please select DXPS region.", "No selection",MB_OK|MB_ICONINFORMATION);
-	return;
-	}
-CDxpsRegion* reg=CDxpsRegion::GetRegByN(Selection);
-CSingleLock sLock(&MutexThread);
-THRI_LOCK();
+	TryWithMessageBox([&]() {
+		int Selection = FindSelectedItem();
+		if (Selection < 0)
+		{
+			MessageBox("Please select DXPS region.", "No selection", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		CDxpsRegion* reg = CDxpsRegion::GetRegByN(Selection);
+		CSingleLock sLock(&MutexThread);
+		THRI_LOCK();
 
-reg->Parameters.Off=!reg->Parameters.Off;
-SetIcon(Selection,reg->Parameters.ColorIndex,reg->Parameters.Off*2);
+		reg->Parameters.Off = !reg->Parameters.Off;
+		SetIcon(Selection, reg->Parameters.ColorIndex, reg->Parameters.Off * 2);
 
-//Если проект был сохранен (или открыт), переписываем параметры регионов
-if(theApp.m_pMainFrame->m_Doc.IsFileOpen())
-	theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
-else
-	theApp.m_pMainFrame->m_Doc.m_NeedSave=theApp.m_pMainFrame->m_Doc.Need;
-THRI_UNLOCK();
-}
-
-void CDxpsDlg::OnPaint() 
-{
-	CPaintDC pdc(this); // device context for painting
-	
-	// Do not call CDialog::OnPaint() for painting messages
-}
-
-void CDxpsDlg::OnButtonDxpsView() 
-{
-
+		//Если проект был сохранен (или открыт), переписываем параметры регионов
+		if (theApp.m_pMainFrame->m_Doc.IsFileOpen())
+			theApp.m_pMainFrame->m_Doc.DxpsProject.WriteDxpsRegionsParam();
+		else
+			theApp.m_pMainFrame->m_Doc.m_NeedSave = theApp.m_pMainFrame->m_Doc.Need;
+		THRI_UNLOCK();
+	}, this);
 }
 
 void CDxpsDlg::SetIcon(int Row, int ColorIndex, int Status)
 {
-LV_ITEM item;
-memset(&item, 0, sizeof(LV_ITEM));
-item.iItem = Row;
-item.iSubItem=0;
-item.iImage=ColorIndex+15*Status;
-item.mask = LVIF_IMAGE;
-m_ListDxps.SetItem(&item);
+	LV_ITEM item;
+	memset(&item, 0, sizeof(LV_ITEM));
+	item.iItem = Row;
+	item.iSubItem=0;
+	item.iImage=ColorIndex+15*Status;
+	item.mask = LVIF_IMAGE;
+	m_ListDxps.SetItem(&item);
 }
 
 void CDxpsDlg::SaveRegionPreferences()
@@ -717,29 +688,29 @@ theApp.WriteProfileString("DxpsDlg","PreferredParams",&Buffer[0]);
 
 void CDxpsDlg::LoadRegionPreferences()
 {
-CString str;
-char buf[3];
-BYTE byte;
-str=theApp.GetProfileString("DxpsDlg","PreferredParams","");
-if(str.GetLength()!=2*sizeof(PreferredParams)-2*sizeof(PreferredParams.Comments))
-{
-	memset(&PreferredParams, 0, sizeof(DxpsRegPar));
-	PreferredParams.HV = 1000.;
-	PreferredParams.Dwell = 10.;
-	PreferredParams.Off = FALSE;
-	PreferredParams.Type=TYPE_BE;
-	return;
-}
+	CString str;
+	char buf[3];
+	BYTE byte;
+	str=theApp.GetProfileString("DxpsDlg","PreferredParams","");
+	if(str.GetLength()!=2*sizeof(PreferredParams)-2*sizeof(PreferredParams.Comments))
+	{
+		memset(&PreferredParams, 0, sizeof(DxpsRegPar));
+		PreferredParams.HV = 1000.;
+		PreferredParams.Dwell = 10.;
+		PreferredParams.Off = FALSE;
+		PreferredParams.Type=TYPE_BE;
+		return;
+	}
 
-for(int i=0; i<sizeof(PreferredParams)-sizeof(PreferredParams.Comments);i++)
-{
-	strcpy(&buf[0],(LPCSTR)str.Mid(2*i,2));
-	byte=(BYTE)strtol(&buf[0],NULL,16);
-	((BYTE*)(&PreferredParams))[i]=byte;
+	for(int i=0; i<sizeof(PreferredParams)-sizeof(PreferredParams.Comments);i++)
+	{
+		strcpy(&buf[0],(LPCSTR)str.Mid(2*i,2));
+		byte=(BYTE)strtol(&buf[0],NULL,16);
+		((BYTE*)(&PreferredParams))[i]=byte;
+	}
 	PreferredParams.Type=TYPE_BE;
-}
-memset(PreferredParams.Comments,0, sizeof(PreferredParams.Comments));
 
+	memset(PreferredParams.Comments,0, sizeof(PreferredParams.Comments));
 }
 
 BOOL CDxpsDlg::AdjustListLastColomn() //возвращает TRUE, если была передвижка

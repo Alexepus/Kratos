@@ -1,5 +1,8 @@
 #include "StdAfx.h"
 #include "MfcHelper.h"
+#include "Exceptions.h"
+#include "function.h"
+#include "LogToFile.h"
 
 std::vector<CString> SplitString(const CString source, const char delimeterChars[])
 {
@@ -24,4 +27,17 @@ CString JoinStrings(const std::vector<CString>& strings, const char delimeter[])
 			res += delimeter;
 	}
 	return res;
+}
+
+void TryWithMessageBox(std::function<void()> lambda, CWnd* win)
+{
+	try
+	{
+		lambda();
+	}
+	catch(std::exception &ex)
+	{
+		win->MessageBox(DetailedException::TryGetDetailedWhat(ex).c_str(), GetAppTitle(), MB_OK | MB_ICONERROR);
+		LogFile(DetailedException::TryGetDetailedWhat(ex).c_str());
+	}
 }

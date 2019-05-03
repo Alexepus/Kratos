@@ -106,5 +106,6 @@ public:
 	ValueSvLd<bool> CamacSimulation; // Режим симуляции КАМАКа
 	ValueSvLd<bool> UsbCounterSimulation; // Режим симуляции счетчика USB
 	ValueSvLd<double> StatisticsMediumExtraDelay; //Среднестатистическая дополнительная задержка каждого измерения
+	ValueSvLd<int> DxpsLastScanTime; //Последнее время измерения в режиме DXPS
 };
 #endif

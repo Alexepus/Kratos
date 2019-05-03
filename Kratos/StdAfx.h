@@ -14,6 +14,9 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
+#include <map>
+#include <list>
+#include <functional>
 #include <afxmt.h>
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

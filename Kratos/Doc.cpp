@@ -56,14 +56,14 @@ if(m_DocType==DXPS)
 								(WPARAM) ID_PROGRAM_DXPS_TABLE, (LPARAM) MAKELONG(TRUE, 0));
 		if(CDxpsRegion::PassedNumberOfPoints>0)
 		{
-			theApp.m_pMainFrame->m_pHideWnd->ShowWindow(SW_HIDE);
-			theApp.m_pMainFrame->m_Graph.ShowWindow(SW_SHOW);
+			ShowWindow(theApp.m_pMainFrame->m_pHideWnd->m_hWnd, SW_HIDE);
+			ShowWindow(theApp.m_pMainFrame->m_Graph.m_hWnd, SW_SHOW);
 			theApp.m_pMainFrame->m_Graph.PlotData();
 		}
 		else
 		{
-			theApp.m_pMainFrame->m_pHideWnd->ShowWindow(SW_SHOW);
-			theApp.m_pMainFrame->m_Graph.ShowWindow(SW_HIDE);
+			ShowWindow(theApp.m_pMainFrame->m_pHideWnd->m_hWnd, SW_SHOW);
+			ShowWindow(theApp.m_pMainFrame->m_Graph.m_hWnd, SW_HIDE);
 		}
 	}
 if(m_DocType==NoDoc)

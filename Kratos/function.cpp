@@ -412,3 +412,10 @@ long GetRegisterHVCodeFromHV(double HV)
 			return i;
 	return 14L; //=2.0 V
 }
+
+char* GetAppTitle()
+{
+	if (!theApp.Ini.HighPressureMode.Value)
+		return "KRATOS";
+	return "HP";
+}

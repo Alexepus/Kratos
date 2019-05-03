@@ -37,20 +37,6 @@ struct DxpsRegPar
 	//enum{Al, Mg, He1, He2};
 };
 
-class CDxpsData
-{
-protected:
-	CDxpsData* m_pNext;
-
-public:
-	static CDxpsData* m_pFirst;
-	CDxpsData(int regionN=255, double time=0, double freq=0)
-	{OutData.RegionN=regionN;OutData.Time=time;OutData.Freq=freq;};
-	static void DeleteRegData(int regionN);
-	static CDxpsData* GetFirst(){return CDxpsData::m_pFirst;};
-	CDxpsData* GetNext(){return m_pNext;};
-	DxpsOutData OutData;
-};
 typedef  std::list<DxpsOutData> DxpsOutList;
 
 class CDxpsRegion 
@@ -64,7 +50,7 @@ protected:
 	CDxpsRegion* m_pPrev;
 
 public:
-	BOOL HasData();
+	BOOL HasData() const;
 	static DxpsOutList OutData;
 	static double ScanTime;			// Global Scan Time, sec
 	static double PassedCommonTime; // Passed Time, common for all regions
@@ -80,7 +66,5 @@ public:
 	~CDxpsRegion();
 	int ID;
 	DxpsRegPar Parameters;
-	//UINT m_ptrInFile;
-	//DWORD m_NDataOut;
-	//DWORD m_NDataOutCurr;
+	static void CalcAllMissingDivRegions(std::function<void(DxpsOutData)> onOutDataAddedFunc);
 };

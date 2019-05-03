@@ -40,6 +40,7 @@ CamacSimulation.Describe((int)FALSE, "DEBUG", "CamacSimulation", IniFileName); /
 UsbCounterSimulation.Describe((int)FALSE, "DEBUG", "UsbCounterSimulation", IniFileName); // Режим симуляции счетчика USB
 
 StatisticsMediumExtraDelay.Describe(0., "STATISTICS", "StatisticsMediumExtraDelay", IniFileName); //Среднестатистическая дополнительная задержка каждого измерения
+DxpsLastScanTime.Describe(300, "DxpsDlg", "DxpsLastScanTime", IniFileName);; //Последнее время измерения в режиме DXPS
 }
 
 //--------------------------------------------------------------------------------------------------

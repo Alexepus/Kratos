@@ -408,6 +408,32 @@ return 0;
 
 //====================================================================================
 
+// Рассчитать значения Dxps-регионов типа DIV, которые берутся их соотношения других регионов
+void CalcDivDxpsRegionData(std::map<int, DxpsOutData> &LastRegData, std::function<void(DxpsOutData)> drawFunc)
+{
+	for (auto pReg = CDxpsRegion::GetFirst(); pReg!=nullptr; pReg=CDxpsRegion::GetNext(pReg))
+	{
+		if(pReg->Parameters.Type==TYPE_DIV)
+			if((pReg->Parameters.Divident>0) && (pReg->Parameters.Divident<=CDxpsRegion::GetRegNumber()) &&
+				(pReg->Parameters.Divisor>0) && (pReg->Parameters.Divisor<=CDxpsRegion::GetRegNumber()) &&
+				(pReg->Parameters.Divident!=pReg->Parameters.Divisor) &&
+				(pReg->Parameters.Divident-1!=pReg->ID) && (pReg->Parameters.Divisor-1!=pReg->ID))
+				if(LastRegData.count(pReg->Parameters.Divident-1) && LastRegData.count(pReg->Parameters.Divisor-1) 
+					&& !LastRegData.count(pReg->ID)) // последняя проверка - на случай нового пересчета по старым данным
+				{
+					LastRegData[pReg->ID].RegionN=pReg->ID;
+					LastRegData[pReg->ID].Time=std::max(LastRegData[pReg->Parameters.Divident - 1].Time, LastRegData[pReg->Parameters.Divisor - 1].Time);
+					if(LastRegData[pReg->Parameters.Divident-1].Freq!=0)
+						LastRegData[pReg->ID].Freq=LastRegData[pReg->Parameters.Divident-1].Freq/LastRegData[pReg->Parameters.Divisor-1].Freq;
+					else
+						LastRegData[pReg->ID].Freq=1e100;
+					CDxpsRegion::OutData.push_back(LastRegData[pReg->ID]);
+					CDxpsRegion::PassedNumberOfPoints++;
+					if (drawFunc != nullptr)
+						drawFunc(LastRegData[pReg->ID]);
+				}
+	}
+}
 
 UINT DxpsThread(LPVOID pParam)
 {
@@ -416,9 +442,7 @@ THREAD_COMMON* ThComm = (THREAD_COMMON*) pParam;
 #define THRD_LOCK() {ThreadLock.Lock(2000);if(ThreadLock.IsLocked())	/*LogFile("Lock", __FILE__, __LINE__)*/;else{LogFile("Failed to Lock, break thread", __FILE__, __LINE__);LeaveCrSecAndEndDxpsThread(ThComm->pMainFrame, pReg, ThreadLock);}}
 #define THRD_UNLOCK() {ThreadLock.Unlock(); /*LogFile("UnLock", __FILE__, __LINE__)*/;}
 
-DxpsOutData LastRegData[100];
-BOOL LastRegDataWritten[100];
-memset(LastRegDataWritten,0, sizeof(LastRegDataWritten));
+std::map<int, DxpsOutData> LastRegData; //[region ID] => Last DxpsOutData
 
 BOOL IsAnyOnRegion=FALSE;
 CSingleLock ThreadLock(&MutexThread);
@@ -667,7 +691,6 @@ while((CDxpsRegion::ScanTime-CDxpsRegion::PassedCommonTime>0 && ThComm->StopCont
 	LastRegData[pReg->ID].Tcur = validTemperature? ThComm->LastCurTemperature : std::numeric_limits<double>::quiet_NaN();
 	LastRegData[pReg->ID].Tref = validTemperature? ThComm->LastRefTemperature : std::numeric_limits<double>::quiet_NaN();
 	CDxpsRegion::OutData.push_back(LastRegData[pReg->ID]);
-	LastRegDataWritten[pReg->ID]=TRUE;
 	CDxpsRegion::PassedNumberOfPoints++;
 
 		//ThComm->pMainFrame->m_Doc.m_Graph.m_pDataShort=CDxpsRegion::GetFirst()->m_pDataOut;
@@ -682,32 +705,8 @@ while((CDxpsRegion::ScanTime-CDxpsRegion::PassedCommonTime>0 && ThComm->StopCont
 SkipSwitchedOff:
 	if(pReg==CDxpsRegion::GetLast())
 	{
-		BOOL NoDataWritten=TRUE;
-		CDxpsRegion *pReg2;
-		for (pReg2=CDxpsRegion::GetFirst(); pReg2!=NULL; pReg2=CDxpsRegion::GetNext(pReg2))
-		{
-			if(pReg2->Parameters.Type==TYPE_DIV)
-				if((pReg2->Parameters.Divident>0) && (pReg2->Parameters.Divident<=CDxpsRegion::GetRegNumber()) &&
-					(pReg2->Parameters.Divisor>0) && (pReg2->Parameters.Divisor<=CDxpsRegion::GetRegNumber()) &&
-					(pReg2->Parameters.Divident!=pReg2->Parameters.Divisor) &&
-					(pReg2->Parameters.Divident-1!=pReg2->ID) && (pReg2->Parameters.Divisor-1!=pReg2->ID))
-						if(LastRegDataWritten[pReg2->Parameters.Divident-1] && LastRegDataWritten[pReg2->Parameters.Divisor-1])
-						{
-							LastRegData[pReg2->ID].RegionN=pReg2->ID;
-							LastRegData[pReg2->ID].Time=CDxpsRegion::PassedCommonTime;
-							if(LastRegData[pReg2->Parameters.Divident-1].Freq!=0)
-								LastRegData[pReg2->ID].Freq=LastRegData[pReg2->Parameters.Divident-1].Freq/LastRegData[pReg2->Parameters.Divisor-1].Freq;
-							else
-								LastRegData[pReg2->ID].Freq=1e100;
-							CDxpsRegion::OutData.push_back(LastRegData[pReg2->ID]);
-							LastRegDataWritten[pReg2->ID]=TRUE;
-							CDxpsRegion::PassedNumberOfPoints++;
-							ThComm->pMainFrame->m_Graph.PlotNewSegment(LastRegData[pReg2->ID]);
-						}
-			if(LastRegDataWritten[pReg2->ID])
-				NoDataWritten=FALSE;
-		}
-		if(NoDataWritten)
+		CalcDivDxpsRegionData(LastRegData, [ThComm](DxpsOutData outData) { ThComm->pMainFrame->m_Graph.PlotNewSegment(outData); });
+		if(LastRegData.size() == 0)
 		{
 			THRD_UNLOCK();
 			MsgLog("Error in region parameters: no data to measure.\nFinishing measuring.");
@@ -716,13 +715,10 @@ SkipSwitchedOff:
 		CDxpsRegion::PassedCommonTime+=StepTime;
 		StepTime=0;
 		ThComm->pMainFrame->m_Doc.DxpsProject.WriteDxpsPoints();
-		memset(LastRegDataWritten,0, sizeof(LastRegDataWritten));
 	}
 	THRD_UNLOCK();
 
 } //главный цикл 
-
-
 
 Met_End:
 

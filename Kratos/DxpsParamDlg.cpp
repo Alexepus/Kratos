@@ -233,13 +233,13 @@ void CDxpsParamDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 		if (lpDrawItemStruct->itemState & ODS_SELECTED)
 		{
 			dc.SetTextColor(0xFFFFFF&(~theApp.m_pMainFrame->m_pDxpsDlg->m_ColorIndex[lpDrawItemStruct->itemID]));
-			if(lpDrawItemStruct->itemID==7)
+			if(lpDrawItemStruct->itemID==7 || lpDrawItemStruct->itemID == 12)
 				dc.SetTextColor(RGB(255,255,255));
 		}
 		else
 		{
 			dc.SetTextColor(RGB(0,0,0));
-			if(lpDrawItemStruct->itemID==11)
+			if(lpDrawItemStruct->itemID == 3 || lpDrawItemStruct->itemID==11)
 				dc.SetTextColor(RGB(196,196,196));
 		}
 		dc.SetBkColor(RGB(255,255,255));
@@ -486,8 +486,8 @@ void CDxpsParamDlg::EnableDisableControls()
 	BOOL EnableAnode= !MeasureRun && !RegionHasData && TypeBE;
 	BOOL EnableDwell= !MeasureRun && !RegionHasData && TypeBE;
 	BOOL EnableTypeBE= !MeasureRun && !RegionHasData;
-	BOOL EnableTypeDiv= (CDxpsRegion::GetRegNumber()>2) && !RegionHasData;
-	BOOL EnableDivisorDivident=(CDxpsRegion::GetRegNumber()>2) && !RegionHasData && !TypeBE;
+	BOOL EnableTypeDiv= (m_NewRegion? CDxpsRegion::GetRegNumber() >= 2 : CDxpsRegion::GetRegNumber() > 2) && !RegionHasData;
+	BOOL EnableDivisorDivident= EnableTypeDiv && !TypeBE;
 	BOOL EnableDelay= TypeBE;
 
 	m_ButtonResetReg.EnableWindow(EnableButtonResetReg);

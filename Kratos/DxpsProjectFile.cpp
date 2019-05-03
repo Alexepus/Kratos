@@ -263,7 +263,7 @@ void DxpsProjectFile::SaveProject(FILE* fp)
 	UINT ptrCurr = 0;
 	fseek(fp, ptrCurr, SEEK_SET);
 	unsigned char key[4];
-	key[0] = (KRATOS_KEY & 0xff00) >> 8; key[1] = KRATOS_KEY & 0xff; key[2] = DXPS_TYPE; key[3] = DXPS_VER2;
+	key[0] = KRATOS_KEY0; key[1] = KRATOS_KEY1; key[2] = DXPS_TYPE; key[3] = DXPS_VER2;
 	ptrCurr += (UINT) sizeof(unsigned char)*fwrite(key, sizeof(unsigned char), 4, fp);
 	WriteDxpsRegionsParam();
 	WriteDxpsPoints();

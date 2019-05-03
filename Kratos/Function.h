@@ -2,6 +2,7 @@
 #include "CRegion.h"
 #include "DxpsRegion.h"
 class CDialogParamRegion;
+class CMainFrame;
 
 #define THRI_LOCK() {\
 while(1){\
@@ -50,3 +51,4 @@ void AskAndSaveMeasuringData(CMainFrame* pMainFrame, DATA_OUT* NewData, int NNew
 void GetXpsTimeRemainedToEnd(int* TIME);
 void TIME2Str(int TIME, char* str);
 long GetRegisterHVCodeFromHV(double HV);
+char* GetAppTitle();

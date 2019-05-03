@@ -805,7 +805,7 @@ void CNTGraph::PlotData()
 	ClearGraph();
 	memset((void*)MaxSeriesValue, 0, sizeof(MaxSeriesValue));
 	memset((void*)LastSeriesIndex, 0, sizeof(LastSeriesIndex));
-	memset((void*)WasFirstSeriesPoint, 0, sizeof(LastSeriesIndex));	
+	memset((void*)WasFirstSeriesPoint, 0, sizeof(WasFirstSeriesPoint));
 	SetRange(0, 1/24./60./60.*CDxpsRegion::ScanTime, 0,100);
 	//SetXGridNumber(6);
 	CDxpsRegion *pReg;

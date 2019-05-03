@@ -61,6 +61,30 @@ for(pReg=GetFirst(), i=0;pReg!=NULL;pReg=GetNext(pReg), i++)
 m_NReg--;
 }
 
+bool CompareOutDataByTimeAndId(const DxpsOutData & a, const DxpsOutData & b)
+{
+	return a.Time < b.Time || (a.Time == b.Time && a.RegionN < b.RegionN);
+}
+
+//Расчитать данные для всех DIV регионов, для которых нет данных
+void CDxpsRegion::CalcAllMissingDivRegions(std::function<void(DxpsOutData)> onOutDataAddedFunc)
+{
+	std::map<int, DxpsOutData> lastOutData;
+	double measureTime = -1;
+	for(auto i = OutData.begin(); i != OutData.end(); ++i)
+	{
+		if(i->Time != measureTime && !lastOutData.empty())
+		{
+			CalcDivDxpsRegionData(lastOutData, onOutDataAddedFunc);
+			lastOutData.clear();
+		}
+		measureTime = i->Time;
+		lastOutData[i->RegionN] = *i;
+	}
+	CalcDivDxpsRegionData(lastOutData, onOutDataAddedFunc);
+	OutData.sort(CompareOutDataByTimeAndId);
+}
+
 CDxpsRegion::CDxpsRegion()
 {
 ID=CDxpsRegion::m_NReg; //
@@ -99,39 +123,9 @@ CDxpsRegion* CDxpsRegion::GetRegByN(int N)
 
 //__________________________________________________________________
 
-CDxpsData* CDxpsData::m_pFirst=NULL;
-void CDxpsData::DeleteRegData(int regionN)
+BOOL CDxpsRegion::HasData() const
 {
-	CDxpsData *pBeforeDeleted=NULL, *pNextOfDeleted=NULL;
-	for(CDxpsData *pData=CDxpsData::GetFirst(); pData!=NULL; )
-	{
-		if(pData->OutData.RegionN==regionN)
-		{
-			if(pData==CDxpsData::GetFirst())
-			{
-				m_pFirst=pData->GetNext();
-			}
-			if(pBeforeDeleted!=NULL)
-				pBeforeDeleted->m_pNext=pData->GetNext();
-			pNextOfDeleted=pData->GetNext();
-			delete (pData);
-			pData=pNextOfDeleted;
-		}
-		else
-		{
-			if(pData->OutData.RegionN>regionN)
-				pData->OutData.RegionN--;
-			pBeforeDeleted=pData;
-			pData=pData->GetNext();
-		}
-	}
-
-}
-
-BOOL CDxpsRegion::HasData()
-{
-DxpsOutList::iterator i;
-for(i=CDxpsRegion::OutData.begin(); i!=CDxpsRegion::OutData.end(); i++)
+for(auto i=CDxpsRegion::OutData.begin(); i!=CDxpsRegion::OutData.end(); i++)
 	if(i->RegionN==ID)
 	{		//There is any data in this region
 			return TRUE;
