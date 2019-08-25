@@ -24,7 +24,7 @@ long HardwareSimulation::ReadCounter()
 {
 	int sleepTime = static_cast<int>(_dis(_gen)*1000) + 40;
 	Sleep(sleepTime);
-	if(sleepTime > 230)
+	if(sleepTime > 238)
 		throw EXCEPTION_SPECIFIC(CounterTimeoutException, "ѕсевдо-ошибка в блоке симул€тора счетчика: счетчик во врем€ не закончил счет.");
 	return (int)((sin(_retard*0.0002) + 1.01 + _dis(_gen)) * 1000);
 }

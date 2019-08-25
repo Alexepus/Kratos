@@ -52,3 +52,13 @@ void GetXpsTimeRemainedToEnd(int* TIME);
 void TIME2Str(int TIME, char* str);
 long GetRegisterHVCodeFromHV(double HV);
 char* GetAppTitle();
+
+/**
+ * Возвращает правильное окончание для согласованного числительного в русском языке
+ *
+ * @param number     Число
+ * @param nominative именительный падеж;
+ * @param genetive   родительный падеж;
+ * @param plural     множественное число.
+ */
+CString GetI18nNumEnding(int number, char* nominative, char* genetive, char* plural);

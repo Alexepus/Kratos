@@ -136,15 +136,20 @@ BOOL CListRegionWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 				{ if(pReg->ID == SelectedItem) break;}
 			if(::MessageBox(this->m_hWnd, "Are you sure you want\nto reset all measured data ?", "Attention",MB_YESNO) == IDYES)
 			{
+				bool isCurrentRegionInGraph = m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut;
 				pReg->ResetMeasuredData();
 				m_pMainFrame->m_Doc.XpsProject.SaveXpsFullRegionDataToFile(pReg);
 				GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
 				UpdateItem(pReg);
 
-				m_pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
-				m_pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
-				m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
+				if (isCurrentRegionInGraph)
+				{
+					m_pMainFrame->m_Doc.m_Graph.m_pDataAll = pReg->m_pDataOut;
+					m_pMainFrame->m_Doc.m_Graph.m_NDataAll = pReg->m_NDataOut;
+					m_pMainFrame->m_Doc.m_Graph.m_NDataShort = 0;
+					m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
+				}
 			}
 		}
 		else if(wID == IDC_BUTTON_COMMENTS)

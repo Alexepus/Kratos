@@ -1,14 +1,6 @@
-#if !defined(AFX_GRAPHICS_H__9B0EBD9B_3E6F_4DEB_87F9_C806E97BA8A7__INCLUDED_)
-#define AFX_GRAPHICS_H__9B0EBD9B_3E6F_4DEB_87F9_C806E97BA8A7__INCLUDED_
-
+#pragma once
 #include "WndForCurve.h"	// Added by ClassView
 #include "NotifyStruct.h"	// Added by ClassView
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-// Graphics.h : header file
-//
-
 
 class CMainFrame;
 /////////////////////////////////////////////////////////////////////////////
@@ -33,30 +25,14 @@ public:
 	
 	BOOL m_Grid;
 	BOOL m_GuideLines;//Рисовать курсор длинными линиями
-//	char m_FontStyle[LF_FACESIZE];
-//	char* m_lpszSection;
 	LOGFONT* m_pLogFont;
 	HFONT m_Font;
 	NOTIFY_COORD m_NotifyCoord;
-
 
 // Construction
 public:
 	CGraphics();
 
-// Attributes
-public:
-
-// Operations
-public:
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CGraphics)
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
 	RECT m_LastUpdateRect;
 	BOOL m_WasOnPaint;
 	void DrawKRATOS();
@@ -74,10 +50,7 @@ public:
 	void DrawGraphics();
 	char m_cl_name_for_curve[16];
 	CWndForCurve m_WndForCurve;
-	//void DrawXaxis();
 	BOOL LimitsX();
-//	int m_nY;
-//	int m_VesY;
 	void DrawAxis();
 	void CalcLXaxisAndX0Pixels();
 	BOOL LimitsY();
@@ -103,16 +76,12 @@ public:
 	double m_Y1;
 	double m_Y2;
 	int m_LMaxTextY;
-//	BOOL LimitsY();
-//	void CalcLYaxisAndY0Pixels();
 	
 	int m_X0_pixels;
 	int m_Y0_pixels;
 	int m_LXaxis;
-	//int m_Y0_pixels;
 	int m_LYaxis;
-	
-	
+
 	virtual ~CGraphics();
 
 	// Generated message map functions
@@ -126,10 +95,3 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_GRAPHICS_H__9B0EBD9B_3E6F_4DEB_87F9_C806E97BA8A7__INCLUDED_)

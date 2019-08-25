@@ -35,6 +35,7 @@ private:
 	BOOL RegisterRegionWndClass();
 	WNDCLASS m_WC;	
 	void MoveSelectedRegions(Directions dir);
+	void DeleteRegionInternal(CRegion * pReg);
 
 	// Generated message map functions
 protected:

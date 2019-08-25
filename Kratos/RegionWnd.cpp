@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Main.h"
-	
+#include "CppLinq.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -140,7 +141,7 @@ void CRegionWnd::OnButtonEdit()
 
 	BOOL RegNow;
 	BOOL ReWriteFile = FALSE;
-	BOOL ReDrawReg = TRUE;
+	BOOL ReDrawReg = FALSE;
 	BOOL ViewReg = FALSE;
 	int itemCount = m_pListRegionWnd->GetItemCount();
 	if (itemCount == 0) 
@@ -178,12 +179,7 @@ void CRegionWnd::OnButtonEdit()
 				m_pDlgParamReg->m_pMainFrame = this->m_pMainFrame;
 				pReg->m_NewOrEdit = pReg->Edit;
 				m_pDlgParamReg->m_pReg = pReg;
-				if (m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut)
-				{
-					ReDrawReg = TRUE;
-					m_pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
-				}
-				else { ReDrawReg = FALSE; }
+
 				if (::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
 				{
 					if (pReg == m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pReg)
@@ -199,6 +195,7 @@ void CRegionWnd::OnButtonEdit()
 					if ((D2I(m_pDlgParamReg->m_KE_Start) != pReg->m_DataIn.KE_Start) || (D2I(m_pDlgParamReg->m_KE_End) != pReg->m_DataIn.KE_End) || (D2I(m_pDlgParamReg->m_Step) != pReg->m_DataIn.Step))
 					{
 						ReWriteFile = TRUE;
+						ReDrawReg = m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut;
 					}
 					auto oldDataIn = pReg->m_DataIn;
 					SetRegionParametersFromDialog(pReg, m_pDlgParamReg);
@@ -241,7 +238,7 @@ void CRegionWnd::OnButtonEdit()
 					m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
 				}
 
-				if (ViewReg) // if(ViewReg == TRUE)
+				if (ViewReg)
 				{
 					m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = pReg->m_pDataOut;
 					m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_NDataAll = pReg->m_NDataOut;
@@ -264,110 +261,127 @@ void CRegionWnd::OnButtonEdit()
 
 void CRegionWnd::OnButtonDelete()
 {
-	CSingleLock sLock(&MutexThread);
 
-	BOOL RegNow;
-	int N_Item = m_pListRegionWnd->GetItemCount();
-	if (N_Item == 0) ::MessageBox(m_pListRegionWnd->m_hWnd, "There is no region.", "Attention", MB_OK);
+	auto selectedItems = m_pListRegionWnd->GetSelectedRegions();
+	if (selectedItems.empty())
+		::MessageBox(m_pListRegionWnd->m_hWnd, "Please select a region.", "Attention", MB_OK);
 	else
 	{
-		auto selectedItems = m_pListRegionWnd->GetSelectedRegions();
-		if (selectedItems.empty())
-			::MessageBox(m_pListRegionWnd->m_hWnd, "Please select a region.", "Attention", MB_OK);
+		for(int i = 0; i < selectedItems.size(); ++i)
+		{
+			if (selectedItems[i] == m_pMainFrame->m_Doc.m_ThrComm.pRegNow)
+			{
+				::MessageBox(m_pListRegionWnd->m_hWnd, 
+					Format("–егион R%i нельз€ удалить пр€мо сейчас, поскольку на нем идут измерени€.\n", selectedItems[i]->ID + 1).GetString(), 
+					"Attention", MB_OK);
+				return;				
+			}
+		}
+
+		CString message;
+		if(selectedItems.size() == 1)
+		{
+			message.Format("ƒействительно хотите удалить регион R%i?", selectedItems[0]->ID + 1);
+		}
 		else
 		{
-			CRegion* pReg = selectedItems[selectedItems.size() - 1];
-			int itemIndex = pReg->ID;
+			std::vector<CString> regionStrings = Linq::from(selectedItems)
+				.select([](CRegion* r) {return Format("R%i", r->ID + 1); })
+				.toVector();
 
-			THRI_LOCK();
-			if ((pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop == m_pMainFrame->Stop))
-				RegNow = TRUE;
-			else
-			{
-				m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = pReg;
-				RegNow = FALSE;
-			}
-			THRI_UNLOCK();
+			message.Format("ƒействительно хотите удалить %i %s: %s?", selectedItems.size(), 
+				GetI18nNumEnding(selectedItems.size(), "регион", "региона", "регионов").GetString(),
+				JoinStrings(regionStrings, ", ").GetString());
+		}
+		if (::MessageBox(m_pListRegionWnd->m_hWnd, message, "Attention", MB_YESNO) == IDNO)
+			return;
 
-			::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
+		::EnableWindow(m_pMainFrame->m_hWnd, FALSE);
 
-			if (!RegNow)
-			{
-				char str[128];
-				sprintf(str, "Are you sure you want\nto delete the region R%i ?", itemIndex + 1);
-				if (::MessageBox(m_pListRegionWnd->m_hWnd, str, "Attention", MB_YESNO) == IDYES)
-				{
-					if (::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
-					{
-						if (pReg->m_pDataOut == m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll)
-						{
-							m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
-							m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pReg = NULL;
-							::SendMessage(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0, 0);
-							m_pMainFrame->m_Doc.m_ViewWnd.DestroyWindow();
-						}
-					}
-					CWaitCursor WCur;
-					THRI_LOCK();
-					if (m_pMainFrame->m_Doc.m_ThrComm.pRegNow == pReg)
-						m_pMainFrame->m_Doc.m_ThrComm.pRegNow = NULL;
-					if (m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut)
-					{
-						m_pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
-						m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
-					}
-					delete pReg;
-					if (!CRegion::GetFirst())
-						m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
-					if (m_pMainFrame->m_Doc.IsFileOpen())
-					{
-						m_pMainFrame->m_Doc.SaveProjectFile();
-						m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
-					}
+		for (int i = 0; i < selectedItems.size(); ++i)
+		{
+			DeleteRegionInternal(selectedItems[i]);
+		}
 
-					THRI_UNLOCK();
-					::SendMessage(m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, (WPARAM)itemIndex, 0);
-					LV_ITEM item;
-					item.iSubItem = 0;
-					--N_Item;
-					for (int i = 0; i<N_Item; ++i)
-					{
-						item.iItem = i;
-						sprintf(str, "R%i", i + 1);
-						item.pszText = str;
-						::SendMessage(m_pListRegionWnd->m_hWnd, LVM_SETITEMTEXT, (WPARAM)i,
-						              (LPARAM)(LV_ITEM FAR*) &item);
-					}
-
-					if ((::IsWindow(this->m_pListRegionWnd->m_CommentsWnd.m_hWnd)))
-					{
-						char str[32];
-						sprintf(str, "No Comments");
-						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWnd, WM_SETTEXT,
-						              0, (LPARAM)str);
-						::SendMessage(m_pListRegionWnd->m_CommentsWnd.m_hWndEdit, WM_SETTEXT,
-						              0, (LPARAM)str);
-					}
-
-					GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
-					m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
-				} // end if(::MessageBox(m_pListRegionWnd->m_hWnd, str, "Attention",MB_YESNO) == IDYES)
-
-				m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
-			}//end if(!RegNow) // if(RegNow == FALSE)
-
-			else //if(RegNow == TRUE) //Ќельз€ удал€ть регион
-			{
-				::MessageBox(m_pListRegionWnd->m_hWnd,
-				             "You can't delete this region now.\n", "Attention", MB_OK);
-			}//Ќельз€ удал€ть регион
-
-			::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
-			::SetFocus(m_pListRegionWnd->m_hWnd);
-
-		} // end else if(SelectedItem != -1)			
+		::EnableWindow(m_pMainFrame->m_hWnd, TRUE);
+		::SetFocus(m_pListRegionWnd->m_hWnd);
 	}
 	theApp.m_pMainFrame->m_Doc.CheckDocType();
+}
+
+void CRegionWnd::DeleteRegionInternal(CRegion* pReg)
+{	
+	CSingleLock sLock(&MutexThread);
+	BOOL RegNow;
+	int itemIndex = pReg->ID;
+
+	THRI_LOCK();
+	if ((pReg == m_pMainFrame->m_Doc.m_ThrComm.pRegNow) && (m_pMainFrame->m_StartStop == m_pMainFrame->Stop))
+		RegNow = TRUE;
+	else
+	{
+		m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = pReg;
+		RegNow = FALSE;
+	}
+	THRI_UNLOCK();
+
+	if (!RegNow)
+	{
+		char str[128];
+		if (::IsWindow(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd))
+		{
+			if (pReg->m_pDataOut == m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll)
+			{
+				m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pDataAll = NULL;
+				m_pMainFrame->m_Doc.m_ViewWnd.m_ViewGraph.m_pReg = NULL;
+				::SendMessage(m_pMainFrame->m_Doc.m_ViewWnd.m_hWnd, WM_CLOSE, 0, 0);
+				m_pMainFrame->m_Doc.m_ViewWnd.DestroyWindow();
+			}
+		}
+		CWaitCursor WCur;
+		THRI_LOCK();
+		if (m_pMainFrame->m_Doc.m_ThrComm.pRegNow == pReg)
+			m_pMainFrame->m_Doc.m_ThrComm.pRegNow = NULL;
+		if (m_pMainFrame->m_Doc.m_Graph.m_pDataAll == pReg->m_pDataOut)
+		{
+			m_pMainFrame->m_Doc.m_Graph.m_pDataAll = NULL;
+			m_pMainFrame->m_Doc.m_Graph.ReDrawAll();
+			m_pMainFrame->m_Doc.m_Graph.DrawKRATOS();
+		}
+		delete pReg;
+		if (!CRegion::GetFirst())
+			m_pMainFrame->m_Doc.m_ThrComm.StopContinue = m_pMainFrame->m_Doc.m_ThrComm.Stop;
+		if (m_pMainFrame->m_Doc.IsFileOpen())
+		{
+			m_pMainFrame->m_Doc.SaveProjectFile();
+			m_pMainFrame->m_Doc.m_NeedSave = m_pMainFrame->m_Doc.NoNeed;
+		}
+
+		THRI_UNLOCK();
+		::SendMessage(m_pListRegionWnd->m_hWnd, LVM_DELETEITEM, (WPARAM)itemIndex, 0);
+		LV_ITEM item;
+		item.iSubItem = 0;
+		int itemCount = m_pListRegionWnd->GetItemCount();
+		for (int i = 0; i < itemCount; ++i)
+		{
+			item.iItem = i;
+			sprintf(str, "R%i", i + 1);
+			item.pszText = str;
+			::SendMessage(m_pListRegionWnd->m_hWnd, LVM_SETITEMTEXT, (WPARAM)i,
+				(LPARAM)(LV_ITEM FAR*) &item);
+		}
+
+		GetXpsTimeRemainedToEnd(&m_pMainFrame->m_Doc.m_ThrComm.TIME);
+		m_pMainFrame->SetStatusTime(m_pMainFrame->m_Doc.m_ThrComm.TIME);
+
+		m_pMainFrame->m_Doc.m_ThrComm.pRegEdit = NULL;
+	}//end if(!RegNow) // if(RegNow == FALSE)
+
+	else //if(RegNow == TRUE) //Ќельз€ удал€ть регион
+	{
+		::MessageBox(m_pListRegionWnd->m_hWnd,
+			"You can't delete this region now.\n", "Attention", MB_OK);
+	}
 }
 
 void CRegionWnd::OnButtonView()

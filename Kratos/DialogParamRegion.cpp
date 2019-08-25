@@ -237,7 +237,7 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 
 		int delta = D2I(m_KE_End) - D2I(m_KE_Start);
 		int N_Step = (int)((m_KE_End - m_KE_Start) / m_Step);
-		if (delta %  D2I(m_Step))
+		if (delta % D2I(m_Step) != 0 && abs(D2I(m_Step) - delta % D2I(m_Step)) > 1)
 		{
 			double BigEnd = I2D(D2I(m_KE_Start) + (N_Step + 1) * D2I(m_Step));
 			double SmallEnd = I2D(D2I(m_KE_Start) + (N_Step)* D2I(m_Step));//m_KE_Start + N_Step*m_Step;
@@ -277,7 +277,11 @@ void CDialogParamRegion::DoDataExchange(CDataExchange* pDX)
 				delete m_pDlgKEEnd;
 			}
 		} //end if( delta %  D2I(m_Step)  )		
-
+		else if(delta % D2I(m_Step))
+		{
+			int steps = (int)round((m_KE_End - m_KE_Start) / m_Step);
+			m_KE_End = I2D(D2I(m_KE_Start) + steps * D2I(m_Step));
+		}
 		if ((m_pReg->m_NewOrEdit == m_pReg->Edit)
 			&& (m_pReg->m_DataIn.Curr_N > 0)
 			&& (m_pReg->m_DataIn.Curr_N > m_N))

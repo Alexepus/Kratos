@@ -419,3 +419,22 @@ char* GetAppTitle()
 		return "KRATOS";
 	return "HP";
 }
+
+/**
+ * Возвращает правильное окончание для согласованного числительного в русском языке
+ *
+ * @param number     Число
+ * @param nominative именительный падеж;
+ * @param genetive   родительный падеж;
+ * @param plural     множественное число.
+ */
+CString GetI18nNumEnding(int number, char* nominative, char* genetive, char* plural) 
+{
+	number = abs(number);
+
+	return number % 10 == 1 && number % 100 != 11
+				? nominative
+				: (number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 >= 20)
+					? genetive
+					: plural);
+}

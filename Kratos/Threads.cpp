@@ -18,8 +18,7 @@ void SetDataForGraph(THREAD_COMMON* ThComm, CRegion* pReg, DATA_OUT* NewData)
 	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShort = pReg->m_NDataOut;
 	ThComm->pMainFrame->m_Doc.m_Graph.m_NDataShortCurr = pReg->m_NDataOutCurr;
 
-	if (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE)
-		sprintf(ThComm->pMainFrame->m_Doc.m_Graph.m_strCaption,
+	sprintf(ThComm->pMainFrame->m_Doc.m_Graph.m_strCaption,
 		        "Region %i ( %s, Anode: %s )", pReg->ID + 1, (pReg->m_DataIn.KE_BE == DATA_IN::EnergyType::KE) ? "KE" : "BE", pReg->str.Name_h_nu);
 
 	if (pReg->m_DataIn.Curr_N == 0)

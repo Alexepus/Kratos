@@ -2,7 +2,7 @@
 #include "CRegion.h"
 #include "CppLinq.h"
 
-int D2I(double d) { return (int)(d*1000.0); }
+int D2I(double d) { return (int)(round(d*1000.0)); }
 double I2D(int i) { return ((double)i) / 1000.0; }
 
 int CRegion::m_NReg = 0;
